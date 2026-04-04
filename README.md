@@ -22,23 +22,6 @@ A comprehensive **MagicMirror²** module that displays football league standings
 - Unified team name normalization across client and server.
 - Improved hyphen and alias handling to resolve naming inconsistencies between sources.
 
-## 🆕 Recent Updates (v2.2.7 - 2026-04-02)
-
-**World Cup 2026 UI & Data Fixes:**
-- Fixed fixture population for World Cup groups A-L.
-- Increased fixture wrapper height and reduced padding to ensure all 6 group matches are visible.
-- Resolved logo display issues for "Congo DR" and "Czech Republic" via new aliases.
-
-**World Cup 2026 Dual-Month Fixture Support:**
-- Added support for fetching and merging fixtures from both June and July 2026.
-- Improved fixture deduplication logic.
-- Confirmed BBC Sport as the primary data source for World Cup tournament data.
-
-**FIFA World Cup 2026 Qualifier Update:**
-- Updated participants to the final 48 qualified nations.
-- Updated mock data to reflect the new 12-group structure (A-L).
-- Normalized team logo mappings for all qualified nations.
-
 See [CHANGELOG.md](./CHANGELOG.md) for complete details.
 
 ## 🏆 Key Features
