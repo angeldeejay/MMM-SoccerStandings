@@ -29,26 +29,15 @@ A comprehensive **MagicMirror²** module that displays football league standings
 - Increased fixture wrapper height and reduced padding to ensure all 6 group matches are visible.
 - Resolved logo display issues for "Congo DR" and "Czech Republic" via new aliases.
 
-## 🆕 Recent Updates (v2.2.6 - 2026-04-02)
-
 **World Cup 2026 Dual-Month Fixture Support:**
 - Added support for fetching and merging fixtures from both June and July 2026.
 - Improved fixture deduplication logic.
 - Confirmed BBC Sport as the primary data source for World Cup tournament data.
 
-## 🆕 Recent Updates (v2.2.5 - 2026-04-02)
-
 **FIFA World Cup 2026 Qualifier Update:**
 - Updated participants to the final 48 qualified nations.
 - Updated mock data to reflect the new 12-group structure (A-L).
 - Normalized team logo mappings for all qualified nations.
-
-## 🆕 Recent Updates (v2.2.4 - 2026-03-17)
-
-
-**🚀 Advanced Power-User Features:**
-
-
 
 See [CHANGELOG.md](./CHANGELOG.md) for complete details.
 
@@ -193,7 +182,7 @@ To use this module, add it to the modules array in the `~/MagicMirror/config/con
     showWC2026Knockouts: ["Rd32", "Rd16", "QF", "SF", "TP", "Final"], // Knockout rounds to show
     defaultWCSubTab: "C", // Default tab to focus on start-up (e.g., "C", "Final", etc.)
     displayAllTabs: true, // Override to show all tabs regardless of stage completion
-    useMockData: true, // For testing use only (only for World Cup 2026) for when data not available - Swet to false before competion begins
+    useMockData: false, // For testing use only (only for World Cup 2026) for when data not available - Swet to false before competion begins
 
     // ===== Display Options =====
     showPosition: true, // Show table position
@@ -236,7 +225,7 @@ To use this module, add it to the modules array in the `~/MagicMirror/config/con
     customTeamColors: {"Celtic": "#018749", "Hearts": "#ea00ff86"}, // Custom colors for specific teams: {"Team Name": "#HEXCOLOR"}
     
     // Debug
-    debug: true, // Set to true to enable console logging
+    debug: false, // Set to true to enable console logging
     dateTimeOverride: null, // Override system date/time for testing. Use ISO date format (e.g., "2026-01-15" or "2026-01-15T14:30:00Z"). null = use system date
 
     // Cache controls
