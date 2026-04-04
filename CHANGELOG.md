@@ -1,5 +1,90 @@
 # CHANGELOG
 
+## [v2.2.8] - 2026-04-02 - Tournament Data Resilience & Normalization Refactor
+
+### Problem
+- **Missing Fixtures**: Group B (Bosnia and Herzegovina) and Group D (United States) fixtures failed to display for some users due to naming inconsistencies between standings tables (often with "(Host)") and fixture lists (often hyphenated or abbreviated).
+- **Code Duplication**: Team name normalization and alias resolution were duplicated across multiple client-side and server-side functions, leading to inconsistent matching.
+
+### Solution
+- **Unified Normalization**: Refactored `normalizeTeamName()` into a standardized method used for both fixture filtering and logo lookup.
+- **Alias-Aware Filtering**: Moved `teamAliases` to a module-level property and integrated it directly into `normalizeTeamName()`. This ensures that "Bosnia-Herzegovina" matches "Bosnia and Herzegovina" and "United States (Host)" matches "United States" in all contexts.
+- **Hyphen Resilience**: Updated normalization logic to treat hyphens as spaces, improving matching for teams like "Bosnia-Herzegovina".
+- **Synchronized Resolvers**: Updated both the client-side module and the server-side `logo-resolver.js` with identical aliases and normalization logic to ensure consistent behavior across the entire module.
+
+### Files Modified
+- `MMM-MyTeams-LeagueTable.js`: Refactored `start()`, `normalizeTeamName()`, `buildNormalizedTeamMap()`, and `getTeamLogoMapping()`.
+- `logo-resolver.js`: Updated `normalize()`, `fuzzyNormalize()`, and `teamAliases`.
+- `CHANGELOG.md`: Added v2.2.8 entry.
+- `README.md`: Updated version.
+
+---
+
+## [v2.2.7] - 2026-04-02 - World Cup 2026 UI & Data Population Fixes
+
+### Problem
+- **Fixture Population**: World Cup group stage fixtures failed to populate when `useMockData: false` due to strict team name matching between the standings table and the BBC fixtures (e.g., "Congo DR" vs "DR Congo").
+- **UI Visibility**: The 270px fixture wrapper height was insufficient to display all 6 group stage fixtures without scrolling, and the vertical padding was too loose.
+- **Logo Issues**: Logos for "Congo DR" and "Czech Republic" failed to display for some users due to missing aliases and spelling variations (e.g., "Check Republic").
+
+### Solution
+- **Fuzzy Fixture Matching**: Implemented `normalizeTeamName()` method in `MMM-MyTeams-LeagueTable.js` to ensure fixtures populate even if team names have minor differences in diacritics, case, or suffix.
+- **Enhanced Layout**: Increased `.uefa-section-wrapper` height to 300px (dual) / 600px (single) and optimized row padding to ensure all 6 fixtures are visible in the group stage view.
+- **Logo Resilience**: Added "Check Republic", "RD Congo", and "Democratic Republic of Congo" aliases to both client-side and server-side resolvers.
+- **Global Normalization**: Pulled `normalizeTeamName()` into a reusable class method to ensure consistent data matching across the module.
+
+### Files Modified
+- `MMM-MyTeams-LeagueTable.js`: Added `normalizeTeamName()` and `fuzzyNormalizeTeamName()`; updated `_generateWorldCupView()` logic; increased `maxTableHeight`.
+- `MMM-MyTeams-LeagueTable.css`: Increased `.uefa-section-wrapper` and container heights.
+- `logo-resolver.js`: Added "Check Republic" and "DR Congo" variants to `teamAliases`.
+- `team-logo-mappings.js`: Added explicit fallback for "Check Republic" and "Czechia".
+- `CHANGELOG.md`: Added v2.2.7 entry.
+- `README.md`: Updated version.
+
+---
+
+## [v2.2.6] - 2026-04-02 - World Cup 2026 Dual-Month Fixture Support
+
+### Problem
+- **What was wrong**: The World Cup 2026 fixtures are spread across two separate BBC Sport URLs (June and July 2026), but the module was only configured to fetch the June data.
+- **Impact**: Fixtures and knockout stages occurring in July would not be displayed.
+
+### Solution
+- Updated `WORLD_CUP_2026` configuration to support an array of URLs.
+- Modified `node_helper.js` to concurrently fetch multiple fixture pages and intelligently merge/deduplicate the results.
+- Added synthetic key fallback for fixture deduplication to ensure data integrity.
+- Confirmed module data source remains BBC Sport for maximum reliability (despite `FIFAParser` naming).
+
+### Files Modified
+- `MMM-MyTeams-LeagueTable.js`: Updated `WORLD_CUP_2026` to include both June and July fixture URLs.
+- `node_helper.js`: Enhanced `fetchFIFAWorldCup2026()` to handle multiple fixture sources.
+- `CHANGELOG.md`: Added v2.2.6 entry.
+- `README.md`: Updated version.
+
+---
+
+## [v2.2.5] - 2026-04-02 - FIFA World Cup 2026 Qualifier Update
+
+### Problem
+- **What was wrong**: The World Cup 2026 qualifying process has concluded, and the previous "mock data" and "team logo mappings" contained outdated "Play-Off" placeholders and incorrect group compositions.
+- **Why it happened**: Final qualifying rounds (including inter-confederation play-offs) only recently completed, and the module needed a manual data refresh to reflect the final 48 participants.
+- **Impact**: Users viewing World Cup 2026 data or using `useMockData: true` saw outdated team lists and placeholder names.
+
+### Solution
+- Updated `FIFAParser.js` with the authoritative 48-nation group list (A-L) and a comprehensive set of matches sourced from BBC Sport.
+- Normalized team logo mappings in `team-logo-mappings.js` to match both BBC and user-provided naming conventions (e.g., "South Korea", "Congo DR", "Bosnia-Herzegovina").
+- Removed all "Play-Off" placeholders from mock data and logo mappings.
+- Updated `WorldCup2026-UserGuide.md` with the final participant table.
+
+### Files Modified
+- `FIFAParser.js`: Updated `generateMockWC2026Data()` with real groups A-L and current fixtures.
+- `team-logo-mappings.js`: Added mappings for "South Korea", "Congo DR", "Bosnia-Herzegovina", and "Iran"; removed Play-Off entries.
+- `documentation\WorldCup2026-UserGuide.md`: Updated Group Stage Participants table.
+- `CHANGELOG.md`: Added v2.2.5 entry.
+- `README.md`: Updated version and recent updates section.
+
+---
+
 ## [v2.2.4] - 2026-03-17 - Minimal Config Data Not Loading Fix
 
 ### Problem

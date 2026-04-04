@@ -505,19 +505,59 @@ module.exports = NodeHelper.create({
 			}
 
 			// Fetch both BBC pages: tables and fixtures
+			// Handle single URL or array of URLs for fixtures
+			const fixtureUrls = Array.isArray(url) ? url : [url];
 			const tablesUrl = "https://www.bbc.co.uk/sport/football/world-cup/table";
-			const [tablesHtml, fixturesHtml] = await Promise.all([
-				this.fetchWebPage(tablesUrl),
-				this.fetchWebPage(url)
-			]);
+
+			const fetchPromises = [this.fetchWebPage(tablesUrl)];
+			fixtureUrls.forEach((fUrl) => fetchPromises.push(this.fetchWebPage(fUrl)));
+
+			const [tablesHtml, ...fixturesHtmlParts] =
+				await Promise.all(fetchPromises);
 
 			// Parse groups from tables page
 			this.fifaParser.setConfig(config);
 			const groups = this.fifaParser.parseFIFAWorldCupTablesBBC(tablesHtml);
-			// Parse fixtures from fixtures page
-			let data = this.fifaParser.parseFIFAWorldCupData("", fixturesHtml);
-			// Overwrite groups with authoritative table data
-			data.groups = groups;
+
+			// Parse fixtures from all fixture pages and merge them
+			let allFixtures = [];
+			fixturesHtmlParts.forEach((fHtml) => {
+				const partData = this.fifaParser.parseFIFAWorldCupData("", fHtml);
+				if (partData && partData.fixtures) {
+					allFixtures = allFixtures.concat(partData.fixtures);
+				}
+			});
+
+			// Deduplicate fixtures by matchNo
+			const uniqueFixturesMap = new Map();
+			allFixtures.forEach((f) => {
+				if (f.matchNo) {
+					uniqueFixturesMap.set(f.matchNo, f);
+				} else {
+					// For fixtures without matchNo (if any), use a synthetic key
+					const key = `${f.date}_${f.homeTeam}_${f.awayTeam}`;
+					uniqueFixturesMap.set(key, f);
+				}
+			});
+
+			const mergedFixtures = Array.from(uniqueFixturesMap.values());
+
+			// Create final data object
+			let data = {
+				groups: groups,
+				fixtures: mergedFixtures,
+				knockouts: {
+					rd32: mergedFixtures.filter((f) => f.stage === "Rd32"),
+					rd16: mergedFixtures.filter((f) => f.stage === "Rd16"),
+					qf: mergedFixtures.filter((f) => f.stage === "QF"),
+					sf: mergedFixtures.filter((f) => f.stage === "SF"),
+					tp: mergedFixtures.filter((f) => f.stage === "TP"),
+					final: mergedFixtures.filter((f) => f.stage === "Final")
+				},
+				lastUpdated: new Date().toISOString(),
+				source: "BBC Sport",
+				leagueType: leagueType
+			};
 
 			if (data && data.groups && Object.keys(data.groups).length > 0) {
 				data.leagueType = leagueType;

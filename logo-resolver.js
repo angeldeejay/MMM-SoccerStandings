@@ -29,23 +29,34 @@ class LogoResolver {
 			"fn"
 		];
 		this.teamAliases = {
-			"Cabo Verde": "Cape Verde",
-			"Cape Verde Islands": "Cape Verde",
-			"IR Iran": "Iran",
-			"Iran, Islamic Republic of": "Iran",
-			"South Korea": "Rep. of Korea",
-			"Korea Republic": "Rep. of Korea",
-			"Korea, Republic of": "Rep. of Korea",
-			"Côte d'Ivoire": "Ivory Coast",
-			"Cote d'Ivoire": "Ivory Coast",
-			Curacao: "Curaçao",
-			USA: "United States",
-			"United States of America": "United States",
-			Czechia: "Czech Republic",
-			Türkiye: "Turkey",
-			"North Macedonia": "Macedonia",
-			"Viet Nam": "Vietnam",
-			Eswatini: "Swaziland"
+			"cabo verde": "Cape Verde",
+			"cape verde islands": "Cape Verde",
+			"ir iran": "Iran",
+			"iran, islamic republic of": "Iran",
+			"south korea": "Rep. of Korea",
+			"korea republic": "Rep. of Korea",
+			"korea, republic of": "Rep. of Korea",
+			"côte d'ivoire": "Ivory Coast",
+			"cote d'ivoire": "Ivory Coast",
+			"bosnia-herzegovina": "Bosnia and Herzegovina",
+			"bosnia & herzegovina": "Bosnia and Herzegovina",
+			curacao: "Curaçao",
+			usa: "United States",
+			"united states (host)": "United States",
+			"mexico (host)": "Mexico",
+			"canada (host)": "Canada",
+			"argentina (title holder)": "Argentina",
+			"united states of america": "United States",
+			czechia: "Czech Republic",
+			"check republic": "Czech Republic",
+			"congo dr": "DR Congo",
+			"democratic republic of congo": "DR Congo",
+			"rd congo": "DR Congo",
+			"democratic republic of the congo": "DR Congo",
+			türkiye: "Turkey",
+			"north macedonia": "Macedonia",
+			"viet nam": "Vietnam",
+			eswatini: "Swaziland"
 		};
 
 		// Initial build with default mappings
@@ -69,7 +80,13 @@ class LogoResolver {
 	normalize(str) {
 		if (!str) return "";
 		
-		// Check cache first
+		// 1. Resolve aliases if defined (use the raw name first, trimmed and lowercase)
+		const lookupKey = str.trim().toLowerCase();
+		if (this.teamAliases && this.teamAliases[lookupKey]) {
+			str = this.teamAliases[lookupKey];
+		}
+
+		// Check cache next (using the potentially aliased name)
 		if (this.normalizedNameCache.has(str)) {
 			const cached = this.normalizedNameCache.get(str);
 			// LRU: Move to end by deleting and re-adding
@@ -81,6 +98,10 @@ class LogoResolver {
 		// Perform normalization
 		const normalized = this.removeDiacritics(str)
 			.toLowerCase()
+			.replace(/\([^)]*\)/g, "") // Strip anything in parentheses
+			.replace(/\b(and|the|of|rep|republic)\b/g, "") // Strip common words
+			.replace(/&/g, " ")
+			.replace(/[-]/g, " ") // Replace hyphens with spaces
 			.replace(/\s+/g, " ")
 			.trim()
 			.replace(/[.,]/g, "");
@@ -100,9 +121,8 @@ class LogoResolver {
 	 * Fuzzy normalization (alphanumeric only)
 	 */
 	fuzzyNormalize(str) {
-		return this.removeDiacritics(str || "")
-			.toLowerCase()
-			.replace(/[^a-z0-9]/g, "");
+		const norm = this.normalize(str);
+		return norm.replace(/[^a-z0-9]/g, "");
 	}
 
 	/**

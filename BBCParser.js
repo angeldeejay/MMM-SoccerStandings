@@ -491,31 +491,32 @@ class BBCParser extends BaseParser {
 				// Step 1: Extract aggregate score first (if present).
 				// BBC Sport uses multiple formats: "(agg 3-2)", "(3-2 agg)", "agg 3-2",
 				// "aggregate 3-2", and "(3-2 on aggregate)".
+				// FIX: Require "agg" word if in brackets to avoid picking up match scores.
 				const aggMatch =
-					block.match(/\((?:agg(?:regate)?\s*)?(\d+[-–]\d+)\s*(?:agg(?:regate)?)?\)/i) ||
+					block.match(/\((?:agg(?:regate)?\s+)(\d+[-–]\d+)\s*\)/i) ||
+					block.match(/\((\d+[-–]\d+)\s*(?:agg(?:regate)?)\)/i) ||
 					block.match(/agg(?:regate)?\s*(\d+[-–]\d+)/i) ||
-					block.match(/(\d+[-–]\d+)\s*(?:on\s*)?agg(?:regate)?/i);
+					block.match(/(\d+[-–]\d+)\s*(?:on\s*)?agg(?:regate)?/i) ||
+					block.match(/aggregate\s*score[^<]*(\d+[-–]\d+)/i);
 				const aggregateScore = aggMatch ? aggMatch[1].replace("–", "-") : undefined;
 
 				// Step 1b: Look for "X-Y on the night" pattern — BBC often uses this for
 				// the 2nd-leg individual score when the aggregate is the displayed headline.
-				// Capture this BEFORE stripping anything so it can override step 3/4.
 				const onTheNightMatch =
 					block.match(/(\d+)[-–](\d+)\s+on\s+the\s+night/i) ||
 					block.match(/\((\d+)[-–](\d+)\s+on\s+the\s+night\)/i) ||
-					block.match(/2nd\s+leg\s*:\s*(\d+)[-–](\d+)/i);
+					block.match(/2nd\s+leg\s*:\s*(\d+)[-–](\d+)/i) ||
+					block.match(/match\s*score\s*(\d+)[-–](\d+)/i);
 
 				// Create a cleaned block that excludes aggregate score text to avoid confusion
 				let blockForScoring = block;
 				if (aggregateScore) {
 					// Remove all variations of aggregate score notation from the block before score extraction
-					blockForScoring = block.replace(/\((?:agg(?:regate)?\s*)?(\d+[-–]\d+)\s*(?:agg(?:regate)?)?\)/gi, "");
+					blockForScoring = block.replace(/\((?:agg(?:regate)?\s+)(\d+[-–]\d+)\s*\)/gi, "");
+					blockForScoring = blockForScoring.replace(/\((\d+[-–]\d+)\s*(?:agg(?:regate)?)\)/gi, "");
 					blockForScoring = blockForScoring.replace(/agg(?:regate)?\s*(\d+[-–]\d+)/gi, "");
 					blockForScoring = blockForScoring.replace(/(\d+[-–]\d+)\s*(?:on\s*)?agg(?:regate)?/gi, "");
-					blockForScoring = blockForScoring.replace(
-						/aggregate\s*score[^<]*(\d+-\d+)/gi,
-						""
-					);
+					blockForScoring = blockForScoring.replace(/aggregate\s*score[^<]*(\d+[-–]\d+)/gi, "");
 				}
 
 				// Step 1c: If "on the night" score was found, use it immediately — it is the
@@ -526,16 +527,26 @@ class BBCParser extends BaseParser {
 
 				// Step 2: Check aria-label first as it's very reliable for current scores.
 				// Skip if we already have scores from "on the night" match.
-				const ariaScoreMatch = scores.length < 2
-					? blockForScoring.match(
-						/aria-label="[^"]+?\s*(\d+)\s*,\s*[^"]+?\s*(\d+)/i
-					)
-					: null;
-				if (ariaScoreMatch) {
-					scores = [ariaScoreMatch[1], ariaScoreMatch[2]];
-				} else if (scores.length < 2) {
+				if (scores.length < 2) {
+					// FIX: Check aria-label for match score. BBC often puts aggregate at the end of aria-label.
+					// We want the FIRST score pair in the aria-label as it's usually the match score.
+					const ariaMatch = block.match(/aria-label="([^"]+)"/i);
+					if (ariaMatch) {
+						const ariaText = ariaMatch[1];
+						// Clean aggregate info from aria text before matching
+						const cleanAria = ariaText
+							.replace(/agg(?:regate)?\s*\d+[-–]\d+/gi, "")
+							.replace(/\d+[-–]\d+\s*(?:on\s*)?agg(?:regate)?/gi, "");
+						
+						const scorePair = cleanAria.match(/(\d+)\s*,\s*(\d+)/) || cleanAria.match(/(\d+)\s*[-–]\s*(\d+)/);
+						if (scorePair) {
+							scores = [scorePair[1], scorePair[2]];
+						}
+					}
+				}
+
+				if (scores.length < 2) {
 					// Step 3: Try to find scores by modern BBC classes and data-testids.
-					// Only runs if "on the night" and ARIA extraction did not already yield scores.
 					const scoresRaw = Array.from(
 						blockForScoring.matchAll(
 							/<(?:span|div)[^>]*?(?:class="[^"]*?(?:sp-c-fixture__number|sp-c-fixture__number--[a-z]+|ScoreValue|MatchScore|FixtureScore|score-value)[^"]*?"|data-testid="[^"]*?(?:score-value|match-score|score)[^"]*?")[^>]*?>([\s\S]*?)<\/(?:span|div)>/gi
@@ -544,24 +555,17 @@ class BBCParser extends BaseParser {
 					const candidateScores = scoresRaw
 						.map((s) => s.replace(/<[^>]*>/g, "").trim())
 						.filter((s) => /^\d+$/.test(s));
-					// Reject if the two scores together equal the aggregate (i.e. BBC rendered agg in score spans)
+					
 					if (candidateScores.length >= 2) {
-						const candidatePair = `${candidateScores[0]}-${candidateScores[1]}`;
-						if (candidatePair !== aggregateScore) {
-							scores = candidateScores;
-						}
+						scores = candidateScores;
 					}
 				}
 
-				// Step 4: Fallback to hyphenated score match (but not if it's the aggregate we already found)
+				// Step 4: Fallback to hyphenated score match
 				if (scores.length < 2) {
 					const sm = blockForScoring.match(/(\d+)\s*[-–,]\s*(\d+)/);
 					if (sm) {
-						const potentialScore = `${sm[1]}-${sm[2]}`;
-						// Only use this if it's NOT the same as the aggregate score
-						if (potentialScore !== aggregateScore) {
-							scores = [sm[1], sm[2]];
-						}
+						scores = [sm[1], sm[2]];
 					}
 				}
 
@@ -625,21 +629,21 @@ class BBCParser extends BaseParser {
 				// Require live class OR ARIA evidence, AND at least one live-time indicator.
 				else if (
 					(hasLiveClass || /\bin progress\b/i.test(block)) &&
-					block.match(/\d{1,2}'|HT|AET|in progress/i)
+					block.match(/\b\d{1,3}'|HT|AET|ET|PEN|in progress\b/i)
 				) {
 					isLive = true;
 
 					// Try multiple patterns to extract live minute marker
-					// Pattern 1: "45'" or "90+3'" (most reliable)
-					const minMatch1 = block.match(/\b(\d{1,2}(?:\+\d{1,2})?')\b/);
-					if (minMatch1) {
-						statusStr = minMatch1[1];
+					// Pattern 1: "HT", "AET", "ET", or "PEN" - High priority for state changes
+					const sm = block.match(/\b(HT|AET|ET|PEN)\b/i);
+					if (sm) {
+						statusStr = sm[1].toUpperCase();
 					}
-					// Pattern 2: "HT" or "AET"
+					// Pattern 2: "45'" or "105+3'" (handles ET minutes)
 					else {
-						const sm = block.match(/\b(HT|AET)\b/i);
-						if (sm) {
-							statusStr = sm[1].toUpperCase();
+						const minMatch1 = block.match(/\b(\d{1,3}(?:\+\d{1,2})?')\b/);
+						if (minMatch1) {
+							statusStr = minMatch1[1];
 						}
 						// Pattern 3: "X minutes, in progress"
 						else {
@@ -1645,21 +1649,96 @@ class BBCParser extends BaseParser {
 			if (inferred) f.stage = inferred;
 		});
 
-		// Staged Classification (Task: UEFA 3-stage display)
-		// FIX: Categorize by match status, NOT by score presence
-		// Issue: Second leg fixtures have aggregate scores assigned, causing them to appear in Results prematurely
+		// ── 2nd-Leg Score Back-Calculation ──────────────────────────────────────────
+		// BBC Sport displays only the aggregate score in completed 2nd-leg fixture
+		// blocks, so the parser cannot extract the individual match score directly.
+		// We recover it from the aggregate and the known 1st-leg result:
+		//   2nd_leg_home = agg_home − 1st_leg_away
+		//   2nd_leg_away = agg_away − 1st_leg_home
+		// (Teams swap home/away between legs, so the 1st-leg home score maps to the
+		// 2nd-leg away team and vice-versa.)
+		const normForPair = (name) =>
+			(name || "")
+				.toLowerCase()
+				.replace(/[^a-z0-9\s]/g, "")
+				.replace(/\s+/g, " ")
+				.trim();
 
-		// Stage 1: Finished matches only (not live)
-		// A match is finished if it has status "FT", "PEN", or "AET"
-		// DO NOT include matches just because they have scores - scores might be aggregate scores from first leg
+		const teamsSimilar = (a, b) => {
+			const na = normForPair(a);
+			const nb = normForPair(b);
+			if (na === nb) return true;
+			if (na.length >= 4 && nb.length >= 4) {
+				if (na.includes(nb) || nb.includes(na)) return true;
+			}
+			if (na.length >= 5 && nb.length >= 5) {
+				return na.substring(0, 5) === nb.substring(0, 5);
+			}
+			return false;
+		};
+
+		dedupedFixtures.forEach((f2) => {
+			// Only process 2nd-leg fixtures: has aggregate, no match score
+			if (
+				!f2.aggregateScore ||
+				f2.homeScore !== undefined ||
+				f2.awayScore !== undefined
+			) return;
+
+			const aggParts = f2.aggregateScore.split("-").map(Number);
+			if (aggParts.length !== 2 || isNaN(aggParts[0]) || isNaN(aggParts[1])) return;
+
+			// Find the matching 1st leg: same two teams (home/away swapped), earlier date, has scores
+			const firstLeg = dedupedFixtures.find((f1) => {
+				if (f1 === f2) return false;
+				if (f1.date >= f2.date) return false;
+				if (f1.homeScore === undefined || f1.awayScore === undefined) return false;
+				return teamsSimilar(f1.homeTeam, f2.awayTeam) && teamsSimilar(f1.awayTeam, f2.homeTeam);
+			});
+
+			if (!firstLeg) return;
+
+			const calcHome = aggParts[0] - firstLeg.awayScore;
+			const calcAway = aggParts[1] - firstLeg.homeScore;
+
+			if (calcHome < 0 || calcAway < 0) {
+				if (this.config && this.config.debug) {
+					console.log(
+						`[BBCParser-2NDLEG] Negative score calc for ${f2.homeTeam} vs ${f2.awayTeam} (${f2.date}): agg=${f2.aggregateScore}, 1st=${firstLeg.homeScore}-${firstLeg.awayScore} → ${calcHome}-${calcAway}. Skipping.`
+					);
+				}
+				return;
+			}
+
+			f2.homeScore = calcHome;
+			f2.awayScore = calcAway;
+			f2.score = `${calcHome} - ${calcAway}`;
+			f2.scoreSource = "calculated";
+
+			if (this.config && this.config.debug) {
+				console.log(
+					`[BBCParser-2NDLEG] Calculated 2nd leg score: ${f2.homeTeam} ${calcHome}-${calcAway} ${f2.awayTeam} (agg ${f2.aggregateScore}, 1st leg ${firstLeg.homeScore}-${firstLeg.awayScore})`
+				);
+			}
+		});
+
+		// Stage 1a: Finished matches (FT, PEN, AET, etc.)
 		const stage1 = dedupedFixtures.filter((f) => {
 			const status = (f.status || "").toUpperCase();
-			return status === "FT" || status === "PEN" || status === "AET";
+			return (
+				status === "FT" ||
+				status === "PEN" ||
+				status === "PENS" ||
+				status === "AET" ||
+				status === "FULL TIME" ||
+				status === "FINISHED"
+			);
 		});
 
 		// Stage 1b: Live matches (currently in progress)
 		// Detected by live flag OR status containing minute markers (e.g., "45'", "HT")
 		const stageLive = dedupedFixtures.filter((f) => {
+			if (stage1.includes(f)) return false;
 			if (f.live === true) return true;
 			const status = (f.status || "").toUpperCase();
 			return /\d+'|HT|LIVE/i.test(status);
@@ -1670,15 +1749,19 @@ class BBCParser extends BaseParser {
 		const stage2 = dedupedFixtures.filter((f) => {
 			if (f.date !== today) return false;
 			if (stage1.includes(f) || stageLive.includes(f)) return false;
-			// A match is upcoming if it has no status or status doesn't indicate finished/live
 			const status = (f.status || "").toUpperCase();
 			const isFinishedOrLive =
 				status === "FT" ||
 				status === "PEN" ||
+				status === "PENS" ||
 				status === "AET" ||
+				status === "FULL TIME" ||
+				status === "FINISHED" ||
 				status === "LIVE" ||
 				f.live ||
 				/\d+'|HT/i.test(status);
+			// A today fixture with no status and no live flag is assumed finished
+			if (!status && !f.live) return false;
 			return !isFinishedOrLive;
 		});
 
@@ -1692,7 +1775,10 @@ class BBCParser extends BaseParser {
 			const isFinishedOrLive =
 				status === "FT" ||
 				status === "PEN" ||
+				status === "PENS" ||
 				status === "AET" ||
+				status === "FULL TIME" ||
+				status === "FINISHED" ||
 				status === "LIVE" ||
 				f.live ||
 				/\d+'|HT/i.test(status);
@@ -1784,21 +1870,97 @@ class BBCParser extends BaseParser {
 		return teamName;
 	}
 
+	/**
+	 * Infer the tournament stage (GS, Rd32, QF, etc.) from a text block
+	 * @param {string} text - The header or fixture text
+	 * @returns {string|undefined} - The inferred stage
+	 */
+	_inferStageFromBlock(text) {
+		if (!text) return undefined;
+		const t = text.toUpperCase();
+
+		// World Cup Group Stage
+		if (t.includes("GROUP ")) {
+			const m = t.match(/GROUP\s+([A-L])/i);
+			return m ? m[1] : "GS";
+		}
+
+		// Knockout Rounds
+		if (t.includes("ROUND OF 32") || t.includes("RD32")) return "Rd32";
+		if (t.includes("ROUND OF 16") || t.includes("RD16")) return "Rd16";
+		if (t.includes("QUARTER") || t.includes(" QF")) return "QF";
+		if (t.includes("SEMI") || t.includes(" SF")) return "SF";
+		if (t.includes("THIRD PLACE") || t.includes(" TP")) return "TP";
+		if (t.includes("FINAL")) return "Final";
+
+		// UEFA Playoff
+		if (t.includes("PLAY-OFF") || t.includes("PLAYOFF")) return "Playoff";
+
+		return undefined;
+	}
+
 	_inferUEFAStage(fixture) {
 		const stage = fixture.stage || "";
 
-		// Priority 1: If a recognised stage label was already set by the HTML section-header
-		// parser (_inferStageFromBlock), honour it and return immediately.  Month-based
-		// inference is only a fallback for fixtures whose stage is unknown or a raw text value
-		// that has not yet been normalised.  Without this guard, February Round-of-16 first-legs
-		// (which BBC Sport places inside an "Rd16" section) were being overwritten to "Playoff"
-		// purely because they fall in month 02.
+		// ── Date-authoritative mapping ──────────────────────────────────────────────
+		// The BBC Sport bracket UI sometimes places newly-announced ties inside the
+		// wrong bracket section (e.g. an Rd16 match labelled "Quarter-final" because
+		// BBC shows the full bracket tree and the fixture sits under the QF slot).
+		// To guard against this, we derive the expected stage purely from the fixture
+		// date and use it to VETO a section-header stage that doesn't fit the calendar.
+		//
+		// UEFA knockout calendar (typical month assignment):
+		//   Jan/Feb  → Playoff      (Rd32 or knockout play-offs)
+		//   March    → Rd16         (Round of 16 — NEVER QF or later)
+		//   April    → QF           (Quarter-final)
+		//   Apr/May  → SF           (Semi-final)
+		//   May/Jun  → Final
+		const dateStage = (() => {
+			if (!fixture.date) return null;
+			const m = fixture.date.split("-")[1];
+			if (m === "01" || m === "02") return "Playoff";
+			if (m === "03") return "Rd16";
+			if (m === "04") return "QF";
+			if (m === "05") return "SF";
+			if (m === "06") return "Final";
+			return null;
+		})();
+
+		// Strict monthly bounds: a QF/SF/Final can NEVER fall in Rd16's exclusive month
+		// (March), and an Rd16 tie can NEVER fall in a QF/SF month (April onwards).
+		// If the section-header stage contradicts the date, override with the date.
+		const stageUpper = stage.toUpperCase();
+		if (dateStage && stageUpper) {
+			const mismatch = (
+				(dateStage === "Rd16"   && (stageUpper === "QF" || stageUpper === "SF" || stageUpper === "FINAL")) ||
+				(dateStage === "QF"     && (stageUpper === "SF" || stageUpper === "FINAL")) ||
+				(dateStage === "Playoff"&& (stageUpper === "RD16" || stageUpper === "QF" || stageUpper === "SF" || stageUpper === "FINAL"))
+			);
+			if (mismatch) return dateStage;
+		}
+
+		// Priority 1: If a recognised short-form stage label was already set by the
+		// HTML section-header parser, honour it (the mismatch guard above has already
+		// vetted it against the fixture date).
 		if (/^playoff$/i.test(stage)) return "Playoff";
 		if (/^rd16$/i.test(stage)) return "Rd16";
 		if (/^qf$/i.test(stage)) return "QF";
 		if (/^sf$/i.test(stage)) return "SF";
 		if (/^final$/i.test(stage)) return "Final";
-		if (/^gs$/i.test(stage)) return "GS";
+		
+		// If it's GS but we are in knockout months, reconsider
+		if (/^gs$/i.test(stage)) {
+			if (fixture.date) {
+				const month = fixture.date.split("-")[1];
+				if (["02", "03", "04", "05"].includes(month)) {
+					// Fall through to month-based inference
+				} else {
+					return "GS";
+				}
+			} else {
+				return "GS";
+			}
+		}
 
 		// Priority 2: Normalise verbose stage strings parsed from section headers
 		if (
@@ -1813,9 +1975,8 @@ class BBCParser extends BaseParser {
 		if (/Semi|SF/i.test(stage)) return "SF";
 		if (/Final/i.test(stage)) return "Final";
 
-		// Priority 3: Month-based fallback — only reached when the fixture has no recognisable
-		// stage value (e.g. stage is empty or a raw BBC Sport label not matched above).
-		// This avoids incorrectly overriding correctly-parsed stage codes.
+		// Priority 3: Month-based fallback — only reached when the fixture has no
+		// recognisable stage value.
 		if (fixture.date) {
 			const parts = fixture.date.split("-");
 			if (parts.length >= 2) {

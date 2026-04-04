@@ -172,7 +172,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		// Cache controls
 		clearCacheButton: true,
 		clearCacheOnStart: false, // Set to true to force-clear ALL caches (disk, fixture, logo) on every module start - useful for development and troubleshooting
-		maxTableHeight: 520 // Height in px to show 12 teams + extra room for fixtures (increased by 60px)
+		maxTableHeight: 600 // Height in px to show 12 teams + extra room for fixtures (increased by 100px from baseline)
 	},
 
 	// Required version of MagicMirror
@@ -187,6 +187,38 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		// team-logo-mappings.js (102KB) is loaded asynchronously via loadLogoMappings()
 		// so that the module renders standings immediately without blocking on that file.
 		this.mergedTeamLogoMap = Object.assign({}, this.config.teamLogoMap || {});
+
+		// Country name synonyms and variations (handles FIFA vs BBC vs other source differences)
+		this.teamAliases = {
+			"cabo verde": "Cape Verde",
+			"cape verde islands": "Cape Verde",
+			"ir iran": "Iran",
+			"iran, islamic republic of": "Iran",
+			"south korea": "Rep. of Korea",
+			"korea republic": "Rep. of Korea",
+			"korea, republic of": "Rep. of Korea",
+			"côte d'ivoire": "Ivory Coast",
+			"cote d'ivoire": "Ivory Coast",
+			"bosnia-herzegovina": "Bosnia and Herzegovina",
+			"bosnia & herzegovina": "Bosnia and Herzegovina",
+			curacao: "Curaçao",
+			usa: "United States",
+			"united states (host)": "United States",
+			"mexico (host)": "Mexico",
+			"canada (host)": "Canada",
+			"argentina (title holder)": "Argentina",
+			"united states of america": "United States",
+			czechia: "Czech Republic",
+			"check republic": "Czech Republic",
+			"congo dr": "DR Congo",
+			"democratic republic of congo": "DR Congo",
+			"rd congo": "DR Congo",
+			"democratic republic of the congo": "DR Congo",
+			türkiye: "Turkey",
+			"north macedonia": "Macedonia",
+			"viet nam": "Vietnam",
+			eswatini: "Swaziland"
+		};
 
 		// Build normalized team lookup map for case-insensitive matching
 		this.normalizedTeamLogoMap = {};
@@ -348,6 +380,36 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		return this.getCurrentDate().toLocaleDateString("en-CA");
 	},
 
+	// Standardize team names for comparisons and logo lookups
+	normalizeTeamName(str) {
+		if (!str) return "";
+		
+		// 1. Resolve aliases if defined (use the raw name first, trimmed and lowercase)
+		const lookupKey = str.trim().toLowerCase();
+		if (this.teamAliases && this.teamAliases[lookupKey]) {
+			str = this.teamAliases[lookupKey];
+		}
+
+		// 2. Remove diacritics
+		let result = str.replace(/ß/g, "ss").replace(/ø/g, "o").replace(/æ/g, "ae");
+		result = result.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+		// 3. Lowercase and strip common tournament suffixes/words
+		return result.toLowerCase()
+			.replace(/\([^)]*\)/g, "") // Strip anything in parentheses like (Host) or (Title Holder)
+			.replace(/\b(and|the|of|rep|republic)\b/g, "") // Strip common words
+			.replace(/&/g, " ")
+			.replace(/[-]/g, " ") // Replace hyphens with spaces
+			.replace(/\s+/g, " ")
+			.trim()
+			.replace(/[.,]/g, "");
+	},
+
+	fuzzyNormalizeTeamName(str) {
+		const norm = this.normalizeTeamName(str);
+		return norm.replace(/[^a-z0-9]/g, "");
+	},
+
 	// ===== NEW: Build normalized team lookup map =====
 	// Creates a case-insensitive, whitespace-normalized lookup for team logo mappings
 	// Handles common naming variations (e.g., "St Mirren" vs "st mirren", "ST. MIRREN", etc.)
@@ -359,91 +421,33 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 		// Common football club suffixes/prefixes to handle
 		var commonSuffixes = [
-			"fc",
-			"sc",
-			"ac",
-			"cf",
-			"sk",
-			"if",
-			"bk",
-			"fk",
-			"ik",
-			"aik",
-			"afc",
-			"vfb",
-			"unt",
-			"fn"
+			"fc", "sc", "ac", "cf", "sk", "if", "bk", "fk", "ik", "aik", "afc", "vfb", "unt", "fn"
 		];
 
-		// Country name synonyms and variations (handles FIFA vs BBC vs other source differences)
-		var teamAliases = {
-			"Cabo Verde": "Cape Verde",
-			"Cape Verde Islands": "Cape Verde",
-			"IR Iran": "Iran",
-			"Iran, Islamic Republic of": "Iran",
-			"South Korea": "Rep. of Korea",
-			"Korea Republic": "Rep. of Korea",
-			"Korea, Republic of": "Rep. of Korea",
-			"Côte d'Ivoire": "Ivory Coast",
-			"Cote d'Ivoire": "Ivory Coast",
-			Curacao: "Curaçao",
-			USA: "United States",
-			"United States of America": "United States",
-			Czechia: "Czech Republic",
-			Türkiye: "Turkey",
-			"North Macedonia": "Macedonia",
-			"Viet Nam": "Vietnam",
-			Eswatini: "Swaziland"
-		};
+		const self = this;
 
-		// Function to remove diacritics (accents, umlauts, etc.)
-		// Converts: é→e, ö→o, ü→u, ñ→n, ç→c, ß→ss, á→a, í→i, ó→o, ú→u, etc.
-		var removeDiacritics = function (str) {
-			if (!str) return str;
-			// Handle special characters explicitly before Unicode normalization
-			let result = str.replace(/ß/g, "ss"); // German ß → ss
-			result = result.replace(/ø/g, "o"); // Danish/Norwegian ø → o
-			result = result.replace(/æ/g, "ae"); // Scandinavian æ → ae
-			// Use Unicode normalization to decompose accented characters
-			return result.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-		};
-
-		// Function to generate alternative diacritics spellings (e.g., Köln → koeln)
-		// Handles common Anglicization variants: ö→oe, ü→ue, ä→ae
+		// Function to generate alternative diacritics spellings
 		var getAlternativeDiacriticsSpellings = function (str) {
 			if (!str) return [];
 			var variants = [];
-			// German convention: ö→oe, ü→ue, ä→ae
 			if (str.match(/[öüä]/i)) {
 				var withOe = str
-					.replace(/ö/gi, function (m) {
-						return m === "ö" ? "oe" : "OE";
-					})
-					.replace(/ü/gi, function (m) {
-						return m === "ü" ? "ue" : "UE";
-					})
-					.replace(/ä/gi, function (m) {
-						return m === "ä" ? "ae" : "AE";
-					});
-				variants.push(normalize(withOe));
+					.replace(/ö/gi, (m) => (m === "ö" ? "oe" : "OE"))
+					.replace(/ü/gi, (m) => (m === "ü" ? "ue" : "UE"))
+					.replace(/ä/gi, (m) => (m === "ä" ? "ae" : "AE"));
+				variants.push(self.normalizeTeamName(withOe));
 			}
 			return variants;
 		};
 
-		// Normalize function: remove diacritics, lowercase, and remove/compress whitespace, remove punctuation
+		// Normalize function for logo mappings
 		var normalize = function (str) {
-			return removeDiacritics(str || "")
-				.toLowerCase()
-				.replace(/\s+/g, " ")
-				.trim()
-				.replace(/[.,]/g, "");
+			return self.normalizeTeamName(str);
 		};
 
 		// Fuzzy normalize: remove everything except alphanumeric characters
 		var fuzzyNormalize = function (str) {
-			return removeDiacritics(str || "")
-				.toLowerCase()
-				.replace(/[^a-z0-9]/g, "");
+			return self.fuzzyNormalizeTeamName(str);
 		};
 
 		// Function to strip common suffixes/prefixes
@@ -452,21 +456,16 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			var parts = normalized.split(" ");
 			var stripped = normalized;
 
-			// Check if last word is a common suffix
 			if (parts.length > 1) {
 				var lastWord = parts[parts.length - 1];
 				if (commonSuffixes.indexOf(lastWord) !== -1) {
 					stripped = parts.slice(0, -1).join(" ");
 				}
-			}
-			// Check if first word is a common prefix (AC, SC, AFC, VFB, etc.)
-			if (parts.length > 1) {
 				var firstWord = parts[0];
 				if (commonSuffixes.indexOf(firstWord) !== -1) {
 					stripped = parts.slice(1).join(" ");
 				}
 			}
-
 			return stripped.trim();
 		};
 
@@ -524,8 +523,8 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		});
 
 		// Add country name synonyms and variations to the normalized map
-		Object.keys(teamAliases).forEach((alias) => {
-			var targetName = teamAliases[alias];
+		Object.keys(this.teamAliases).forEach((alias) => {
+			var targetName = this.teamAliases[alias];
 			var normalizedAlias = normalize(alias);
 
 			// Find the logo path for the target name (it should already be in the map)
@@ -564,37 +563,13 @@ Module.register("MMM-MyTeams-LeagueTable", {
 	getTeamLogoMapping(teamName) {
 		if (!teamName) return null;
 
-		// Phase 1: Logic moved to server (node_helper.js)
-		// We still keep this helper for potential client-side needs or backward compatibility,
-		// but we prioritize server-resolved logos.
-
 		// If we already have a mapping for this name in our local maps (initialized at startup),
 		// we can still return it as a backup.
 		if (this.mergedTeamLogoMap && this.mergedTeamLogoMap[teamName]) {
 			return this.mergedTeamLogoMap[teamName];
 		}
 
-		// Function to remove diacritics (accents, umlauts, etc.)
-		var removeDiacritics = function (str) {
-			if (!str) return str;
-			// Handle special characters explicitly before Unicode normalization
-			let result = str.replace(/ß/g, "ss"); // German ß → ss
-			result = result.replace(/ø/g, "o"); // Danish/Norwegian ø → o
-			result = result.replace(/æ/g, "ae"); // Scandinavian æ → ae
-			// Use Unicode normalization to decompose accented characters
-			return result.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-		};
-
-		// Normalize and try lookup with suffix handling
-		var normalize = function (str) {
-			return removeDiacritics(str || "")
-				.toLowerCase()
-				.replace(/\s+/g, " ")
-				.trim()
-				.replace(/[.,]/g, "");
-		};
-
-		var normalized = normalize(teamName);
+		var normalized = this.normalizeTeamName(teamName);
 
 		// Try normalized match (handles case/whitespace/punctuation/diacritics variations and Anglicization variants)
 		if (this.normalizedTeamLogoMap[normalized]) {
@@ -608,20 +583,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 		// Try stripping common suffixes/prefixes
 		var commonSuffixes = [
-			"fc",
-			"sc",
-			"ac",
-			"cf",
-			"sk",
-			"if",
-			"bk",
-			"fk",
-			"ik",
-			"aik",
-			"afc",
-			"vfb",
-			"unt",
-			"fn"
+			"fc", "sc", "ac", "cf", "sk", "if", "bk", "fk", "ik", "aik", "afc", "vfb", "unt", "fn"
 		];
 		var parts = normalized.split(" ");
 		var stripped = normalized;
@@ -632,9 +594,6 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			if (commonSuffixes.indexOf(lastWord) !== -1) {
 				stripped = parts.slice(0, -1).join(" ");
 			}
-		}
-		// Check if first word is a common prefix (AC, SC, AFC, VFB, etc.)
-		if (parts.length > 1 && stripped === normalized) {
 			var firstWord = parts[0];
 			if (commonSuffixes.indexOf(firstWord) !== -1) {
 				stripped = parts.slice(1).join(" ");
@@ -651,13 +610,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		}
 
 		// STRATEGY 4: Fuzzy match (strip all non-alphanumeric chars)
-		// This handles names like "Bodø / Glimt" matching "Bodøglimt"
-		var fuzzyNormalize = function (str) {
-			return removeDiacritics(str || "")
-				.toLowerCase()
-				.replace(/[^a-z0-9]/g, "");
-		};
-		var fuzzy = fuzzyNormalize(teamName);
+		var fuzzy = this.fuzzyNormalizeTeamName(teamName);
 		if (this.fuzzyTeamLogoMap[fuzzy]) {
 			if (this.config.debug) {
 				Log.info(
@@ -902,8 +855,10 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			},
 
 			// World Cup
-			WORLD_CUP_2026:
+			WORLD_CUP_2026: [
 				"https://www.bbc.co.uk/sport/football/world-cup/scores-fixtures/2026-06",
+				"https://www.bbc.co.uk/sport/football/world-cup/scores-fixtures/2026-07"
+			],
 
 			// Legacy code support
 			UCL: {
@@ -2472,51 +2427,49 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			metaInfo.appendChild(staleWarning);
 		}
 
-		// Add manual refresh button (only if not in WORLD_CUP_2026 mode, which has its own refresh button location)
-		if (this.currentLeague !== "WORLD_CUP_2026") {
-			const refreshBtn = document.createElement("span");
-			refreshBtn.className = "refresh-btn fas fa-sync-alt small dimmed";
-			refreshBtn.title = "Refresh Data";
-			refreshBtn.setAttribute("aria-label", "Refresh Data");
-			refreshBtn.setAttribute("role", "button");
-			refreshBtn.style.cursor = "pointer";
-			refreshBtn.style.marginLeft = "8px";
-			
-			const refreshHandler = () => {
-				this.requestAllLeagueData();
-				refreshBtn.classList.add("fa-spin");
-				setTimeout(() => refreshBtn.classList.remove("fa-spin"), 2000);
-			};
-			
-			refreshBtn.addEventListener("click", refreshHandler);
-			this.addKeyboardNavigation(refreshBtn, refreshHandler);
-			metaInfo.appendChild(refreshBtn);
+		// Add manual refresh button
+		const refreshBtn = document.createElement("span");
+		refreshBtn.className = "refresh-btn fas fa-sync-alt small";
+		refreshBtn.title = "Refresh Data";
+		refreshBtn.setAttribute("aria-label", "Refresh Data");
+		refreshBtn.setAttribute("role", "button");
+		refreshBtn.style.cursor = "pointer";
+		refreshBtn.style.marginLeft = "8px";
 
-			// Add Clear Cache button when enabled
-			if (this.config.clearCacheButton === true) {
-				const clearBtn = document.createElement("span");
-				clearBtn.className = "clear-cache-btn fas fa-trash-alt small dimmed";
-				clearBtn.title = "Clear Cache";
-				clearBtn.setAttribute("aria-label", "Clear Cache");
-				clearBtn.setAttribute("role", "button");
-				clearBtn.style.cursor = "pointer";
-				clearBtn.style.marginLeft = "8px";
-				
-				const clearHandler = () => {
-					this.sendSocketNotification("CACHE_CLEAR_ALL");
-					clearBtn.classList.add("fa-spin");
-					setTimeout(() => clearBtn.classList.remove("fa-spin"), 1500);
-				};
-				
-				clearBtn.addEventListener("click", clearHandler);
-				this.addKeyboardNavigation(clearBtn, clearHandler);
-				metaInfo.appendChild(clearBtn);
-			}
+		const refreshHandler = () => {
+			this.requestAllLeagueData();
+			refreshBtn.classList.add("fa-spin");
+			setTimeout(() => refreshBtn.classList.remove("fa-spin"), 2000);
+		};
+
+		refreshBtn.addEventListener("click", refreshHandler);
+		this.addKeyboardNavigation(refreshBtn, refreshHandler);
+		metaInfo.appendChild(refreshBtn);
+
+		// Add Clear Cache button when enabled
+		if (this.config.clearCacheButton === true) {
+			const clearBtn = document.createElement("span");
+			clearBtn.className = "clear-cache-btn fas fa-trash-alt small";
+			clearBtn.title = "Clear Cache";
+			clearBtn.setAttribute("aria-label", "Clear Cache");
+			clearBtn.setAttribute("role", "button");
+			clearBtn.style.cursor = "pointer";
+			clearBtn.style.marginLeft = "8px";
+
+			const clearHandler = () => {
+				this.sendSocketNotification("CACHE_CLEAR_ALL");
+				clearBtn.classList.add("fa-spin");
+				setTimeout(() => clearBtn.classList.remove("fa-spin"), 1500);
+			};
+
+			clearBtn.addEventListener("click", clearHandler);
+			this.addKeyboardNavigation(clearBtn, clearHandler);
+			metaInfo.appendChild(clearBtn);
 		}
 
 		// Pin control and countdown in header
 		const pinBtn = document.createElement("span");
-		pinBtn.className = "pin-btn fas fa-thumbtack small dimmed";
+		pinBtn.className = "pin-btn fas fa-thumbtack small";
 		pinBtn.setAttribute("role", "button");
 		pinBtn.setAttribute("aria-pressed", this._pinned);
 		pinBtn.setAttribute(
@@ -2555,7 +2508,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		this.addKeyboardNavigation(pinBtn, pinHandler);
 		metaInfo.appendChild(pinBtn);
 		const countdown = document.createElement("span");
-		countdown.className = "cycle-countdown xsmall dimmed";
+		countdown.className = "cycle-countdown xsmall";
 		countdown.style.marginLeft = "8px";
 		this._countdownEl = countdown;
 		metaInfo.appendChild(countdown);
@@ -2789,20 +2742,6 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			var subTabsContainer = document.createElement("div");
 			subTabsContainer.className = "wc-subtabs-container single-line";
 			const subTabsFragment = document.createDocumentFragment();
-
-			// Add manual refresh button to the left of the tabs
-			const refreshBtn = document.createElement("button");
-			refreshBtn.className = "wc-btn refresh-btn-wc";
-			refreshBtn.appendChild(this.createIcon("fas fa-sync-alt"));
-			refreshBtn.addEventListener("click", () => {
-				this.requestAllLeagueData();
-				const icon = refreshBtn.querySelector("i");
-				if (icon) icon.classList.add("fa-spin");
-				setTimeout(() => {
-					if (icon) icon.classList.remove("fa-spin");
-				}, 2000);
-			});
-			subTabsFragment.appendChild(refreshBtn);
 
 			const currentData = this.leagueData[this.currentLeague];
 			const isTestMode = this.config.displayAllTabs;
@@ -3382,8 +3321,8 @@ Module.register("MMM-MyTeams-LeagueTable", {
 					} else if (team.position >= 25 && team.position <= 36) {
 						row.classList.add("uefa-elimination-zone");
 					}
-				} else {
-					// Standard leagues
+				} else if (leagueKey !== "WORLD_CUP_2026") {
+					// Standard leagues (not World Cup)
 					if (team.position <= 2) row.classList.add("promotion-zone");
 					else if (team.position <= 4) row.classList.add("uefa-zone");
 					else if (team.position >= teamsToShow.length - 1)
@@ -4101,9 +4040,14 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 			// Add fixtures for this group (outside the sticky wrapper so they scroll)
 			const groupFixtures = currentData.fixtures.filter((f) => {
-				if (f.stage !== "GS") return false;
-				const teamNames = groupData.map((t) => t.name);
-				return teamNames.includes(f.homeTeam) && teamNames.includes(f.awayTeam);
+				// Stage must be either 'GS' or match the specific group letter (subTab)
+				const isValidStage = f.stage === "GS" || f.stage === subTab;
+				if (!isValidStage) return false;
+
+				const teamNames = groupData.map((t) => this.normalizeTeamName(t.name));
+				const hNorm = this.normalizeTeamName(f.homeTeam);
+				const aNorm = this.normalizeTeamName(f.awayTeam);
+				return teamNames.includes(hNorm) && teamNames.includes(aNorm);
 			});
 
 			if (groupFixtures.length > 0) {
