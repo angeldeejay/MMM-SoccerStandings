@@ -13,9 +13,7 @@ A comprehensive **MagicMirror²** module that displays football league standings
 | :----------------------------------------------: | :----------------------------------------------: | :----------------------------------------------: |
 | [![Screenshot 1](./screenshots/screenshot1.png)] | [![Screenshot 2](./screenshots/screenshot2.png)] | [![Screenshot 3](./screenshots/screenshot3.png)] |
 | [![Screenshot 4](./screenshots/screenshot4.png)] | [![Screenshot 5](./screenshots/screenshot5.png)] | [![Screenshot 6](./screenshots/screenshot6.png)] |
-| [![Screenshot 7](./screenshots/screenshot7.png)] |                                                  |                                                  |
-
-## 🆕 Recent Updates (v2.2.8 - 2026-04-02)
+| [![Screenshot 7](./screenshots/screenshot7.png)] | [![Screenshot 8](./screenshots/screenshot8.png)] | [![Screenshot 9](./screenshots/screenshot9.png)] |    
 
 **Tournament Data Resilience & Normalization Refactor:**
 - Fixed missing fixture visibility for "Bosnia and Herzegovina" and "United States" in World Cup groups.
