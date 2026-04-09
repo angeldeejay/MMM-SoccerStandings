@@ -11,6 +11,7 @@ The **MMM-MyTeams-LeagueTable** module is highly configurable. This guide covers
 | `updateInterval`          | `1800000` (30m)            | How often to refresh data (milliseconds).                                               |
 | `retryDelay`              | `15000`                    | Delay between retry attempts after a fetch error (ms).                                  |
 | `maxRetries`              | `3`                        | Maximum fetch retry attempts before giving up.                                          |
+| `provider`                | `"auto"`                   | Data source: `"auto"`, `"bbc"`, `"google"`, `"espn"`, `"soccerway"`, or `"wikipedia"`.             |
 | `animationSpeed`          | `2000`                     | DOM update animation speed (ms).                                                        |
 | `fadeSpeed`               | `4000`                     | Fade transition speed (ms).                                                             |
 | `selectedLeagues`         | `["SCOTLAND_PREMIERSHIP"]` | Array of league codes to display.                                                       |
@@ -112,12 +113,40 @@ The **MMM-MyTeams-LeagueTable** module is highly configurable. This guide covers
 
 Use these codes in your `selectedLeagues` array:
 
-- **UK**: `SCOTLAND_PREMIERSHIP`, `SCOTLAND_CHAMPIONSHIP`, `ENGLAND_PREMIER_LEAGUE`
+- **UK & Ireland**: `SCOTLAND_PREMIERSHIP`, `SCOTLAND_CHAMPIONSHIP`, `ENGLAND_PREMIER_LEAGUE`, `ENGLAND_CHAMPIONSHIP`, `NI_PREMIERSHIP`, `IE_PREMIER_DIVISION`, `WALES_PREMIER`
 - **Major Europe**: `GERMANY_BUNDESLIGA`, `SPAIN_LA_LIGA`, `ITALY_SERIE_A`, `FRANCE_LIGUE1`, `NETHERLANDS_EREDIVISIE`
 - **Other Europe**: `PORTUGAL_PRIMEIRA_LIGA`, `BELGIUM_PRO_LEAGUE`, `TURKEY_SUPER_LIG`, `GREECE_SUPER_LEAGUE`, `AUSTRIA_BUNDESLIGA`, `CZECH_LIGA`, `DENMARK_SUPERLIGAEN`, `NORWAY_ELITESERIEN`, `SWEDEN_ALLSVENSKAN`, `SWITZERLAND_SUPER_LEAGUE`, `UKRAINE_PREMIER_LEAGUE`, `ROMANIA_LIGA_I`, `CROATIA_HNL`, `SERBIA_SUPER_LIGA`, `HUNGARY_NBI`, `POLAND_EKSTRAKLASA`
+- **Tier 2 Coverage**: Supported for ALL above countries (e.g., `NETHERLANDS_EERSTE_DIVISIE`, `SPAIN_LA_LIGA_2`, etc.). See provider-specific documentation for full lists.
 - **International/UEFA**: `UEFA_CHAMPIONS_LEAGUE`, `UEFA_EUROPA_LEAGUE`, `UEFA_EUROPA_CONFERENCE_LEAGUE`, `WORLD_CUP_2026`
 
 ### Configuration Examples
+
+## Multi-Source Provider Setup
+
+The module supports multiple data providers to ensure maximum league coverage.
+
+| Provider | Value | Best For |
+| :--- | :--- | :--- |
+| **BBC Sport** | `"bbc"` | UK and major European leagues. |
+| **Google Search** | `"google"` | Extremely resilient fallback for almost any league. |
+| **ESPN** | `"espn"` | Global professional leagues. |
+| **Soccerway** | `"soccerway"` | Deep global coverage (almost every league). |
+| **Wikipedia** | `"wikipedia"` | Niche/Lower leagues (Static HTML fallback). |
+| **Auto** | `"auto"` | Detects provider automatically from the URL. |
+
+### Using Custom URLs with Providers
+
+If a league is not internally mapped, or you want to use a specific source, you can use the `customUrls` option:
+
+```javascript
+config: {
+    selectedLeagues: ["ROMANIA_LIGA_I"],
+    provider: "auto", // Detects Wikipedia from the URL
+    customUrls: {
+        "ROMANIA_LIGA_I": "https://en.wikipedia.org/wiki/2024–25_Liga_I"
+    }
+}
+```
 
 ## 1. Minimal Configuration (Single Leauge Only)
 The simplest setup to get started.
@@ -185,7 +214,16 @@ Optimized view for the upcoming World Cup.
 }
 ```
 
-## 5. Full Recommended Configuration including accesability options. (The "Power User" Setup)
+## 5. Multi-Group Split-Leagues (Automated)
+
+The module includes specialized logic for European leagues that split into Championship and Relegation groups mid-season. These leagues are fully automated and require no additional user configuration:
+
+- **Supported Leagues**: Romania Liga I, Scottish Premiership, Austrian Bundesliga, Belgian Pro League, Swiss Super League, Danish Superliga, Serbian Super Liga, and Cymru Premier.
+- **Simultaneous Display**: Once a league has split, the module will automatically render all groups together (e.g., Top 6 and Bottom 6) with labeled separators.
+- **Smart Fallback**: Because split-league pages often return incomplete data or 404s on some providers, the module automatically escalates from BBC Sport to Wikipedia to ensure all group standings are visible.
+- **Customization**: Group-aware zone coloring is applied, highlighting promotion spots in the top group and relegation spots in the bottom group.
+
+## 6. Full Recommended Configuration including accessibility options. (The "Power User" Setup)
 Enables all leagues, auto-cycling, high contrast, and manual overrides.
 
 ```javascript

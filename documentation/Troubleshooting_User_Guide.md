@@ -69,6 +69,15 @@ This guide helps you resolve common issues with the **MMM-MyTeams-LeagueTable** 
     *   The module now displays three sections in UEFA Playoff tabs: "RESULTS" (completed), "TODAYS FIXTURES" (live/today), and "UPCOMING FIXTURES" (future, including Feb 26th second legs)
     *   All fixtures are sorted chronologically within each section
 
+### 10. Only One Group (e.g. Top 6) Visible for a Split League
+*   **Status**: ✅ **FIXED in v2.5.0** (2026-04-09)
+*   **Cause**: Providers like BBC Sport often show only the Championship group once a league splits. Previous versions only rendered the first group found.
+*   **Solution**: 
+    *   The module now supports multi-group rendering (Championship + Relegation simultaneously).
+    *   If the primary source is missing groups, the module automatically escalates to Wikipedia.
+    *   Ensure your `wikipediaUrlMap` in `MMM-MyTeams-LeagueTable.js` is correct for the current season.
+    *   Check for `[Multi-group]` logs in the terminal to verify Wikipedia parsing success.
+
 ## Diagnostic Steps
 
 1.  **Enable Debug Mode**: Set `debug: true` in your module configuration. This will output detailed logs to the browser console and the Node.js console.
