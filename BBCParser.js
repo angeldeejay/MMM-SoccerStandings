@@ -7,16 +7,22 @@ const BaseParser = require("./BaseParser");
 class BBCParser extends BaseParser {
 	/**
 	 * Parse league data from HTML (BBC Sport structure)
-	 * @param {string} html - HTML to parse
-	 * @param {string} leagueType - Type of league
-	 * @returns {object} - Parsed league data
+	 * This method orchestrates the parsing process by trying multiple strategies.
+	 * It first attempts to find standard HTML tables, and if that fails, it tries 
+	 * the modern Grid/Div layout used by newer BBC Sport pages.
+	 * 
+	 * @param {string} html - Raw HTML content from the BBC Sport league page
+	 * @param {string} leagueType - The internal code for the league (e.g., "SCOTLAND_PREMIERSHIP")
+	 * @returns {object} - A standardized league data object containing team standings and metadata
 	 */
 	parseLeagueData(html, leagueType) {
 		try {
 			const teams = [];
 			this.logDebug(`Starting to parse ${leagueType} HTML data`);
 
-			// Strategy 1: Standard HTML Table
+			// STRATEGY 1: Standard HTML <table> extraction
+			// Many BBC pages still use traditional <table> elements for league standings.
+			// We look for all tables and filter them by common keywords (Team, Played, Points).
 			const tableRegex = /<table[^>]*>(.*?)<\/table>/gis;
 			const tableMatches = html.match(tableRegex);
 
@@ -30,7 +36,9 @@ class BBCParser extends BaseParser {
 					this.logDebug(
 						`Checking table candidate (length: ${tableHtml.length})`
 					);
-					// More lenient table identification
+					
+					// HEURISTIC: Reject tables that don't look like league standings by checking for required headers.
+					// This prevents parsing unrelated tables like "Recent Results" or "Next Fixtures".
 					if (
 						!tableHtmlLower.includes("team") &&
 						!tableHtmlLower.includes("club") &&
@@ -43,6 +51,7 @@ class BBCParser extends BaseParser {
 						continue;
 					}
 
+					// Extract rows from the validated table.
 					const rowRegex = /<tr[^>]*>(.*?)<\/tr>/gis;
 					const rows = tableHtml.match(rowRegex);
 
@@ -53,11 +62,14 @@ class BBCParser extends BaseParser {
 					);
 					processedTables++;
 
+					// Loop through rows, skipping the header (index 0).
 					for (let i = 1; i < rows.length; i++) {
 						const row = rows[i];
 						const team = this.parseTeamRow(row, totalTeams + i);
 
 						if (team) {
+							// SPECIAL HANDLING: UEFA competitions often group tables by "Group A", "Group B", etc.
+							// We look backwards from the table to find the nearest group heading.
 							if (["UCL", "UEL", "ECL"].includes(leagueType)) {
 								const groupHeaderRegex = /<h3[^>]*>Group\s+([A-Z])<\/h3>/i;
 								const groupMatch = html
@@ -76,7 +88,7 @@ class BBCParser extends BaseParser {
 					}
 					totalTeams += rows.length - 1;
 
-					// If we found teams, and it's not a multi-table league like UCL, we can stop
+					// OPTIMIZATION: If we found teams in a single-table league (like EPL), we don't need to check other tables.
 					if (
 						teams.length > 0 &&
 						!["UCL", "UEL", "ECL", "WORLD_CUP_2026"].includes(leagueType)
@@ -85,11 +97,13 @@ class BBCParser extends BaseParser {
 				}
 			}
 
-			// Strategy 2: Grid/Div based table (modern BBC layout)
+			// STRATEGY 2: Grid/Div-based layout extraction (Modern BBC Layout)
+			// Newer BBC Sport pages use ARIA-labeled divs instead of tables for accessibility and responsive design.
 			if (teams.length === 0) {
 				this.logDebug(
 					`No standard table found for ${leagueType}, trying Grid/Div parsing`
 				);
+				// We look for elements with role="row" within containers that look like table rows.
 				const rowRegex =
 					/<(?:div|article)[^>]*class="[^"]*(?:TableRecord|TableRow|gel-layout__item)[^"]*"[^>]*role="row"[^>]*>(.*?)<\/(?:div|article)>/gis;
 				const rows = html.match(rowRegex);
@@ -103,6 +117,7 @@ class BBCParser extends BaseParser {
 				}
 			}
 
+			// FALLBACK: If standard strategies fail, try the alternative format parser (legacy/simplified pages).
 			if (teams.length === 0) {
 				this.logDebug(
 					`No teams parsed for ${leagueType} using standard methods, trying fallback`

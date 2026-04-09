@@ -13,19 +13,53 @@ A comprehensive **MagicMirror²** module that displays football league standings
 | :----------------------------------------------: | :----------------------------------------------: | :----------------------------------------------: |
 | ![Screenshot 1](./screenshots/screenshot1.png) | ![Screenshot 2](./screenshots/screenshot2.png) | ![Screenshot 3](./screenshots/screenshot3.png) |
 | ![Screenshot 4](./screenshots/screenshot4.png) | ![Screenshot 5](./screenshots/screenshot5.png) | ![Screenshot 6](./screenshots/screenshot6.png) |
-| ![Screenshot 7](./screenshots/screenshot7.png) | ![Screenshot 8](./screenshots/screenshot8.png) | ![Screenshot 9](./screenshots/screenshot9.png) | 
+| ![Screenshot 7](./screenshots/screenshot7.png) | ![Screenshot 8](./screenshots/screenshot8.png) | ![Screenshot 9](./screenshots/screenshot9.png) |
 
+## 🆕 Recent Updates (v2.5.0 - 2026-04-09)
+
+**Multi-Group Split-League Support & Enhanced Resilience:**
+- **Simultaneous Group Display**: Support for European leagues that split into Championship and Relegation groups (Romania, Scotland, Austria, etc.). The module now renders all groups together with labeled separators.
+- **Wikipedia Multi-Group Parser**: Upgraded Wikipedia extraction to robustly find and parse multiple group tables from a single page using heading keyword detection.
+- **Smart Provider Escalation**: Automatically detects when a provider (like BBC) returns incomplete single-group data and escalates to a full multi-group source.
+- **Improved UI Separation**: Added labeled separator rows and alternating group shading to clearly distinguish between league phases.
+- **Split-Aware Caching**: Prevent stale single-group data from being served after a league split has occurred.
+
+## 🆕 Recent Updates (v2.4.0 - 2026-04-07)
+
+**Google Search Parser & Expanded Tier 2 Coverage:**
+- **Google Search Parser**: Added a powerful new parser that extracts league tables directly from Google Search result snippets.
+- **Massive Coverage Expansion**: Added Tier 2 leagues for ALL supported countries across all providers.
+- **Specific League Additions**: Integrated Romanian Super Liga, Cymru Premier, Irish Premier Division, and Irish Premiership.
+- **Improved Documentation**: All league mapping files are now alphabetically sorted by country for easier navigation.
+
+## 🆕 Recent Updates (v2.3.0 - 2026-04-04)
+
+**Multi-Source Provider Factory & Expanded Coverage:**
+- **Multiple Data Sources**: Added support for **ESPN**, **Soccerway**, and **Wikipedia** alongside default **BBC Sport**.
+- **Provider Factory Pattern**: Automatically selects the best parser based on URL domain or user config.
+- **Resilient Fallback**: Implemented primary/fallback URL logic to ensure data is displayed even if the primary source fails.
+- **League Expansion**: Added support for Romania Liga I, Bolivia Liga 2, Irish Premiership, Irish Premier Division, Cymru Premier, USA MLS, Brazilian Brasileirão, Argentine Primera, Liga MX, J1 League, A-League, and Chinese Super League.
+- **Source Attribution**: The module footer now explicitly shows the data source (e.g., "Source: Soccerway").
+- **34 Languages Supported**: Expanded translation system to include Albanian, Finnish, Romanian, Slovak, and many more.
+- **Fully Annotated Code**: `BBCParser.js`, `ESPNParser.js`, and `SoccerwayParser.js` are now fully annotated in plain English for easier maintenance.
+
+## 🆕 Recent Updates (v2.2.8 - 2026-04-02)
 
 **Tournament Data Resilience & Normalization Refactor:**
 - Fixed missing fixture visibility for "Bosnia and Herzegovina" and "United States" in World Cup groups.
 - Unified team name normalization across client and server.
 - Improved hyphen and alias handling to resolve naming inconsistencies between sources.
 
+**🚀 Advanced Power-User Features:**
+
+
+
 See [CHANGELOG.md](./CHANGELOG.md) for complete details.
 
 ## 🏆 Key Features
 
-- **Multi-League Support**: Track SPFL, EPL, Bundesliga, La Liga, and 20+ other national leagues.
+- **Multi-Provider Support**: Fetch data from **BBC Sport**, **Google Search**, **ESPN**, **Soccerway**, or **Wikipedia** for maximum global coverage.
+- **Multi-League Support**: Track 100+ national and international leagues across Europe, the Americas, Asia, and Oceania.
 - **Tournament Modes**: Dedicated views for UEFA Champions League and FIFA World Cup 2026.
 - **Intelligent Logo Mapping**: Automatic team crest resolution for over 1,700 teams.
 - **Performance Optimized**: Server-side processing, async caching, virtual scrolling, and smooth CSS transitions.
@@ -229,6 +263,7 @@ See - **[Configuration User Guide](./documentation/Configuration_User_Guide.md)*
 | `updateInterval`          | `1800000` (30m)            | How often to refresh data (milliseconds).                                                      |
 | `retryDelay`              | `15000`                    | Delay between retry attempts after a fetch error (ms).                                         |
 | `maxRetries`              | `3`                        | Maximum fetch retry attempts before giving up.                                                 |
+| `provider`                | `"auto"`                   | Data source: `"auto"`, `"bbc"`, `"google"`, `"espn"`, `"soccerway"`, or `"wikipedia"`.                    |
 | `animationSpeed`          | `2000`                     | DOM update animation speed (ms).                                                               |
 | `fadeSpeed`               | `4000`                     | Fade transition speed (ms).                                                                    |
 | `selectedLeagues`         | `["SCOTLAND_PREMIERSHIP"]` | Array of league codes to display.                                                              |

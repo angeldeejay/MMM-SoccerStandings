@@ -1,5 +1,90 @@
 # CHANGELOG
 
+## [v2.5.0] - 2026-04-09 - Multi-Group Split-League Support & Enhanced Resilience
+
+### Problem
+- **Split-League Fragmentation**: Many European leagues (Romania, Scotland, Austria, Belgium, etc.) split into separate Championship and Relegation groups mid-season. 
+- **Incomplete BBC Data**: Once a split occurs, BBC Sport often updates to show only the Championship group, losing the Relegation standings, or their page structure causes the module to return a 404 or a full pre-split table.
+- **Display Limitations**: Previous versions could only render a single group table at a time, making it impossible to see the full league context (both top and bottom halves) simultaneously.
+
+### Solution
+- **Multi-Group Rendering**: Refactored the core UI engine to support the `splitGroups` data structure. The module now renders multiple group tables (e.g., Championship + Relegation) simultaneously with labeled separator rows.
+- **Enhanced Wikipedia Parser**: Upgraded `WikipediaParser.js` with a robust multi-group extraction engine that uses heading keyword matching and size validation to find and parse all groups from a single page.
+- **Provider Escalation Guard (Case 2)**: Implemented a new guard in `node_helper.js` that detects when a provider (like BBC) returns only a single group for a league configured for multi-group display, automatically escalating to Wikipedia for complete data.
+- **Split-Aware Cache Validation**: Updated `isDataComplete` to reject cached data that lacks the required `splitGroups` structure, ensuring users always see the full post-split view rather than stale single-group data.
+- **Layout & Stability Fixes**: 
+    - Fixed a critical CSS column layout bug where separator rows interfered with `table-layout: fixed`.
+    - Implemented group-aware zone coloring (promotion colors for Group A, relegation colors for lower groups).
+    - Added alternating background shading for multiple groups to improve visual separation.
+- **Refined Keyword Mapping**: Updated keywords for Austrian and Belgian leagues to match actual Wikipedia heading conventions (e.g., "Champions' play-offs").
+
+### Files Modified
+- `MMM-MyTeams-LeagueTable.js`: Updated `LEAGUE_SPLITS` with group definitions; refactored `createTable` for multi-group support.
+- `node_helper.js`: Added single-group detection guard; updated `isDataComplete` and `resolveLogos` for split groups.
+- `WikipediaParser.js`: Implemented generic `_findGroupTable` and multi-group `parseLeagueData` path.
+- `MMM-MyTeams-LeagueTable.css`: Added styles for `.split-group-separator`, `.split-group-label`, and `.split-group-alt`.
+- `documentation/*.md`: Comprehensive documentation updates for split-league mechanics.
+
+---
+
+## [v2.4.0] - 2026-04-07 - Google Search Provider & Expanded Tier 2 Coverage
+
+### Problem
+- **BBC Coverage Gaps**: While BBC Sport is the primary source, many Tier 2 leagues and niche competitions are not consistently available or frequently change URL structures.
+- **Limited Provider Options**: Users needed more resilient fallback options for leagues that are difficult to scrape from traditional sports websites.
+- **Unsorted Documentation**: League mappings in documentation files were becoming difficult to navigate as more leagues were added.
+
+### Solution
+- **Google Search Parser**: Implemented `GoogleParser.js` to extract league standings directly from Google Search result "sports snippets". This provides a highly resilient fallback for almost any professional league.
+- **Massive League Expansion**:
+    - Added Tier 2 league support for ALL supported countries across all providers (BBC, Google, Soccerway, Wikipedia).
+    - Specifically added support for Romanian Super Liga, Cymru Premier (Wales), Irish Premier Division, and Irish Premiership.
+- **Documentation Refactor**:
+    - Created `googleLeaguePages.md` with search query URLs for 50+ competitions.
+    - Standardized all league documentation files (`bbcLeaguesPages.md`, `googleLeaguePages.md`, `soccerwayLeaguesPages.md`, `wikipediaLeaguesPages.md`) with alphabetical sorting by country.
+    - Verified consistency of `showLeague` keys across all providers.
+- **Provider Factory Update**: Registered `google` as a supported provider in `node_helper.js`, allowing users to explicitly select it or use it via `google.com` URLs.
+
+### Files Modified
+- `node_helper.js`: Registered and integrated `GoogleParser`.
+- `GoogleParser.js`: Created new parser engine for Google Search snippets.
+- `documentation/*.md`: Comprehensive updates to league mappings, sorting, and new provider details.
+- `README.md`, `CHANGELOG.md`: Updated with v2.4.0 details and feature lists.
+
+---
+
+## [v2.3.0] - 2026-04-04 - Multi-Source Provider Factory & Global League Expansion
+
+### Problem
+- **Limited Coverage**: BBC Sport, while reliable, lacks coverage for many minor European leagues , lower-tier leagues, and non-European leagues (e.g., Romania Liga I, Bolivia Liga 2).
+- **Single-Source Fragility**: Relying on a single website makes the module vulnerable to site outages or HTML structure changes.
+- **Documentation Gaps**: Missing URLs for many global leagues made it difficult for users to configure the module for non-UK/major European competitions.
+
+### Solution
+- **Provider Factory Pattern**: Refactored `node_helper.js` to support multiple specialized parsers. The module now automatically detects the correct parser based on the URL domain (`espn.com`, `soccerway.com`, `wikipedia.org`) or manual configuration.
+- **New Parser Engines**:
+    - `ESPNParser.js`: Handles dual-table layouts and modern global sports formatting.
+    - `SoccerwayParser.js`: Targeted parsing for industry-standard statistical tables.
+    - `WikipediaParser.js`: Resilient static HTML scraping for niche leagues using standard `wikitable` structures.
+- **Resilient Fallback Logic**: Implemented a primary/fallback URL system. If the primary fetch or parse operation fails, the module automatically attempts the fallback source.
+- **League Expansion**:
+    - Added comprehensive mappings for: Romania Liga I, Bolivia Liga 2, Irish Premiership, Irish Premier Division, Cymru Premier, USA MLS, Brazilian Brasileirão, Argentine Primera, Liga MX, J1 League, A-League, and Chinese Super League.
+- **Source Attribution**: Modified the UI to explicitly display the data source in the footer, ensuring transparency regarding data origin.
+- **Translation Expansion**:
+    - Registered 7 missing languages: Czech, Finnish, Romanian, Slovak, Slovenian, Albanian, and Serbian.
+    - Updated `Translation-Guide.md` with all 34 supported languages and their respective flag emojis.
+- **Code Maintenance**: Fully annotated `BBCParser.js`, `ESPNParser.js`, and `SoccerwayParser.js` with real-life English language explanations for all major logic blocks.
+
+### Files Modified
+- `node_helper.js`: Implemented Provider Factory and fallback logic.
+- `MMM-MyTeams-LeagueTable.js`: Updated URL mapping, translation registrations, and UI footer attribution.
+- `BBCParser.js`, `ESPNParser.js`, `SoccerwayParser.js`, `WikipediaParser.js`: Created/updated/annotated specialized parser engines.
+- `documentation/*.md`: Updated all league page guides and the translation guide with complete tables and icons.
+- `CHANGELOG.md`: Added v2.3.0 entry.
+- `README.md`: Updated version and feature list.
+
+---
+
 ## [v2.2.8] - 2026-04-02 - Tournament Data Resilience & Normalization Refactor
 
 ### Problem

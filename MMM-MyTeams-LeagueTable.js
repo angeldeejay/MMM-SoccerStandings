@@ -1,14 +1,15 @@
 /* MagicMirror²
  * Module:  MMM-MyTeams-LeagueTable
  *
- * Author: gitgitaway with assistance from AI Assistant
+ * Author: gitgitaway with assistance from Zencoder AI Assistant
  * MIT Licensed.
  *
  * This module displays football league standings from multiple European competitions
- * sourced from BBC Sport website, including all top-tier European football leagues,
- * UEFA Champions League, UEFA Europa League, and UEFA Europa Conference League.
+ * sourced from BBC Sport, Google Search, Soccerway, and Wikipedia, including top-tier 
+ * and second-tier European football leagues, UEFA Champions League, UEFA Europa League, 
+ * UEFA Europa Conference League, and FIFA World Cup 2026.
  *
- * Enhanced with configurable league selection supporting 20+ European nations.
+ * Enhanced with multi-provider parsing and configurable league selection for 30+ nations.
  */
 
 Module.register("MMM-MyTeams-LeagueTable", {
@@ -130,6 +131,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			SCOTLAND_PREMIERSHIP: "Scottish Premiership",
 			SCOTLAND_CHAMPIONSHIP: "Scottish Championship",
 			ENGLAND_PREMIER_LEAGUE: "English Premier League",
+			Cymru_Premier_League: "Cymru Premier",
 			GERMANY_BUNDESLIGA: "Bundesliga",
 			FRANCE_LIGUE1: "Ligue 1",
 			SPAIN_LA_LIGA: "La Liga",
@@ -146,11 +148,12 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			SWEDEN_ALLSVENSKAN: "Allsvenskan",
 			SWITZERLAND_SUPER_LEAGUE: "Swiss Super League",
 			UKRAINE_PREMIER_LEAGUE: "Ukrainian Premier League",
-			ROMANIA_LIGA_I: "Liga I",
+			ROMANIA_LIGA_I: "Romanian Liga I",
 			CROATIA_HNL: "Croatian HNL",
 			SERBIA_SUPER_LIGA: "Serbian Super Liga",
 			HUNGARY_NBI: "Hungarian NB I",
 			POLAND_EKSTRAKLASA: "Ekstraklasa",
+			BOLIVIA_LIGA_2: "Bolivia Simón Bolívar",
 			// European Competitions
 			UEFA_EUROPA_CONFERENCE_LEAGUE: "UEFA Europa Conference League",
 			UEFA_EUROPA_LEAGUE: "UEFA Europa League",
@@ -167,6 +170,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 		// Debug
 		debug: true, // Set to true to enable console logging
+		provider: "auto", // Data provider: "auto", "bbc", "soccerway", "wikipedia", "espn", "google"
 		dateTimeOverride: null, // Override system date/time for testing. Use ISO date format (e.g., "2026-01-15" or "2026-01-15T14:30:00Z"). null = use system date
 
 		// Cache controls
@@ -784,8 +788,114 @@ Module.register("MMM-MyTeams-LeagueTable", {
 	// ===== NEW: Get league URL by code =====
 	// Returns the BBC Sport URL for a given league code
 	getLeagueUrl(leagueCode) {
+		const provider = (this.config.provider || "auto").toLowerCase();
+
+		// Map of league codes to their Wikipedia URLs
+		// NOTE: Wikipedia URLs are season-specific and must be updated each season (typically July/August).
+		// Aug-May leagues use format "2025%E2%80%9326" (en-dash encoded = %E2%80%93).
+		// Calendar-year leagues (Norway, Sweden) use just the year e.g. "2026".
+		// These provide the most reliable static HTML fallback for split-league phases (e.g. Romania).
+		const wikipediaUrlMap = {
+			ROMANIA_LIGA_I: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Liga_I",
+			BOLIVIA_LIGA_2: "https://en.wikipedia.org/wiki/2025_Copa_Sim%C3%B3n_Bol%C3%ADvar_(Bolivia)",
+			Austria: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Austrian_Football_Bundesliga",
+			SCOTLAND_PREMIERSHIP: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Scottish_Premiership",
+			SCOTLAND_CHAMPIONSHIP: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Scottish_Championship",
+			ENGLAND_PREMIER_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Premier_League",
+			ENGLAND_CHAMPIONSHIP: "https://en.wikipedia.org/wiki/2025%E2%80%9326_EFL_Championship",
+			GERMANY_BUNDESLIGA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Bundesliga",
+			FRANCE_LIGUE1: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Ligue_1",
+			SPAIN_LA_LIGA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_La_Liga",
+			ITALY_SERIE_A: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Serie_A",
+			NETHERLANDS_EREDIVISIE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Eredivisie",
+			BELGIUM_PRO_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Belgian_Pro_League",
+			PORTUGAL_PRIMEIRA_LIGA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Primeira_Liga",
+			TURKEY_SUPER_LIG: "https://en.wikipedia.org/wiki/2025%E2%80%9326_S%C3%BCper_Lig",
+			GREECE_SUPER_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Super_League_Greece",
+			AUSTRIA_BUNDESLIGA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Austrian_Football_Bundesliga",
+			DENMARK_SUPERLIGAEN: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Danish_Superliga",
+			NORWAY_ELITESERIEN: "https://en.wikipedia.org/wiki/2026_Eliteserien",
+			SWEDEN_ALLSVENSKAN: "https://en.wikipedia.org/wiki/2026_Allsvenskan",
+			SWITZERLAND_SUPER_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Swiss_Super_League",
+			UKRAINE_PREMIER_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Ukrainian_Premier_League",
+			CROATIA_HNL: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Croatian_Football_League",
+			SERBIA_SUPER_LIGA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Serbian_SuperLiga",
+			HUNGARY_NBI: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Nemzeti_Bajnoks%C3%A1g_I",
+			POLAND_EKSTRAKLASA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Ekstraklasa",
+			CZECH_LIGA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Czech_First_League",
+			CYMRU_PREMIER_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Cymru_Premier",
+		};
+
+		// Map of league codes to their Soccerway URLs
+		// NOTE: Soccerway URLs contain season-specific IDs (r#####) and must be updated each season.
+		// Soccerway uses heavy JS rendering; results may vary with a simple HTTP GET request.
+		// Season IDs below are for 2025-26; update r##### IDs if season changes.
+		const soccerwayUrlMap = {
+			
+			Austria: "https://int.soccerway.com/national/austria/bundesliga/20252026/regular-season/r87207/",
+			BOLIVIA_LIGA_2: "https://int.soccerway.com/national/bolivia/nacional-b/2025/regular-season/r86100/",
+			SCOTLAND_PREMIERSHIP: "https://int.soccerway.com/national/scotland/premier-league/20252026/regular-season/r87208/",
+			ENGLAND_PREMIER_LEAGUE: "https://int.soccerway.com/national/england/premier-league/20252026/regular-season/r87209/",
+			GERMANY_BUNDESLIGA: "https://int.soccerway.com/national/germany/bundesliga/20252026/regular-season/r87210/",
+			FRANCE_LIGUE1: "https://int.soccerway.com/national/france/ligue-1/20252026/regular-season/r87211/",
+			SPAIN_LA_LIGA: "https://int.soccerway.com/national/spain/primera-division/20252026/regular-season/r87212/",
+			ITALY_SERIE_A: "https://int.soccerway.com/national/italy/serie-a/20252026/regular-season/r87213/",
+			CYMRU_PREMIER_LEAGUE: "https://int.soccerway.com/national/wales/cymru-premier/20252026/regular-season/r87300/",
+		};
+
+		// Map of league codes to their Google Search URLs (last-resort fallback)
+		// GoogleParser searches for sports snippet tables in Google's HTML response.
+		const googleUrlMap = {
+			ROMANIA_LIGA_I: "https://www.google.com/search?q=Romanian+Superliga+table+standings+2025-26",
+			BOLIVIA_LIGA_2: "https://www.google.com/search?q=Bolivia+Copa+Simon+Bolivar+table+2025",
+			SCOTLAND_PREMIERSHIP: "https://www.google.com/search?q=Scottish+Premiership+table+standings",
+			ENGLAND_PREMIER_guesGUE: "https://www.google.com/search?q=Premier+League+table+standings",
+			GERMANY_BUNDESLIGA: "https://www.google.com/search?q=Bundesliga+table+standings",
+			FRANCE_LIGUE1: "https://www.google.com/search?q=Ligue+1+table+standings",
+			SPAIN_LA_LIGA: "https://www.google.com/search?q=La+Liga+table+standings",
+			ITALY_SERIE_A: "https://www.google.com/search?q=Serie+A+table+standings",
+			AUSTRIA_BUNDESLIGA: "https://www.google.com/search?q=Austrian+Bundesliga+table+standings",
+			BELGIUM_PRO_LEAGUE: "https://www.google.com/search?q=Belgian+Pro+League+table+standings",
+			CYMRU_PREMIER_LEAGUE: "https://www.google.com/search?q=Cymru+Premier+League+table+standings",
+		};
+
+		// Map of league codes to their ESPN standings URLs.
+		// ESPN uses a consistent URL pattern: /soccer/standings/_/league/<code>
+		// These are year-independent (no season ID needed).
+		const espnUrlMap = {
+			SCOTLAND_PREMIERSHIP: "https://www.espn.com/soccer/standings/_/league/sco.1",
+			SCOTLAND_CHAMPIONSHIP: "https://www.espn.com/soccer/standings/_/league/sco.2",
+			ENGLAND_PREMIER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/eng.1",
+			ENGLAND_CHAMPIONSHIP: "https://www.espn.com/soccer/standings/_/league/eng.2",
+			GERMANY_BUNDESLIGA: "https://www.espn.com/soccer/standings/_/league/ger.1",
+			FRANCE_LIGUE1: "https://www.espn.com/soccer/standings/_/league/fra.1",
+			SPAIN_LA_LIGA: "https://www.espn.com/soccer/standings/_/league/esp.1",
+			ITALY_SERIE_A: "https://www.espn.com/soccer/standings/_/league/ita.1",
+			NETHERLANDS_EREDIVISIE: "https://www.espn.com/soccer/standings/_/league/ned.1",
+			BELGIUM_PRO_LEAGUE: "https://www.espn.com/soccer/standings/_/league/bel.1",
+			PORTUGAL_PRIMEIRA_LIGA: "https://www.espn.com/soccer/standings/_/league/por.1",
+			TURKEY_SUPER_LIG: "https://www.espn.com/soccer/standings/_/league/tur.1",
+			GREECE_SUPER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/gre.1",
+			AUSTRIA_BUNDESLIGA: "https://www.espn.com/soccer/standings/_/league/aut.1",
+			DENMARK_SUPERLIGAEN: "https://www.espn.com/soccer/standings/_/league/den.1",
+			NORWAY_ELITESERIEN: "https://www.espn.com/soccer/standings/_/league/nor.1",
+			SWEDEN_ALLSVENSKAN: "https://www.espn.com/soccer/standings/_/league/swe.1",
+			SWITZERLAND_SUPER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/sui.1",
+			ROMANIA_LIGA_I: "https://www.espn.com/soccer/standings/_/league/rou.1",
+			CROATIA_HNL: "https://www.espn.com/soccer/standings/_/league/cro.1",
+			SERBIA_SUPER_LIGA: "https://www.espn.com/soccer/standings/_/league/srb.1",
+			UKRAINE_PREMIER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/ukr.1",
+			HUNGARY_NBI: "https://www.espn.com/soccer/standings/_/league/hun.1",
+			POLAND_EKSTRAKLASA: "https://www.espn.com/soccer/standings/_/league/pol.1",
+			CZECH_LIGA: "https://www.espn.com/soccer/standings/_/league/cze.1",
+			CYMRU_PREMIER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/wal.1",
+		};
+
+
+
+
 		// Map of league codes to their BBC Sport URLs
-		const urlMap = {
+		const bbcUrlMap = {
 			// Domestic Leagues
 			SCOTLAND_PREMIERSHIP:
 				"https://www.bbc.co.uk/sport/football/scottish-premiership/table",
@@ -835,6 +945,8 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			HUNGARY_NBI: "https://www.bbc.co.uk/sport/football/hungarian-nb-i/table",
 			POLAND_EKSTRAKLASA:
 				"https://www.bbc.co.uk/sport/football/polish-ekstraklasa/table",
+			CYMRU_PREMIER_LEAGUE:
+				"https://www.bbc.co.uk/sport/football/cymru-premier/table",
 
 			// UEFA Competitions
 			UEFA_CHAMPIONS_LEAGUE: {
@@ -879,11 +991,53 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			}
 		};
 
-		const url = urlMap[leagueCode];
-		if (!url && this.config.debug) {
-			Log.warn(` MMM-MyTeams-LeagueTable: Unknown league code: ${leagueCode}`);
+		const urls = {
+			bbc: bbcUrlMap[leagueCode],
+			google: googleUrlMap[leagueCode],
+			wikipedia: wikipediaUrlMap[leagueCode],
+			espn: espnUrlMap[leagueCode],
+			soccerway: soccerwayUrlMap[leagueCode]
+		};
+
+		// Helper: build a provider chain starting with the given priority order,
+		// filtering out any entries where the URL is missing.
+		const buildChain = (...providerOrder) =>
+			providerOrder
+				.map(p => (urls[p] ? { url: urls[p], provider: p } : null))
+				.filter(Boolean);
+
+		// Explicit provider selection: put the requested provider first, then
+		// fall back through the remaining ordered chain.
+		if (provider === "wikipedia" && urls.wikipedia) {
+			const chain = buildChain("wikipedia", "espn", "bbc", "google");
+			return { primary: chain[0].url, fallback: chain[1]?.url, providerChain: chain };
 		}
-		return url;
+
+		if (provider === "espn" && urls.espn) {
+			const chain = buildChain("espn", "wikipedia", "bbc", "google");
+			return { primary: chain[0].url, fallback: chain[1]?.url, providerChain: chain };
+		}
+
+		if (provider === "soccerway" && urls.soccerway) {
+			const chain = buildChain("soccerway", "wikipedia", "espn", "bbc", "google");
+			return { primary: chain[0].url, fallback: chain[1]?.url, providerChain: chain };
+		}
+
+		if (provider === "google" && urls.google) {
+			const chain = buildChain("google", "wikipedia", "espn", "bbc");
+			return { primary: chain[0].url, fallback: chain[1]?.url, providerChain: chain };
+		}
+
+		if (provider === "bbc" && urls.bbc) {
+			const chain = buildChain("bbc", "wikipedia", "espn", "soccerway", "google");
+			return { primary: chain[0].url, fallback: chain[1]?.url, providerChain: chain };
+		}
+
+		// "auto" mode: BBC first, then Wikipedia (most reliable static HTML for split leagues),
+		// then ESPN, then Soccerway, then Google as last resort.
+		const chain = buildChain("bbc", "wikipedia", "espn", "soccerway", "google");
+		if (chain.length === 0) return { primary: null, fallback: null, providerChain: [] };
+		return { primary: chain[0].url, fallback: chain[1]?.url, providerChain: chain };
 	},
 
 	// ===== NEW: Request data for all enabled leagues (dynamic) =====
@@ -897,30 +1051,161 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			return;
 		}
 
+		// Split-league configurations: describes mid-season splits where the table divides
+		// into Championship and Relegation groups. Each parser uses this to select the
+		// correct post-split group table rather than the pre-split full table.
+		// Sources: leagueSplits_Guide.md
+		// championshipKeywords: lowercase heading strings used on Wikipedia to label the top group.
+		// relegationKeywords: lowercase heading strings for the bottom group.
+		// preferGroup: "championship" means we display the top post-split group table.
+		const LEAGUE_SPLITS = {
+			ROMANIA_LIGA_I: {
+				regularSeasonGames: 30,
+				championshipSize: 6,
+				relegationSize: 10,
+				pointsCarryover: "halved",
+				showAllGroups: true,
+				groups: [
+					{ label: "Play-off Group", size: 6, keywords: ["play-off table", "play-off round", "playoff table", "playoff round", "championship round", "championship group", "championship table"] },
+					{ label: "Play-out Group", size: 10, keywords: ["play-out table", "play-out round", "relegation round", "relegation group", "relegation table"] }
+				],
+				championshipKeywords: ["championship round", "championship group", "playoff round", "play-off round", "play-off table", "playoff table"],
+				relegationKeywords: ["relegation round", "relegation group", "play-out round", "play-out table"],
+				preferGroup: "championship"
+			},
+			SCOTLAND_PREMIERSHIP: {
+				regularSeasonGames: 33,
+				championshipSize: 6,
+				relegationSize: 6,
+				pointsCarryover: "all",
+				showAllGroups: true,
+				groups: [
+					{ label: "Top Six", size: 6, keywords: ["top six", "top 6", "championship group", "championship round", "championship table", "upper tier"] },
+					{ label: "Bottom Six", size: 6, keywords: ["bottom six", "bottom 6", "relegation group", "relegation round", "relegation table", "lower tier"] }
+				],
+				championshipKeywords: ["championship group", "top six", "top 6", "upper tier", "championship table"],
+				relegationKeywords: ["relegation group", "bottom six", "bottom 6", "lower tier", "relegation table"],
+				preferGroup: "championship"
+			},
+			AUSTRIA_BUNDESLIGA: {
+				regularSeasonGames: 22,
+				championshipSize: 6,
+				relegationSize: 6,
+				pointsCarryover: "halved",
+				showAllGroups: true,
+				groups: [
+					{ label: "Championship Round", size: 6, keywords: ["championship round", "meistergruppe", "meister-gruppe", "championship group", "top group", "championship table"] },
+					{ label: "Relegation Round", size: 6, keywords: ["relegation round", "qualifikationsgruppe", "relegation group", "bottom group", "relegation table"] }
+				],
+				championshipKeywords: ["championship round", "championship group", "meister-gruppe", "meistergruppe", "top group", "meistergruppe table"],
+				relegationKeywords: ["relegation round", "relegation group", "qualifikationsgruppe", "bottom group", "qualifikationsgruppe table"],
+				preferGroup: "championship"
+			},
+			BELGIUM_PRO_LEAGUE: {
+				regularSeasonGames: 30,
+				championshipSize: 6,
+				relegationSize: 10,
+				pointsCarryover: "halved",
+				showAllGroups: true,
+				groups: [
+					{ label: "Champions' Play-offs", size: 6, keywords: ["champions' play-offs", "champions play-offs", "championship play-offs", "championship playoff", "championship group", "championship round", "top 6", "po1", "play-offs i", "playoffs i"] },
+					{ label: "Europa Play-offs", size: 6, keywords: ["europa play-offs", "europe play-offs", "europa playoffs", "po2", "play-offs ii", "playoffs ii", "europa league play-offs", "conference league play-offs"] },
+					{ label: "Relegation Play-offs", size: 4, keywords: ["relegation play-offs", "relegation playoff", "relegation group", "bottom 4", "relegation table"] }
+				],
+				championshipKeywords: ["champions' play-offs", "champions play-offs", "championship play-offs", "championship playoff", "championship round", "top 6", "championship table"],
+				relegationKeywords: ["relegation play-offs", "relegation group", "bottom group", "relegation table"],
+				preferGroup: "championship"
+			},
+			SWITZERLAND_SUPER_LEAGUE: {
+				regularSeasonGames: 33,
+				championshipSize: 6,
+				relegationSize: 6,
+				pointsCarryover: "all",
+				showAllGroups: true,
+				groups: [
+					{ label: "Championship Group", size: 6, keywords: ["meisterrunde", "championship group", "championship round", "top 6", "championship table"] },
+					{ label: "Relegation Group", size: 6, keywords: ["abstiegsrunde", "relegation group", "relegation round", "bottom 6", "relegation table"] }
+				],
+				championshipKeywords: ["championship group", "meisterrunde", "top 6", "meisterrunde table"],
+				relegationKeywords: ["relegation group", "abstiegsrunde", "bottom 6", "abstiegsrunde table"],
+				preferGroup: "championship"
+			},
+			DENMARK_SUPERLIGAEN: {
+				regularSeasonGames: 22,
+				championshipSize: 6,
+				relegationSize: 6,
+				pointsCarryover: "all",
+				showAllGroups: true,
+				groups: [
+					{ label: "Championship Group", size: 6, keywords: ["championship group", "championship round", "top 6", "upper half", "championship table"] },
+					{ label: "Relegation Group", size: 6, keywords: ["relegation group", "relegation round", "bottom 6", "lower half", "relegation table"] }
+				],
+				championshipKeywords: ["championship group", "top 6", "upper half", "championship table"],
+				relegationKeywords: ["relegation group", "bottom 6", "lower half", "relegation table"],
+				preferGroup: "championship"
+			},
+			SERBIA_SUPER_LIGA: {
+				regularSeasonGames: 30,
+				championshipSize: 8,
+				relegationSize: 8,
+				pointsCarryover: "all",
+				showAllGroups: true,
+				groups: [
+					{ label: "Championship Group", size: 8, keywords: ["championship group", "championship round", "top 8", "first group", "championship table"] },
+					{ label: "Relegation Group", size: 8, keywords: ["relegation group", "relegation round", "bottom 8", "second group", "relegation table"] }
+				],
+				championshipKeywords: ["championship group", "top 8", "first group", "championship table"],
+				relegationKeywords: ["relegation group", "bottom 8", "second group", "relegation table"],
+				preferGroup: "championship"
+			},
+			CYMRU_PREMIER_LEAGUE: {
+				regularSeasonGames: 22,
+				championshipSize: 6,
+				relegationSize: 6,
+				pointsCarryover: "all",
+				showAllGroups: true,
+				groups: [
+					{ label: "Championship Group", size: 6, keywords: ["championship group", "championship round", "top 6", "upper half", "championship table"] },
+					{ label: "Relegation Group", size: 6, keywords: ["relegation group", "relegation round", "bottom 6", "lower half", "relegation table"] }
+				],
+				championshipKeywords: ["championship group", "top 6", "upper half", "championship table"],
+				relegationKeywords: ["relegation group", "bottom 6", "lower half", "relegation table"],
+				preferGroup: "championship"
+			}
+		};
+
 		// Iterate through each enabled league code and request its data with staggering to avoid spikes
 		this.enabledLeagueCodes.forEach((leagueCode, index) => {
-			const url = this.getLeagueUrl(leagueCode);
+			const urls = this.getLeagueUrl(leagueCode);
 
-			if (!url) {
+			if (!urls || (!urls.primary && !urls.fallback)) {
 				Log.error(
 					` MMM-MyTeams-LeagueTable: Could not find URL for league code: ${leagueCode}`
 				);
 				return; // Skip this league if no URL found
 			}
 
+			// Look up split config for this league (null for non-split leagues)
+			const splitConfig = LEAGUE_SPLITS[leagueCode] || null;
+
 			// Stagger requests by 500ms to prevent network/CPU spikes
 			setTimeout(() => {
 				if (this.config.debug) {
 					Log.info(
-						` MMM-MyTeams-LeagueTable: Requesting data for ${leagueCode} from ${url}`
+						` MMM-MyTeams-LeagueTable: Requesting data for ${leagueCode} from ${urls.primary || urls.fallback}${splitConfig ? " (split-league)" : ""}`
 					);
 				}
 
-				// Send request to node helper
+				// Send request to node helper, including the full provider chain
+				// so the backend can automatically try fallback providers when primary returns bad data.
+				// splitConfig tells parsers how to handle post-split group table selection.
 				this.sendSocketNotification("GET_LEAGUE_DATA", {
 					...this.config,
 					leagueType: leagueCode,
-					url: url
+					url: urls.primary,
+					fallbackUrl: urls.fallback,
+					providerChain: urls.providerChain || [],
+					splitConfig: splitConfig
 				});
 			}, index * 500);
 		});
@@ -1675,6 +1960,16 @@ Module.register("MMM-MyTeams-LeagueTable", {
 				name: "Superligaen",
 				countryFolder: "Denmark",
 				countryCode: "DK"
+			},
+			CYMRU_PREMIER_LEAGUE: {
+				name: "Cymru Premier",
+				countryFolder: "Wales",
+				countryCode: "WA"
+			},
+			ENGLAND_CHAMPIONSHIP: {
+				name: "EFL Championship",
+				countryFolder: "England",
+				countryCode: "EN"
 			},
 			WORLD_CUP_2026: {
 				name: "FIFA WC 2026",
@@ -3282,14 +3577,67 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		bodyTable.setAttribute("aria-label", `${this.config.leagueHeaders[this.currentLeague] || this.currentLeague} Standings Data`);
 		const tbody = document.createElement("tbody");
 
-		var teamsToShow = leagueData.teams || [];
-		if (this.config.maxTeams > 0) {
-			teamsToShow = teamsToShow.slice(0, this.config.maxTeams);
+		// Compute column count for split-group separator colspan
+		let _colCount = 1; // team name column always present
+		if (this.config.showPosition) _colCount++;
+		if (this.config.showPlayedGames) _colCount++;
+		if (this.config.showWon) _colCount++;
+		if (this.config.showDrawn) _colCount++;
+		if (this.config.showLost) _colCount++;
+		if (this.config.showGoalsFor) _colCount++;
+		if (this.config.showGoalsAgainst) _colCount++;
+		if (this.config.showGoalDifference) _colCount++;
+		if (this.config.showPoints) _colCount++;
+		if (this.config.showForm) _colCount++;
+
+		// Build the list of group segments to render.
+		// When splitGroups is present (post-split leagues), render each group with a label separator.
+		// Otherwise render a single unlabelled group from leagueData.teams.
+		const _groupsToRender = [];
+		if (
+			leagueData.splitGroups &&
+			Array.isArray(leagueData.splitGroups) &&
+			leagueData.splitGroups.length > 1
+		) {
+			leagueData.splitGroups.forEach(group => {
+				_groupsToRender.push({ label: group.label, teams: group.teams || [] });
+			});
+		} else {
+			_groupsToRender.push({ label: null, teams: leagueData.teams || [] });
 		}
+
+		// Track total teams across all groups for virtual scrolling threshold check
+		let _totalTeamsRendered = 0;
+
+		_groupsToRender.forEach((group, groupIndex) => {
+			// Insert a labelled separator row before each group (only for 2nd+ groups).
+			// Skipping groupIndex 0 ensures the first tbody row is always a data row,
+			// which is required for table-layout:fixed to correctly size all columns.
+			if (_groupsToRender.length > 1 && group.label && groupIndex > 0) {
+				const separatorRow = document.createElement("tr");
+				separatorRow.className = "split-group-separator";
+				separatorRow.setAttribute("role", "row");
+				const separatorCell = document.createElement("td");
+				separatorCell.colSpan = _colCount;
+				separatorCell.className = "split-group-label";
+				separatorCell.setAttribute("role", "cell");
+				separatorCell.textContent = group.label;
+				separatorRow.appendChild(separatorCell);
+				tbody.appendChild(separatorRow);
+			}
+
+			// Apply maxTeams limit only to the first group
+			let teamsToShow = group.teams;
+			if (groupIndex === 0 && this.config.maxTeams > 0) {
+				teamsToShow = teamsToShow.slice(0, this.config.maxTeams);
+			}
+			_totalTeamsRendered += teamsToShow.length;
 
 		teamsToShow.forEach((team, index) => {
 			var row = document.createElement("tr");
 			row.className = "team-row";
+			// Add alternating shade on the second+ groups so they visually separate
+			if (groupIndex % 2 === 1) row.classList.add("split-group-alt");
 			row.setAttribute("role", "row");
 			row.setAttribute("aria-rowindex", index + 1);
 			if (team.name) {
@@ -3322,11 +3670,16 @@ Module.register("MMM-MyTeams-LeagueTable", {
 						row.classList.add("uefa-elimination-zone");
 					}
 				} else if (leagueKey !== "WORLD_CUP_2026") {
-					// Standard leagues (not World Cup)
-					if (team.position <= 2) row.classList.add("promotion-zone");
-					else if (team.position <= 4) row.classList.add("uefa-zone");
-					else if (team.position >= teamsToShow.length - 1)
-						row.classList.add("relegation-zone");
+					// For split-league groups, colour based on position within the group
+					if (groupIndex === 0) {
+						// Championship / top group: top positions highlighted
+						if (team.position <= 2) row.classList.add("promotion-zone");
+						else if (team.position <= 4) row.classList.add("uefa-zone");
+					} else {
+						// Relegation / lower groups: bottom positions highlighted
+						if (team.position >= teamsToShow.length - 1)
+							row.classList.add("relegation-zone");
+					}
 				}
 			}
 
@@ -3503,19 +3856,21 @@ Module.register("MMM-MyTeams-LeagueTable", {
 				row.appendChild(formCell);
 			}
 
-			tbody.appendChild(row);
-		});
+				tbody.appendChild(row);
+		}); // end teamsToShow.forEach
+
+		}); // end _groupsToRender.forEach
 
 		bodyTable.appendChild(tbody);
 
 		scrollContainer.appendChild(bodyTable);
 		
 		// Apply virtual scrolling optimizations if enabled and threshold exceeded (PERF-03)
-		if (this.config.enableVirtualScrolling && teamsToShow.length >= this.config.virtualScrollThreshold) {
+		if (this.config.enableVirtualScrolling && _totalTeamsRendered >= this.config.virtualScrollThreshold) {
 			scrollContainer.classList.add("virtual-scroll-container");
 			bodyTable.classList.add("virtual-scrolling-enabled");
 			if (this.config.debug) {
-				Log.info(`[VIRTUAL-SCROLL] Enabled for ${teamsToShow.length} rows (threshold: ${this.config.virtualScrollThreshold})`);
+				Log.info(`[VIRTUAL-SCROLL] Enabled for ${_totalTeamsRendered} rows (threshold: ${this.config.virtualScrollThreshold})`);
 			}
 		}
 		
@@ -4763,7 +5118,14 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			hu: "translations/hu.json",
 			uk: "translations/uk.json",
 			el: "translations/el.json",
-			da: "translations/da.json"
+			da: "translations/da.json",
+			cs: "translations/cs.json",
+			fi: "translations/fi.json",
+			ro: "translations/ro.json",
+			sk: "translations/sk.json",
+			sl: "translations/sl.json",
+			sq: "translations/sq.json",
+			sr: "translations/sr.json"
 		};
 	},
 

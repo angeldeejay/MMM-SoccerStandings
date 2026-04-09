@@ -15,6 +15,10 @@ const NodeHelper = require("node_helper");
 const CacheManager = require("./cache-manager.js");
 const BBCParser = require("./BBCParser.js");
 const FIFAParser = require("./FIFAParser.js");
+const SoccerwayParser = require("./SoccerwayParser.js");
+const WikipediaParser = require("./WikipediaParser.js");
+const ESPNParser = require("./ESPNParser.js");
+const GoogleParser = require("./GoogleParser.js");
 const logoResolver = require("./logo-resolver.js");
 
 module.exports = NodeHelper.create({
@@ -151,6 +155,17 @@ module.exports = NodeHelper.create({
 			});
 		}
 
+		// 2b. Resolve logos for split-league multi-group data (Romania, Austria etc.)
+		if (Array.isArray(data.splitGroups)) {
+			data.splitGroups.forEach((group) => {
+				if (Array.isArray(group.teams)) {
+					group.teams.forEach((team) => {
+						if (team.name) team.logo = getCachedLogo(team.name);
+					});
+				}
+			});
+		}
+
 		// 3. Resolve logos for fixtures
 		if (data.fixtures && Array.isArray(data.fixtures)) {
 			data.fixtures.forEach((fixture) => {
@@ -213,6 +228,10 @@ module.exports = NodeHelper.create({
 		// Initialize parsers
 		this.bbcParser = new BBCParser();
 		this.fifaParser = new FIFAParser();
+		this.soccerwayParser = new SoccerwayParser();
+		this.wikipediaParser = new WikipediaParser();
+		this.espnParser = new ESPNParser();
+		this.googleParser = new GoogleParser();
 
 		// Start periodic cache cleanup
 		this.startCacheCleanup();
@@ -230,9 +249,13 @@ module.exports = NodeHelper.create({
 	async socketNotificationReceived(notification, payload) {
 		if (notification === "GET_LEAGUE_DATA") {
 			this.config = payload;
-			// Propagate config to parsers
+			// Propagate config to all registered parsers
 			if (this.bbcParser) this.bbcParser.setConfig(payload);
 			if (this.fifaParser) this.fifaParser.setConfig(payload);
+			if (this.soccerwayParser) this.soccerwayParser.setConfig(payload);
+			if (this.wikipediaParser) this.wikipediaParser.setConfig(payload);
+			if (this.espnParser) this.espnParser.setConfig(payload);
+			if (this.googleParser) this.googleParser.setConfig(payload);
 
 			this.sendDebugInfo("Received request for " + payload.leagueType);
 			this.fetchLeagueData(payload.url, payload.leagueType, payload);
@@ -259,15 +282,85 @@ module.exports = NodeHelper.create({
 		}
 	},
 
-	// Main function to fetch league data
-	async fetchLeagueData(url, leagueType, config) {
+	// Helper: select the appropriate parser instance and display name for a given provider string.
+	// Provider is detected from the explicit provider name or inferred from the URL domain.
+	_getParser(providerName, url) {
+		const p = (providerName || "auto").toLowerCase();
+		const u = url || "";
+		if (p === "google" || (p === "auto" && u.includes("google.com"))) {
+			return { parser: this.googleParser, name: "Google Search" };
+		}
+		if (p === "fifa" || (p === "auto" && u.includes("fifa.com"))) {
+			return { parser: this.fifaParser, name: "FIFA.com" };
+		}
+		if (p === "soccerway" || (p === "auto" && u.includes("soccerway.com"))) {
+			return { parser: this.soccerwayParser, name: "Soccerway" };
+		}
+		if (p === "wikipedia" || (p === "auto" && u.includes("wikipedia.org"))) {
+			return { parser: this.wikipediaParser, name: "Wikipedia" };
+		}
+		if (p === "espn" || (p === "auto" && u.includes("espn.com"))) {
+			return { parser: this.espnParser, name: "ESPN" };
+		}
+		return { parser: this.bbcParser, name: "BBC Sport" };
+	},
+
+	// Main function to fetch league data.
+	// chainIndex: position within config.providerChain (0 = primary, 1+ = fallback providers).
+	// isFallback is kept for backward compatibility when providerChain is not set.
+	async fetchLeagueData(url, leagueType, config, chainIndex = 0) {
 		const debug = config && config.debug;
 		const useMockData = config && config.useMockData;
+		const providerChain = (config && Array.isArray(config.providerChain))
+			? config.providerChain
+			: [];
+
+		// Determine current provider from chain entry or fall back to config.provider / auto-detect.
+		const chainEntry = providerChain[chainIndex];
+		const currentProviderStr = chainEntry
+			? chainEntry.provider
+			: (config && config.provider ? config.provider : "auto");
 
 		if (debug) {
-			console.log(` MMM-MyTeams-LeagueTable: Fetching ${leagueType} data...`);
+			const chainInfo = providerChain.length > 0
+				? `Chain [${chainIndex + 1}/${providerChain.length}]`
+				: "Single";
+			console.log(
+				` MMM-MyTeams-LeagueTable: Fetching ${leagueType} (${chainInfo}, Provider: ${currentProviderStr})...`
+			);
 			this.cache.setDebug(true);
 		}
+
+		// Convenience: tries the next provider in the chain or falls to cache.
+		const tryNextProvider = async (reason) => {
+			const nextIdx = chainIndex + 1;
+			if (nextIdx < providerChain.length) {
+				if (debug) {
+					console.log(
+						` MMM-MyTeams-LeagueTable: [${leagueType}] ${reason}. Trying next provider: ${providerChain[nextIdx].provider}`
+					);
+				}
+				return this.fetchLeagueData(
+					providerChain[nextIdx].url,
+					leagueType,
+					config,
+					nextIdx
+				);
+			}
+
+			// Legacy single fallbackUrl support (when no providerChain is available).
+			const legacyFallback = config && config.fallbackUrl;
+			if (legacyFallback && chainIndex === 0 && providerChain.length === 0) {
+				if (debug) {
+					console.log(
+						` MMM-MyTeams-LeagueTable: [${leagueType}] ${reason}. Trying legacy fallbackUrl.`
+					);
+				}
+				return this.fetchLeagueData(legacyFallback, leagueType, config, 999);
+			}
+
+			return null; // Signals caller to fall through to cache-only handling.
+		};
 
 		// Handle Mock Data for non-WC leagues (simulated)
 		if (useMockData && leagueType !== "WORLD_CUP_2026") {
@@ -289,7 +382,7 @@ module.exports = NodeHelper.create({
 		}
 
 		// Handle UEFA competitions with separate table and fixture URLs
-		if (typeof url === "object" && url.table && url.fixtures) {
+		if (typeof url === "object" && url !== null && url.table && url.fixtures) {
 			return this.fetchUEFACompetitionData(url, leagueType, config);
 		}
 
@@ -298,67 +391,122 @@ module.exports = NodeHelper.create({
 			return this.fetchFIFAWorldCup2026(url, config);
 		}
 
-		// PROACTIVE CACHING: Check if we have cached data and send it immediately
-		const cachedData = await this.cache.get(leagueType);
-		if (cachedData) {
-			const isValid = this.isDataComplete(cachedData, leagueType);
-			if (debug)
-				console.log(
-					` MMM-MyTeams-LeagueTable: Cached data for ${leagueType} is ${isValid ? "complete" : "incomplete"}`
-				);
-
-			if (isValid) {
-				if (debug)
+		// PROACTIVE CACHING: Serve any valid cached data immediately while a fresh fetch runs.
+		// Only do this on the first attempt (chainIndex === 0) to avoid repeat sends.
+		if (chainIndex === 0) {
+			const cachedData = await this.cache.get(leagueType);
+			if (cachedData) {
+				const isValid = this.isDataComplete(cachedData, leagueType, config && config.splitConfig);
+				if (debug) {
 					console.log(
-						` MMM-MyTeams-LeagueTable: Serving cached data for ${leagueType} immediately`
+						` MMM-MyTeams-LeagueTable: [${leagueType}] Cached data is ${isValid ? "complete" : "incomplete"}`
 					);
-				cachedData.leagueType = leagueType;
-				cachedData.fromCache = true;
-				this.sendSocketNotification(
-					"LEAGUE_DATA",
-					this.resolveLogos(cachedData, config)
-				);
-			} else {
-				if (debug)
-					console.log(
-						` MMM-MyTeams-LeagueTable: Skipping incomplete cache for ${leagueType}`
+				}
+				if (isValid) {
+					cachedData.leagueType = leagueType;
+					cachedData.fromCache = true;
+					this.sendSocketNotification(
+						"LEAGUE_DATA",
+						this.resolveLogos(cachedData, config)
 					);
+				}
 			}
 		}
 
+		// Select the right parser for the current URL / provider.
+		const { parser, name: providerName } = this._getParser(currentProviderStr, url);
+
 		try {
 			const html = await this.fetchWebPage(url);
-			if (debug)
+			if (debug) {
 				console.log(
-					` MMM-MyTeams-LeagueTable: Successfully fetched ${leagueType} webpage`
+					` MMM-MyTeams-LeagueTable: [${leagueType}] Fetched HTML from ${providerName} (${url.substring(0, 80)}...)`
+				);
+			}
+
+			let leagueData = parser.parseLeagueData(html, leagueType, config.splitConfig || null);
+
+			// For split leagues: detect when the parser returned the full pre-split table
+			// instead of the post-split championship group. This happens because the
+			// WikipediaParser (and others) may not have received splitConfig if the shared
+			// parser's this.config was overwritten by a concurrent request (race condition).
+			// The direct splitConfig param (above) fixes the race, but this guard catches
+			// any residual cases where we still get too many teams.
+			if (
+				config.splitConfig &&
+				leagueData &&
+				Array.isArray(leagueData.teams) &&
+				leagueData.teams.length > 0 &&
+				!leagueData.splitGroups
+			) {
+				const splitCfg = config.splitConfig;
+				// Use groups array sum when available (handles 3-group leagues like Belgium)
+				const fullSeasonCount = Array.isArray(splitCfg.groups) && splitCfg.groups.length > 0
+					? splitCfg.groups.reduce((sum, g) => sum + (g.size || 0), 0)
+					: (splitCfg.championshipSize || 0) + (splitCfg.relegationSize || 0);
+				const splitOccurred = leagueData.teams.some(
+					(t) => (t.played || 0) >= splitCfg.regularSeasonGames
 				);
 
-			const leagueData = this.bbcParser.parseLeagueData(html, leagueType);
+				// Case 1: BBC returned the full pre-split table (too many teams before split)
+				const gotPreSplitTable = splitOccurred && leagueData.teams.length >= fullSeasonCount;
+				// Case 2: BBC returned only one group (e.g. 6-team championship-only) but we need
+				// all groups. BBC shows only the top group once the split has occurred.
+				const gotSingleGroupOnly = splitOccurred && splitCfg.showAllGroups && leagueData.teams.length < fullSeasonCount;
+
+				if (gotPreSplitTable || gotSingleGroupOnly) {
+					const escalateReason = gotPreSplitTable
+						? `Pre-split full table returned (${leagueData.teams.length} teams, expected ${splitCfg.championshipSize})`
+						: `Single-group table returned (${leagueData.teams.length} teams) but showAllGroups=true`;
+					if (debug) {
+						console.log(
+							` MMM-MyTeams-LeagueTable: [${leagueType}] ${escalateReason}. Escalating to next provider.`
+						);
+					}
+					const advanced = await tryNextProvider(escalateReason);
+					if (advanced !== null) return;
+					leagueData.incomplete = true;
+				}
+			}
 
 			if (leagueData && leagueData.teams && leagueData.teams.length > 0) {
 				leagueData.leagueType = leagueType;
+				leagueData.source = providerName;
 
-				// Check if fresh data is complete (has form)
-				const isFreshComplete = this.isDataComplete(leagueData, leagueType);
+				const isFreshComplete = this.isDataComplete(leagueData, leagueType, config && config.splitConfig);
 
 				if (!isFreshComplete) {
-					// Fresh data is incomplete. Check if we have a better version in cache.
-					const cachedData = await this.cache.get(leagueType);
-					if (cachedData && this.isDataComplete(cachedData, leagueType)) {
-						if (debug)
+					if (debug) {
+						console.log(
+							` MMM-MyTeams-LeagueTable: [${leagueType}] Data from ${providerName} is incomplete (${leagueData.teams.length} teams, all-zero stats or no form).`
+						);
+					}
+
+					// Check if the cache holds better data before escalating the chain.
+					const existingCache = await this.cache.get(leagueType);
+					if (existingCache && this.isDataComplete(existingCache, leagueType, config && config.splitConfig)) {
+						if (debug) {
 							console.log(
-								` MMM-MyTeams-LeagueTable: Fresh data for ${leagueType} is incomplete, using complete cached data instead.`
+								` MMM-MyTeams-LeagueTable: [${leagueType}] Cache has complete data; serving that instead.`
 							);
-						cachedData.leagueType = leagueType;
-						cachedData.fromCache = true;
-						cachedData.cacheFallback = true;
+						}
+						existingCache.leagueType = leagueType;
+						existingCache.fromCache = true;
+						existingCache.cacheFallback = true;
 						this.sendSocketNotification(
 							"LEAGUE_DATA",
-							this.resolveLogos(cachedData, config)
+							this.resolveLogos(existingCache, config)
 						);
 						return;
 					}
-					// If no better cache, mark this fresh data as incomplete so UI can show warning
+
+					// No usable cache - escalate to next provider in the chain.
+					const advanced = await tryNextProvider(
+						`${providerName} returned incomplete data`
+					);
+					if (advanced !== null) return; // Next provider handled it.
+
+					// All providers exhausted; serve what we have with an incomplete flag.
 					leagueData.incomplete = true;
 				}
 
@@ -369,16 +517,32 @@ module.exports = NodeHelper.create({
 					this.resolveLogos(leagueData, config)
 				);
 			} else {
-				throw new Error(`No ${leagueType} data parsed from website`);
+				// Parser returned no teams - try next provider.
+				const advanced = await tryNextProvider(
+					`${providerName} returned no team data`
+				);
+				if (advanced !== null) return;
+
+				throw new Error(`No ${leagueType} data parsed from any provider`);
 			}
 		} catch (error) {
+			// HTTP / network error - try next provider before giving up.
+			if (debug) {
+				console.log(
+					` MMM-MyTeams-LeagueTable: [${leagueType}] Error from ${providerName}: ${error.message}`
+				);
+			}
+
+			const advanced = await tryNextProvider(`${providerName} fetch/parse error`);
+			if (advanced !== null) return;
+
+			// All providers failed - log and fall back to cached data.
 			this.sendDebugInfo("Error fetching " + leagueType, error.message);
 			console.error(
-				` MMM-MyTeams-LeagueTable: Error fetching ${leagueType} data:`,
+				` MMM-MyTeams-LeagueTable: All providers failed for ${leagueType}:`,
 				error.message
 			);
 
-			// Fallback to cache ONLY if we haven't already served it
 			const fallbackData = await this.cache.get(leagueType);
 			if (fallbackData) {
 				fallbackData.leagueType = leagueType;
@@ -404,7 +568,7 @@ module.exports = NodeHelper.create({
 	 * @param {string} leagueType - League type
 	 * @returns {boolean} - True if complete
 	 */
-	isDataComplete(data, leagueType) {
+	isDataComplete(data, leagueType, splitConfig) {
 		if (
 			!data ||
 			!data.teams ||
@@ -414,48 +578,78 @@ module.exports = NodeHelper.create({
 			return false;
 		}
 
+		// For split leagues that require all groups: cached data lacking splitGroups is stale.
+		// This prevents single-group BBC data from being served from cache for post-split leagues.
+		if (splitConfig && splitConfig.showAllGroups && !data.splitGroups) {
+			return false;
+		}
+
 		// World Cup and other knockout-heavy leagues might not have form in the same way
 		if (leagueType === "WORLD_CUP_2026" || leagueType.includes("UEFA")) {
 			return true;
 		}
 
-		// Check if at least some teams have form data (as an array)
-		// We expect form to be an array of objects if parsed correctly by new parser
+		const debug = this.config && this.config.debug;
+
+		// Check if ALL teams have zero stats (played, points, won all zero).
+		// This indicates a stub or transitional page (e.g. BBC during a league-split period)
+		// rather than genuine start-of-season data where the team count would be wrong too.
+		// We require >3 teams to avoid false positives on tiny cup-phase groups.
+		const allStatsZero = data.teams.length > 3 &&
+			data.teams.every(
+				(t) => (t.played || 0) === 0 && (t.points || 0) === 0 && (t.won || 0) === 0
+			);
+
+		if (allStatsZero) {
+			if (debug) {
+				console.log(
+					` MMM-MyTeams-LeagueTable: [isDataComplete] ${leagueType}: All ${data.teams.length} teams have zero stats - stub/split page detected, marking incomplete.`
+				);
+			}
+			return false;
+		}
+
+		// Fallback providers (Wikipedia, ESPN, Google, Soccerway) do not supply form data.
+		// For these sources, completeness is based on having non-zero stats rather than form.
+		// BBC Sport is the only provider expected to supply form tokens.
+		const fallbackSources = ["Wikipedia", "ESPN", "Google Search", "Soccerway"];
+		const isFallbackSource = fallbackSources.includes(data.source);
+
+		if (isFallbackSource) {
+			// For fallback providers: data is complete if majority of teams have played games.
+			const teamsWhoPlayed = data.teams.filter((t) => (t.played || 0) > 0);
+			const complete = teamsWhoPlayed.length >= Math.ceil(data.teams.length * 0.5);
+			if (debug) {
+				console.log(
+					` MMM-MyTeams-LeagueTable: [isDataComplete] ${leagueType} (source: ${data.source}): ${teamsWhoPlayed.length}/${data.teams.length} teams played. Complete: ${complete}`
+				);
+			}
+			return complete;
+		}
+
+		// For BBC Sport: check that at least some teams have form data.
+		// Form is an array of result objects populated by the BBC parser.
 		const teamsWithForm = data.teams.filter(
 			(t) => Array.isArray(t.form) && t.form.length > 0
 		);
 
-		// Log status for debugging
-		if (this.config && this.config.debug) {
+		if (debug) {
 			console.log(
-				` MMM-MyTeams-LeagueTable: Data completeness check for ${leagueType}: ${teamsWithForm.length}/${data.teams.length} teams have form.`
+				` MMM-MyTeams-LeagueTable: [isDataComplete] ${leagueType}: ${teamsWithForm.length}/${data.teams.length} teams have form.`
 			);
 		}
 
-		// If more than 50% of teams have NO form, consider it incomplete/old parser data
-		// But allow it if there are NO teams with form (maybe it's start of season or special league)
+		// If no teams have form, check whether games have been played.
+		// If games have been played but no form is found, BBC is returning a stub page.
 		if (data.teams.length > 0 && teamsWithForm.length === 0) {
-			// Check if teams have actually played games
 			const teamsWhoPlayed = data.teams.filter((t) => (t.played || 0) > 0);
-
-			// If teams have played but no form is found, it's likely a parsing issue or stale cache
 			if (teamsWhoPlayed.length > 0) {
-				const leaguesWithForm = [
-					"PREMIER_LEAGUE",
-					"CHAMPIONSHIP",
-					"LEAGUE_ONE",
-					"LEAGUE_TWO",
-					"SPFL",
-					"SCOTTISH_PREMIERSHIP"
-				];
-				if (leaguesWithForm.some((l) => leagueType.includes(l))) {
-					if (this.config && this.config.debug) {
-						console.log(
-							` MMM-MyTeams-LeagueTable: League ${leagueType} has played games but no form. Marking as incomplete.`
-						);
-					}
-					return false;
+				if (debug) {
+					console.log(
+						` MMM-MyTeams-LeagueTable: [isDataComplete] ${leagueType} has played games but no form from BBC. Marking as incomplete.`
+					);
 				}
+				return false;
 			}
 		}
 

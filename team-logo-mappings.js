@@ -2035,7 +2035,12 @@ const TEAM_LOGO_MAPPINGS = {
 	// ==========================================================================
 	// Wales
 	// ==========================================================================
-	"Bala Town": "crests/Wales/bala-town.png",
+	
+	Wales: "crests/Wales/wales.png",
+	Cymru: "crests/Wales/wales.png",
+	"Airbus UK Broughton": "crests/Wales/airbus-uk-broughton.png",
+	"Afan Lido": "crests/Wales/afan-lido.png",
+	"Barry Town": "crests/Wales/barry-town.png",
 	"Barry Town United": "crests/Wales/barry-town-united.png",
 	"Briton Ferry Llansawel": "crests/Wales/briton-ferry-llansawel.png",
 	"Caernarfon Town": "crests/Wales/caernarfon-town.png",
