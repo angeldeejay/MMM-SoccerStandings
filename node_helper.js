@@ -444,28 +444,53 @@ module.exports = NodeHelper.create({
 				const fullSeasonCount = Array.isArray(splitCfg.groups) && splitCfg.groups.length > 0
 					? splitCfg.groups.reduce((sum, g) => sum + (g.size || 0), 0)
 					: (splitCfg.championshipSize || 0) + (splitCfg.relegationSize || 0);
-				const splitOccurred = leagueData.teams.some(
-					(t) => (t.played || 0) >= splitCfg.regularSeasonGames
+				// Determine how far into the season we are by taking the maximum
+				// games-played value across all returned teams.
+				const maxPlayed = leagueData.teams.reduce(
+					(max, t) => Math.max(max, t.played || 0), 0
 				);
 
-				// Case 1: BBC returned the full pre-split table (too many teams before split)
-				const gotPreSplitTable = splitOccurred && leagueData.teams.length >= fullSeasonCount;
-				// Case 2: BBC returned only one group (e.g. 6-team championship-only) but we need
-				// all groups. BBC shows only the top group once the split has occurred.
-				const gotSingleGroupOnly = splitOccurred && splitCfg.showAllGroups && leagueData.teams.length < fullSeasonCount;
+				// Phase 2 is underway when at least the leading team has played
+				// more games than the Phase 1 total (regularSeasonGames).
+				const phase2Started = maxPlayed > splitCfg.regularSeasonGames;
 
-				if (gotPreSplitTable || gotSingleGroupOnly) {
-					const escalateReason = gotPreSplitTable
-						? `Pre-split full table returned (${leagueData.teams.length} teams, expected ${splitCfg.championshipSize})`
-						: `Single-group table returned (${leagueData.teams.length} teams) but showAllGroups=true`;
+				// Phase 1 is complete but Phase 2 groups have not been formed yet.
+				// This is the normal transition window between the two phases.
+				const awaitingSplitAnnouncement =
+					!phase2Started && maxPlayed >= splitCfg.regularSeasonGames;
+
+				if (awaitingSplitAnnouncement) {
+					// Phase 1 is over but the split has not been announced yet.
+					// Every provider will return the same full Phase 1 table right now,
+					// so escalating to the next provider is pointless and wastes resources.
+					// Mark the data with awaitingSplit so the frontend can display a
+					// clear indicator (e.g. "Phase 1 Final / Awaiting Split").
+					leagueData.awaitingSplit = true;
 					if (debug) {
 						console.log(
-							` MMM-MyTeams-LeagueTable: [${leagueType}] ${escalateReason}. Escalating to next provider.`
+							` MMM-MyTeams-LeagueTable: [${leagueType}] Phase 1 complete (max played: ${maxPlayed}/${splitCfg.regularSeasonGames}). Awaiting split announcement — serving Phase 1 final standings.`
 						);
 					}
-					const advanced = await tryNextProvider(escalateReason);
-					if (advanced !== null) return;
-					leagueData.incomplete = true;
+				} else {
+					// Phase 2 has started — check whether the returned table is correct.
+					// Case 1: Provider returned the full pre-split table (wrong — too many teams).
+					const gotPreSplitTable = phase2Started && leagueData.teams.length >= fullSeasonCount;
+					// Case 2: Provider returned only one group when we need all groups.
+					const gotSingleGroupOnly = phase2Started && splitCfg.showAllGroups && leagueData.teams.length < fullSeasonCount;
+
+					if (gotPreSplitTable || gotSingleGroupOnly) {
+						const escalateReason = gotPreSplitTable
+							? `Phase 2 started but pre-split full table returned (${leagueData.teams.length} teams, expected ${splitCfg.championshipSize})`
+							: `Phase 2 started but single-group table returned (${leagueData.teams.length} teams) while showAllGroups=true`;
+						if (debug) {
+							console.log(
+								` MMM-MyTeams-LeagueTable: [${leagueType}] ${escalateReason}. Escalating to next provider.`
+							);
+						}
+						const advanced = await tryNextProvider(escalateReason);
+						if (advanced !== null) return;
+						leagueData.incomplete = true;
+					}
 				}
 			}
 
@@ -580,7 +605,12 @@ module.exports = NodeHelper.create({
 
 		// For split leagues that require all groups: cached data lacking splitGroups is stale.
 		// This prevents single-group BBC data from being served from cache for post-split leagues.
+		// EXCEPTION: awaitingSplit data (Phase 1 final standings) is valid — the split simply
+		// has not been announced yet.  Treat it as complete so it can be cached and served.
 		if (splitConfig && splitConfig.showAllGroups && !data.splitGroups) {
+			if (data.awaitingSplit) {
+				return true;
+			}
 			return false;
 		}
 

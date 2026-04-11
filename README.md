@@ -16,6 +16,16 @@ A comprehensive **MagicMirror²** module that displays football league standings
 | ![Screenshot 7](./screenshots/screenshot7.png) | ![Screenshot 8](./screenshots/screenshot8.png) | ![Screenshot 9](./screenshots/screenshot9.png) |
 | ![Screenshot 10](./screenshots/screenshot10.png) |
 
+## 🆕 Recent Updates (v2.5.1 - 2026-04-11)
+
+**Enhanced Split-Season Resilience & UI Polish:**
+- **Global Split-Season Support**: Expanded support for tiered split-league formats to include **Greece Super League**, **Cyprus First Division**, and **Israel Premier League**.
+- **Awaiting Split Indicator**: Added a visual **⏳ AWAITING SPLIT** badge in the module header to gracefully handle the transition period between league phases.
+- **Horizontal Navigation Overhaul**: Implemented a styled horizontal scrollbar for league tabs with SVG arrow indicators for high-density league configurations.
+- **Improved Header Controls**: Redesigned **Refresh**, **Clear Cache**, and **Pin** buttons with unified high-visibility styling and custom "tilted thumbtack" pin animation.
+- **Automated Maintenance**: Added Python-based fix scripts in `tools/` for easy registration of new leagues and split-season logic.
+- **Documentation Audit**: Comprehensive update of all 11+ documentation files to reflect latest features and provider-specific details.
+
 ## 🆕 Recent Updates (v2.5.0 - 2026-04-09)
 
 **Multi-Group Split-League Support & Enhanced Resilience:**

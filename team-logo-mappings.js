@@ -1414,6 +1414,7 @@ const TEAM_LOGO_MAPPINGS = {
 	Afumați: "crests/Romania/afumați.png",
 	"Argeș Pitești": "crests/Romania/argeș-pitești.png",
 	"Asa Târgu Mureș": "crests/Romania/asa-târgu-mureș.png",
+	"ASC Otelul Galați": "crests/Romania/asc-otelul-galați.png", 
 	"Bihor Oradea": "crests/Romania/bihor-oradea.png",
 	Botoșani: "crests/Romania/botoșani.png",
 	"Câmpulung Muscel": "crests/Romania/câmpulung-muscel.png",
@@ -1422,6 +1423,7 @@ const TEAM_LOGO_MAPPINGS = {
 	"Chindia Târgoviște": "crests/Romania/chindia-târgoviște.png",
 	"Concordia Chiajna": "crests/Romania/concordia-chiajna.png",
 	"Corvinul Hunedoara": "crests/Romania/corvinul-hunedoara.png",
+	"CS Universitatea Craiova": "crests/Romania/cs-universitatea-craiova.png",
 	"Cs Dinamo București": "crests/Romania/cs-dinamo-bucurești.png",
 	"Csa Steaua Bucureşti": "crests/Romania/csa-steaua-bucureşti.png",
 	"Csíkszereda Miercurea Ciuc": "crests/Romania/csíkszereda-miercurea-ciuc.png",
@@ -1430,6 +1432,7 @@ const TEAM_LOGO_MAPPINGS = {
 	"Farul Constanța": "crests/Romania/farul-constanța.png",
 	"FC Arges": "crests/Romania/FC Arges.png",
 	"Fc Bacău": "crests/Romania/fc-bacău.png",
+	"FCV Farul Constanța": "crests/Romania/fcv-farul-constanța.png",
 	"Gloria Bistrița": "crests/Romania/gloria-bistrița.png",
 	Hermannstadt: "crests/Romania/hermannstadt.png",
 	"Metaloglobus București": "crests/Romania/metaloglobus-bucurești.png",
@@ -1450,6 +1453,7 @@ const TEAM_LOGO_MAPPINGS = {
 	FCSB: "crests/Romania/fcsb.png",
 	"Steaua București": "crests/Romania/fcsb.png",
 	"Steau Bucharest": "crests/Romania/fcsb.png",
+	
 	// ==========================================================================
 	// Russia
 	// ==========================================================================

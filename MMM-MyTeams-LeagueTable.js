@@ -824,6 +824,8 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			POLAND_EKSTRAKLASA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Ekstraklasa",
 			CZECH_LIGA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Czech_First_League",
 			CYMRU_PREMIER_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Cymru_Premier",
+			CYPRUS_FIRST_DIVISION: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Cypriot_First_Division",
+			ISRAEL_PREMIER_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Israeli_Premier_League",
 		};
 
 		// Map of league codes to their Soccerway URLs
@@ -889,6 +891,8 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			POLAND_EKSTRAKLASA: "https://www.espn.com/soccer/standings/_/league/pol.1",
 			CZECH_LIGA: "https://www.espn.com/soccer/standings/_/league/cze.1",
 			CYMRU_PREMIER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/wal.1",
+			CYPRUS_FIRST_DIVISION: "https://www.espn.com/soccer/standings/_/league/cyp.1",
+			ISRAEL_PREMIER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/isr.1",
 		};
 
 
@@ -947,6 +951,10 @@ Module.register("MMM-MyTeams-LeagueTable", {
 				"https://www.bbc.co.uk/sport/football/polish-ekstraklasa/table",
 			CYMRU_PREMIER_LEAGUE:
 				"https://www.bbc.co.uk/sport/football/cymru-premier/table",
+			CYPRUS_FIRST_DIVISION:
+				"https://www.bbc.co.uk/sport/football/cypriot-first-division/table",
+			ISRAEL_PREMIER_LEAGUE:
+				"https://www.bbc.co.uk/sport/football/israeli-premier-league/table",
 
 			// UEFA Competitions
 			UEFA_CHAMPIONS_LEAGUE: {
@@ -1170,6 +1178,61 @@ Module.register("MMM-MyTeams-LeagueTable", {
 				],
 				championshipKeywords: ["championship group", "top 6", "upper half", "championship table"],
 				relegationKeywords: ["relegation group", "bottom 6", "lower half", "relegation table"],
+				preferGroup: "championship"
+			},
+			// Greece Super League: 14 teams, 26-game double RR regular season (Phase 1), then THREE groups:
+			//   Championship play-offs (top 4): 6 more games (double RR), points carry over fully.
+			//   Europe play-offs (5th-8th, 4 teams): 6 more games (double RR), points HALVED (rounded up).
+			//   Relegation play-outs (9th-14th, 6 teams): 10 more games (double RR), points carry over fully.
+			// pointsCarryover="mixed": Championship/Relegation keep all points; Europe group halves them.
+			GREECE_SUPER_LEAGUE: {
+				regularSeasonGames: 26,
+				championshipSize: 4,
+				relegationSize: 6,
+				pointsCarryover: "mixed",
+				showAllGroups: true,
+				groups: [
+					{ label: "Championship Play-offs", size: 4, keywords: ["championship play-offs", "championship play-off", "championship playoff", "championship round", "championship group", "championship table"] },
+					{ label: "Europe Play-offs", size: 4, keywords: ["europe play-offs", "europe play-off", "europa play-offs", "conference league play-offs", "european play-offs", "europe playoff"] },
+					{ label: "Relegation Play-outs", size: 6, keywords: ["relegation play-outs", "relegation play-out", "relegation playoff", "relegation round", "relegation group", "relegation table"] }
+				],
+				championshipKeywords: ["championship play-offs", "championship play-off", "championship playoff", "championship table"],
+				relegationKeywords: ["relegation play-outs", "relegation play-out", "relegation playoff", "relegation table"],
+				preferGroup: "championship"
+			},
+			// Cyprus First Division: 14 teams, 26-game double RR regular season (Phase 1), then TWO groups:
+			//   Championship round (top 6): 10 more games (double RR within 6 teams), all points carry over.
+			//   Relegation round (7th-14th, 8 teams): 7 more games (single RR), all points carry over.
+			// Bottom three teams in the relegation round are relegated.
+			CYPRUS_FIRST_DIVISION: {
+				regularSeasonGames: 26,
+				championshipSize: 6,
+				relegationSize: 8,
+				pointsCarryover: "all",
+				showAllGroups: true,
+				groups: [
+					{ label: "Championship Round", size: 6, keywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"] },
+					{ label: "Relegation Round", size: 8, keywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"] }
+				],
+				championshipKeywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"],
+				relegationKeywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"],
+				preferGroup: "championship"
+			},
+			// Israel Premier League: 14 teams, 26-game double RR regular season (Phase 1), then TWO groups:
+			//   Championship round (top 6): 10 more games (double RR within 6 teams), all points carry over.
+			//   Relegation round (7th-14th, 8 teams): 7 more games (single RR), all points carry over.
+			ISRAEL_PREMIER_LEAGUE: {
+				regularSeasonGames: 26,
+				championshipSize: 6,
+				relegationSize: 8,
+				pointsCarryover: "all",
+				showAllGroups: true,
+				groups: [
+					{ label: "Championship Round", size: 6, keywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"] },
+					{ label: "Relegation Round", size: 8, keywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"] }
+				],
+				championshipKeywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"],
+				relegationKeywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"],
 				preferGroup: "championship"
 			}
 		};
@@ -2720,6 +2783,26 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			}
 
 			metaInfo.appendChild(staleWarning);
+		}
+
+		// Show "Awaiting Split" badge when Phase 1 is complete but Phase 2
+		// groups have not yet been announced.  This is distinct from a data
+		// error — the data is valid; the league administrator simply has not
+		// published the split group assignments yet.
+		if (currentData && currentData.awaitingSplit) {
+			const awaitingBadge = document.createElement("span");
+			awaitingBadge.className = "awaiting-split-badge xsmall";
+			awaitingBadge.style.marginLeft = "8px";
+			awaitingBadge.style.fontWeight = "bold";
+			awaitingBadge.style.padding = "2px 8px";
+			awaitingBadge.style.borderRadius = "3px";
+			awaitingBadge.style.color = "#64B5F6";
+			awaitingBadge.style.border = "1px solid #64B5F6";
+			awaitingBadge.setAttribute("aria-label", "Awaiting Phase 2 Split");
+			awaitingBadge.title = "Phase 1 complete — awaiting the league split announcement for Phase 2 groups.";
+			awaitingBadge.appendChild(this.createIcon("fas fa-hourglass-half"));
+			awaitingBadge.appendChild(document.createTextNode(" AWAITING SPLIT"));
+			metaInfo.appendChild(awaitingBadge);
 		}
 
 		// Add manual refresh button

@@ -221,6 +221,24 @@ const EUROPEAN_LEAGUES = {
 		tier: 1,
 		enabled: false
 	},
+	CYPRUS_FIRST_DIVISION: {
+		name: "Cypriot First Division",
+		country: "Cyprus",
+		countryCode: "CY",
+		countryFolder: "Cyprus",
+		url: "https://www.bbc.co.uk/sport/football/cypriot-first-division/table",
+		tier: 1,
+		enabled: false
+	},
+	ISRAEL_PREMIER_LEAGUE: {
+		name: "Israeli Premier League",
+		country: "Israel",
+		countryCode: "IL",
+		countryFolder: "Israel",
+		url: "https://www.bbc.co.uk/sport/football/israeli-premier-league/table",
+		tier: 1,
+		enabled: false
+	},
 
 	// UK Leagues (already present but included for completeness)
 	SCOTLAND_PREMIERSHIP: {
@@ -285,7 +303,7 @@ const LEAGUE_REGIONS = {
 		"CROATIA_HNL",
 		"SERBIA_SUPER_LIGA"
 	],
-	Mediterranean: ["GREECE_SUPER_LEAGUE", "TURKEY_SUPER_LIG"],
+	Mediterranean: ["GREECE_SUPER_LEAGUE", "TURKEY_SUPER_LIG", "CYPRUS_FIRST_DIVISION", "ISRAEL_PREMIER_LEAGUE"],
 	"United Kingdom": [
 		"SCOTLAND_PREMIERSHIP",
 		"SCOTLAND_CHAMPIONSHIP",

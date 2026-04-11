@@ -73,26 +73,56 @@
     font-style: italic;
 }
 
-.refresh-btn {
-    color: #fff;
-    transition: color 0.3s ease, transform 0.3s ease;
-    font-size: 16px; /* Increased size for visibility */
-    padding: 0 4px;
+/* Shared base styling for all three header action buttons.
+   Explicit colour and background ensure they are always visible
+   regardless of the parent element's inherited colour. */
+.refresh-btn,
+.clear-cache-btn,
+.pin-btn {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 14px;
+    padding: 3px 5px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    transition: color 0.25s ease, background 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+    cursor: pointer;
 }
 
+/* Hover state: brighten all three buttons identically */
+.refresh-btn:hover,
+.clear-cache-btn:hover,
+.pin-btn:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Rotate the refresh icon anti-clockwise on hover to hint at its purpose */
 .refresh-btn:hover {
-    color: #fff !important;
-    transform: rotate(30deg);
+    transform: rotate(-30deg);
 }
 
+/* Spin animation plays while a fetch is in progress */
 .refresh-btn.fa-spin,
 .clear-cache-btn.fa-spin {
     color: #fff !important;
 }
 
+/* Pin button: bright red background when the display is pinned (paused) */
 .pin-btn.active {
-  color: #ff3333 !important; /* red when pinned */
- 
+    color: #ff6b6b !important;
+    background: rgba(255, 59, 59, 0.25) !important;
+    border-color: rgba(255, 100, 100, 0.5) !important;
+}
+
+/* Animate the thumbtack rotation when toggling pin state */
+.pin-btn {
+    transform-origin: center;
+    transition: color 0.25s ease, background 0.25s ease, transform 0.2s ease, border-color 0.25s ease;
+}
+.pin-btn.active {
+    transform: rotate(-45deg); /* Tilted thumbtack = pinned */
 }
 
 /* League tabs wrapper for horizontal scroll indicators */
@@ -104,43 +134,69 @@
     margin-bottom: 5px;
 }
 
-/* League buttons container */
+/* League buttons container.
+   When more leagues are configured than fit on screen the container
+   scrolls horizontally.  A thin styled scrollbar is always shown so
+   the user knows more content is available without needing to hover. */
 .league-buttons-container {
     display: flex;
     gap: 5px;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 5px 0;
-    scrollbar-width: none; /* Hide standard scrollbar in Firefox */
-    -ms-overflow-style: none; /* Hide standard scrollbar in IE/Edge */
+    padding: 5px 0 7px 0; /* extra bottom padding gives the scrollbar room */
+    scrollbar-width: thin; /* Firefox: show a thin scrollbar */
+    scrollbar-color: rgba(255, 255, 255, 0.35) rgba(255, 255, 255, 0.07);
     -webkit-overflow-scrolling: touch;
     width: 100%;
     scroll-behavior: smooth;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
+/* Thin horizontal scrollbar for Chrome, Safari, and Opera */
 .league-buttons-container::-webkit-scrollbar {
-    display: none;
+    height: 3px;
+    display: block;
 }
 
-/* Scroll indicator buttons */
+.league-buttons-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 2px;
+}
+
+.league-buttons-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 2px;
+    transition: background 0.2s ease;
+}
+
+.league-buttons-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.65);
+}
+
+/* Scroll indicator arrow buttons (previous / next).
+   Positioned absolutely inside the .league-tabs-wrapper (which is
+   position: relative).  They start hidden and fade in only when
+   the container actually has hidden content in that direction.
+   Positioned at the inner edges (not negative offsets) so they
+   remain visible even when the module is flush with the screen edge. */
 .tab-scroll-btn {
-    background: rgba(0, 0, 0, 0.5);
-    border: none;
+    background: rgba(30, 30, 30, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     color: #fff;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 9px;
     z-index: 10;
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease, background 0.2s ease, transform 0.15s ease;
     opacity: 0;
     visibility: hidden;
     position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .tab-scroll-btn.visible {
@@ -149,16 +205,18 @@
 }
 
 .tab-scroll-btn:hover {
-    background: rgba(0, 0, 0, 0.8);
-    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-50%) scale(1.15);
 }
 
+/* Keep arrows inside the wrapper boundary (not at negative offsets) */
 .tab-scroll-btn.prev {
-    left: -12px;
+    left: 2px;
 }
 
 .tab-scroll-btn.next {
-    right: -12px;
+    right: 2px;
 }
 
 /* League button styling */
