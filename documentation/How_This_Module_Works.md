@@ -47,7 +47,8 @@ The module uses a **Provider Factory** pattern to select the most appropriate pa
 ## 3. League Split System
 To handle the complexity of European leagues that split into Championship and Relegation groups mid-season, the module implements a robust **Split Configuration** system:
 
-*   **League Profiles**: The `LEAGUE_SPLITS` constant in `MMM-MyTeams-LeagueTable.js` defines the mechanics for leagues like the Romanian Liga I, Scottish Premiership, Austrian Bundesliga, and Belgian Pro League. This includes regular season game counts, group sizes, and point carryover rules.
+*   **Split Configuration**: The `LEAGUE_SPLITS` constant in `MMM-MyTeams-LeagueTable.js` defines the mechanics for leagues like the Romanian Liga I, Scottish Premiership, Austrian Bundesliga, Belgian Pro League, Greece Super League, Cyprus First Division, and Israel Premier League. This includes regular season game counts, group sizes, and point carryover rules.
+*   **Awaiting Split Resilience**: A specialized state detection system handles the "limbo" period when the first phase of a split-season league has finished but the split groups haven't been officially announced. The module prevents 404 errors by detecting the completed game count and displaying a **⏳ AWAITING SPLIT** badge in the header.
 *   **Multi-Group Rendering**: When a split is detected, the module creates a `splitGroups` data structure that allows the frontend to render multiple tables simultaneously.
 *   **Labeled Separators**: The UI inserts centered, uppercase separator rows between groups to clearly label the "Championship Group", "Relegation Group", etc.
 *   **Group-Aware Coloring**: Promotion and relegation zone coloring is applied independently within each group (e.g., the top 2 teams in the Championship group get promotion colors, while the bottom 2 teams in the Relegation group get relegation colors).
@@ -65,6 +66,8 @@ To ensure speed and reliability, the module implements a multi-tier caching stra
 The frontend is responsible for the visual presentation and user interaction.
 
 *   **DOM Batching**: It uses `DocumentFragment` to update the screen in one go, preventing flickering and reducing CPU usage.
+*   **Horizontal Navigation**: A thin, styled scrollbar and directional arrow indicators enable effortless navigation when more leagues are selected than can fit in the header.
+*   **Enhanced Header Interaction**: Redesigned, high-contrast buttons for Refresh, Clear Cache, and Pin, with active state and thumbtack tilt animations.
 *   **Responsive UI**: The layout adapts to your mirror's size using CSS `clamp()` for fluid typography and flexible containers.
 *   **Interactivity**: The module supports touch and mouse interaction for switching leagues, viewing fixtures, and manual refreshing.
 *   **Auto-Cycling**: If configured, the module automatically rotates through your selected leagues at a set interval.

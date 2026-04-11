@@ -2,6 +2,11 @@
 
 This module supports fetching league data from **Soccerway**, expanding its coverage to include leagues not found on BBC Sport (e.g., Romania's Liga 1 "SuperLiga").
 
+**Caution:** Check that each URL remain valid prior to each new season starting.
+
+🏆 - Denotes that the League splits mid season.
+
+
 ## How to Find Soccerway URLs
 
 Soccerway URLs are more complex than BBC's because they contain internal IDs. Follow these steps to find a league URL for your config:
@@ -24,16 +29,18 @@ Soccerway URLs are more complex than BBC's because they contain internal IDs. Fo
 
 | Country | League Name | Wikipedia Website | showLeague |
 |---------|-------------|------------|------------|
-| Austria | Austrian Bundesliga | https://int.soccerway.com/national/austria/bundesliga/20242025/regular-season/ | AUSTRIA_BUNDESLIGA |
-| Belgium | Belgian Pro League | https://int.soccerway.com/national/belgium/pro-league/20242025/regular-season/ | BELGIUM_PRO_LEAGUE |
+| Austria | Austrian Bundesliga 🏆 | https://int.soccerway.com/national/austria/bundesliga/20242025/regular-season/ | AUSTRIA_BUNDESLIGA |
+| Belgium | Belgian Pro League 🏆 | https://int.soccerway.com/national/belgium/pro-league/20242025/regular-season/ | BELGIUM_PRO_LEAGUE |
 | Croatia | Croatian HNL | https://int.soccerway.com/national/croatia/1-hnl/20242025/regular-season/ | CROATIA_HNL |
+| Cyprus | Cypriot First Division 🏆 | https://int.soccerway.com/national/cyprus/first-division/ | CYPRUS_FIRST_DIVISION |
 | Czech Republic | Czech Liga | https://int.soccerway.com/national/czech-republic/czech-liga/20242025/regular-season/ | CZECH_LIGA |
-| Denmark | Superligaen | https://int.soccerway.com/national/denmark/superliga/20242025/regular-season/ | DENMARK_SUPERLIGAEN |
+| Denmark | Superligaen 🏆 | https://int.soccerway.com/national/denmark/superliga/20242025/regular-season/ | DENMARK_SUPERLIGAEN |
 | England | Premier League | https://int.soccerway.com/national/england/premier-league/20242025/regular-season/ | ENGLAND_PREMIER_LEAGUE |
 | France | Ligue 1 | https://int.soccerway.com/national/france/ligue-1/20242025/regular-season/ | FRANCE_LIGUE1 |
 | Germany | Bundesliga | https://int.soccerway.com/national/germany/bundesliga/20242025/regular-season/ | GERMANY_BUNDESLIGA |
-| Greece | Greek Super League | https://int.soccerway.com/national/greece/super-league/20242025/regular-season/ | GREECE_SUPER_LEAGUE |
+| Greece | Greek Super League 🏆 | https://int.soccerway.com/national/greece/super-league/20242025/regular-season/ | GREECE_SUPER_LEAGUE |
 | Hungary | Hungarian NB I | https://int.soccerway.com/national/hungary/nb-i/20242025/regular-season/ | HUNGARY_NBI |
+| Israel | Israeli Premier League 🏆 | https://int.soccerway.com/national/israel/premier-league/ | ISRAEL_PREMIER_LEAGUE |
 | Italy | Serie A | https://int.soccerway.com/national/italy/serie-a/20242025/regular-season/ | ITALY_SERIE_A |
 | Netherlands | Eredivisie | https://int.soccerway.com/national/netherlands/eredivisie/20242025/regular-season/ | NETHERLANDS_EREDIVISIE |
 | Northern Ireland | Irish Premiership | https://int.soccerway.com/national/northern-ireland/ifa-premiership/20252026/regular-season/ | NI_PREMIERSHIP |
@@ -41,16 +48,16 @@ Soccerway URLs are more complex than BBC's because they contain internal IDs. Fo
 | Poland | Ekstraklasa | https://int.soccerway.com/national/poland/ekstraklasa/20242025/regular-season/ | POLAND_EKSTRAKLASA |
 | Portugal | Primeira Liga | https://int.soccerway.com/national/portugal/portuguese-liga-/20242025/regular-season/ | PORTUGAL_PRIMEIRA_LIGA |
 | Republic of Ireland | Irish Premier Division | https://int.soccerway.com/national/republic-of-ireland/premier-division/2026/regular-season/ | IE_PREMIER_DIVISION |
-| Romania | Liga I | https://int.soccerway.com/national/romania/liga-i/20242025/regular-season/ | ROMANIA_LIGA_I |
+| Romania | Liga I 🏆 | https://int.soccerway.com/national/romania/liga-i/20242025/regular-season/ | ROMANIA_LIGA_I |
 | Russia | Russian Premier League | https://int.soccerway.com/national/russia/premier-league/20242025/regular-season/ | showRPL |
-| Scotland | Scottish Premiership | https://int.soccerway.com/national/scotland/premier-league/20242025/regular-season/ | SCOTLAND_PREMIERSHIP |
-| Serbia | Serbian Super Liga | https://int.soccerway.com/national/serbia/super-liga/20242025/regular-season/ | SERBIA_SUPER_LIGA |
+| Scotland | Scottish Premiership 🏆 | https://int.soccerway.com/national/scotland/premier-league/20242025/regular-season/ | SCOTLAND_PREMIERSHIP |
+| Serbia | Serbian Super Liga 🏆 | https://int.soccerway.com/national/serbia/super-liga/20242025/regular-season/ | SERBIA_SUPER_LIGA |
 | Spain | La Liga | https://int.soccerway.com/national/spain/primera-division/20242025/regular-season/ | SPAIN_LA_LIGA |
 | Sweden | Allsvenskan | https://int.soccerway.com/national/sweden/allsvenskan/2026/regular-season/ | SWEDEN_ALLSVENSKAN |
-| Switzerland | Swiss Super League | https://int.soccerway.com/national/switzerland/super-league/20242025/regular-season/ | SWITZERLAND_SUPER_LEAGUE |
+| Switzerland | Swiss Super League 🏆 | https://int.soccerway.com/national/switzerland/super-league/20242025/regular-season/ | SWITZERLAND_SUPER_LEAGUE |
 | Turkey | Turkish Super Lig | https://int.soccerway.com/national/turkey/super-lig/20242025/regular-season/ | TURKEY_SUPER_LIG |
 | Ukraine | Ukrainian Premier League | https://int.soccerway.com/national/ukraine/premier-league/20242025/regular-season/ | UKRAINE_PREMIER_LEAGUE |
-| Wales | Cymru Premier | https://int.soccerway.com/national/wales/premier-league/20252026/regular-season/ | WALES_PREMIER |
+| Wales | Cymru Premier 🏆 | https://int.soccerway.com/national/wales/premier-league/20252026/regular-season/ | WALES_PREMIER |
 
 ## European Domestic Leagues - Tier 2
 

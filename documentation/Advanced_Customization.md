@@ -67,6 +67,7 @@ If you are running on a low-power Raspberry Pi Zero:
 - Set `showTeamLogos: false`.
 - Increase `updateInterval` to `3600000` (1 hour).
 - Reduce `maxTeams` to `10`.
+- Reduce the number of leauges to be displayed to improve performance.
 
 ## Content Security Policy (CSP) Compatibility
 

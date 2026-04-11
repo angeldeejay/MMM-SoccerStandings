@@ -2,6 +2,10 @@
 
 This document provides a comprehensive list of football league tables available on the BBC Sport website. These URLs are the default source for the MMM-MyTeams-LeagueTable module.
 
+**Caution:** Check that each URL remain valid prior to each new season starting.
+
+🏆 - Denotes that the League splits mid season
+
 ## European Competitions
 
 | Country | League Name | BBC Website | showLeague |
@@ -19,13 +23,15 @@ This document provides a comprehensive list of football league tables available 
 | Austria | Austrian Bundesliga 🏆 | https://www.bbc.co.uk/sport/football/austrian-bundesliga/table | AUSTRIA_BUNDESLIGA |
 | Belgium | Belgian Pro League 🏆 | https://www.bbc.com/sport/football/belgian-pro-league/table | showBelgianProLeague |
 | Croatia | Croatian HNL | https://www.bbc.co.uk/sport/football/croatian-first-league/table | CROATIA_HNL |
+| Cyprus | Cypriot First Division 🏆 | https://www.bbc.co.uk/sport/football/cypriot-first-division/table | CYPRUS_FIRST_DIVISION |
 | Czech Republic | Czech Liga | https://www.bbc.co.uk/sport/football/czech-liga/table | CZECH_LIGA |
 | Denmark | Danish Superliga 🏆 | https://www.bbc.com/sport/football/danish-superliga/table | showSuperliga |
 | England | Premier League | https://www.bbc.com/sport/football/premier-league/table | showEPL |
 | France | Ligue 1 | https://www.bbc.com/sport/football/french-ligue-one/table | showLigue1 |
 | Germany | Bundesliga | https://www.bbc.com/sport/football/german-bundesliga/table | showBundesliga |
-| Greece | Greek Super League | https://www.bbc.com/sport/football/greek-super-league/table | showGreekSuperLeague |
+| Greece | Greek Super League 🏆 | https://www.bbc.com/sport/football/greek-super-league/table | GREECE_SUPER_LEAGUE |
 | Hungary | Hungarian NB I | https://www.bbc.co.uk/sport/football/hungarian-nb-i/table | HUNGARY_NBI |
+| Israel | Israeli Premier League 🏆 | https://www.bbc.co.uk/sport/football/israeli-premier-league/table | ISRAEL_PREMIER_LEAGUE |
 | Italy | Serie A | https://www.bbc.com/sport/football/italian-serie-a/table | showSerieA |
 | Netherlands | Eredivisie | https://www.bbc.com/sport/football/dutch-eredivisie/table | showEredivisie |
 | Northern Ireland | Irish Premiership | https://www.bbc.com/sport/football/irish-premiership/table | NI_PREMIERSHIP |

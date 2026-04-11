@@ -98,6 +98,16 @@ The **MMM-MyTeams-LeagueTable** module is highly configurable. This guide covers
 
 ---
 
+### UI Enhancements & Navigation
+
+The module's header has been enhanced for better usability on both large displays and smaller MagicMirror regions:
+
+- **Horizontal League Switcher**: When more leagues are enabled than can fit in the header, a thin, styled horizontal scrollbar is automatically displayed. This allows you to navigate through all your selected leagues without cluttering the screen.
+- **Improved Header Controls**: The **Refresh**, **Clear Cache**, and **Pin** (pause auto-cycle) buttons have been redesigned for high visibility and consistent styling across all themes.
+- **Pin Animation**: When the **Pin** button is active (pausing auto-cycling), the thumbtack icon tilts and changes color to clearly indicate the module's state.
+
+---
+
 ### Advanced Customization Options
 
 | Option                   | Default    | Description                                                                                                            |
@@ -115,7 +125,7 @@ Use these codes in your `selectedLeagues` array:
 
 - **UK & Ireland**: `SCOTLAND_PREMIERSHIP`, `SCOTLAND_CHAMPIONSHIP`, `ENGLAND_PREMIER_LEAGUE`, `ENGLAND_CHAMPIONSHIP`, `NI_PREMIERSHIP`, `IE_PREMIER_DIVISION`, `WALES_PREMIER`
 - **Major Europe**: `GERMANY_BUNDESLIGA`, `SPAIN_LA_LIGA`, `ITALY_SERIE_A`, `FRANCE_LIGUE1`, `NETHERLANDS_EREDIVISIE`
-- **Other Europe**: `PORTUGAL_PRIMEIRA_LIGA`, `BELGIUM_PRO_LEAGUE`, `TURKEY_SUPER_LIG`, `GREECE_SUPER_LEAGUE`, `AUSTRIA_BUNDESLIGA`, `CZECH_LIGA`, `DENMARK_SUPERLIGAEN`, `NORWAY_ELITESERIEN`, `SWEDEN_ALLSVENSKAN`, `SWITZERLAND_SUPER_LEAGUE`, `UKRAINE_PREMIER_LEAGUE`, `ROMANIA_LIGA_I`, `CROATIA_HNL`, `SERBIA_SUPER_LIGA`, `HUNGARY_NBI`, `POLAND_EKSTRAKLASA`
+- **Other Europe**: `PORTUGAL_PRIMEIRA_LIGA`, `BELGIUM_PRO_LEAGUE`, `TURKEY_SUPER_LIG`, `GREECE_SUPER_LEAGUE`, `AUSTRIA_BUNDESLIGA`, `CZECH_LIGA`, `DENMARK_SUPERLIGAEN`, `NORWAY_ELITESERIEN`, `SWEDEN_ALLSVENSKAN`, `SWITZERLAND_SUPER_LEAGUE`, `UKRAINE_PREMIER_LEAGUE`, `ROMANIA_LIGA_I`, `CROATIA_HNL`, `SERBIA_SUPER_LIGA`, `HUNGARY_NBI`, `POLAND_EKSTRAKLASA`, `CYPRUS_FIRST_DIVISION`, `ISRAEL_PREMIER_LEAGUE`
 - **Tier 2 Coverage**: Supported for ALL above countries (e.g., `NETHERLANDS_EERSTE_DIVISIE`, `SPAIN_LA_LIGA_2`, etc.). See provider-specific documentation for full lists.
 - **International/UEFA**: `UEFA_CHAMPIONS_LEAGUE`, `UEFA_EUROPA_LEAGUE`, `UEFA_EUROPA_CONFERENCE_LEAGUE`, `WORLD_CUP_2026`
 
@@ -139,9 +149,12 @@ The module supports multiple data providers to ensure maximum league coverage.
 If a league is not internally mapped, or you want to use a specific source, you can use the `customUrls` option:
 
 ```javascript
-config: {
+{
+    module: "MMM-MyTeams-LeagueTable",
+    position: "top_right",
+    config: {
+    provider: "auto", 
     selectedLeagues: ["ROMANIA_LIGA_I"],
-    provider: "auto", // Detects Wikipedia from the URL
     customUrls: {
         "ROMANIA_LIGA_I": "https://en.wikipedia.org/wiki/2024–25_Liga_I"
     }
@@ -156,6 +169,7 @@ The simplest setup to get started.
     module: "MMM-MyTeams-LeagueTable",
     position: "top_right",
     config: {
+        provider: "auto", 
         selectedLeagues: ["SCOTLAND_PREMIERSHIP"]
     }
 }
@@ -169,6 +183,7 @@ Rotates between the top 5 European leagues every 20 seconds.
     module: "MMM-MyTeams-LeagueTable",
     position: "top_right",
     config: {
+        provider: "auto", 
         selectedLeagues: [
             "ENGLAND_PREMIER_LEAGUE", 
             "SPAIN_LA_LIGA", 
@@ -190,6 +205,7 @@ Focuses on the European knockout stages with specific tab visibility.
     module: "MMM-MyTeams-LeagueTable",
     position: "top_right",
     config: {
+        provider: "auto", 
         selectedLeagues: ["UEFA_CHAMPIONS_LEAGUE", "UEFA_EUROPA_LEAGUE"],
         showUEFAleagues: true,
         showUEFAnockouts: ["Rd16", "QF", "SF", "Final"],
@@ -206,6 +222,7 @@ Optimized view for the upcoming World Cup.
     module: "MMM-MyTeams-LeagueTable",
     position: "top_right",
     config: {
+        provider: "auto", 
         selectedLeagues: ["WORLD_CUP_2026"],
         onlyShowWorldCup2026: true,
         showWC2026Groups: ["A", "B", "C"], // Focus only on specific groups
@@ -218,7 +235,7 @@ Optimized view for the upcoming World Cup.
 
 The module includes specialized logic for European leagues that split into Championship and Relegation groups mid-season. These leagues are fully automated and require no additional user configuration:
 
-- **Supported Leagues**: Romania Liga I, Scottish Premiership, Austrian Bundesliga, Belgian Pro League, Swiss Super League, Danish Superliga, Serbian Super Liga, and Cymru Premier.
+- **Supported Leagues**: Romania Liga I, Scottish Premiership, Austrian Bundesliga, Belgian Pro League, Swiss Super League, Danish Superliga, Serbian Super Liga, Greece Super League, Cyprus First Division, Israel Premier League, and Cymru Premier.
 - **Simultaneous Display**: Once a league has split, the module will automatically render all groups together (e.g., Top 6 and Bottom 6) with labeled separators.
 - **Smart Fallback**: Because split-league pages often return incomplete data or 404s on some providers, the module automatically escalates from BBC Sport to Wikipedia to ensure all group standings are visible.
 - **Customization**: Group-aware zone coloring is applied, highlighting promotion spots in the top group and relegation spots in the bottom group.
@@ -228,10 +245,10 @@ Enables all leagues, auto-cycling, high contrast, and manual overrides.
 
 ```javascript
 {
- module: "MMM-MyTeams-LeagueTable",
-   position: "top_left",
-   header: "League Standings", // Set to null  or  "League Standings",
-   config: {
+    module: "MMM-MyTeams-LeagueTable",
+    position: "top_right",
+    config: {
+    provider: "auto", 
     updateInterval: 30 * 60 * 1000, // How often to refresh (ms) – default: 30 min
     retryDelay: 15000, // Delay between retry attempts after an error (ms)
     maxRetries: 3, // Stop retrying after this many failures

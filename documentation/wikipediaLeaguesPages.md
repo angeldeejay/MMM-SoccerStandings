@@ -2,6 +2,11 @@
 
 The module uses Wikipedia as its primary fallback for leagues not covered by BBC Sport. Wikipedia is preferred because it uses standard `wikitable` HTML that is highly reliable for scraping without JavaScript.
 
+**Caution:** Check that each URL remain valid prior to each new season starting.
+
+🏆 - Denotes that the League splits mid season.
+
+
 ## How to Find Wikipedia URLs
 
 Wikipedia season pages follow a standard naming convention. Follow these steps to find a league URL for your config:
@@ -26,13 +31,15 @@ Wikipedia season pages follow a standard naming convention. Follow these steps t
 | Austria | Austrian Bundesliga 🏆 | https://en.wikipedia.org/wiki/2024–25_Austrian_Football_Bundesliga | AUSTRIA_BUNDESLIGA |
 | Belgium | Belgian Pro League 🏆 | https://en.wikipedia.org/wiki/2024–25_Belgian_Pro_League | BELGIUM_PRO_LEAGUE |
 | Croatia | Croatian HNL | https://en.wikipedia.org/wiki/2024–25_Croatian_Football_League | CROATIA_HNL |
+| Cyprus | Cypriot First Division 🏆 | https://en.wikipedia.org/wiki/2025–26_Cypriot_First_Division | CYPRUS_FIRST_DIVISION |
 | Czech Republic | Czech Liga | https://en.wikipedia.org/wiki/2024–25_Czech_First_League | CZECH_LIGA |
 | Denmark | Superligaen 🏆 | https://en.wikipedia.org/wiki/2024–25_Danish_Superliga | DENMARK_SUPERLIGAEN |
 | England | Premier League | https://en.wikipedia.org/wiki/2024–25_Premier_League | ENGLAND_PREMIER_LEAGUE |
 | France | Ligue 1 | https://en.wikipedia.org/wiki/2024–25_Ligue_1 | FRANCE_LIGUE1 |
 | Germany | Bundesliga | https://en.wikipedia.org/wiki/2024–25_Bundesliga | GERMANY_BUNDESLIGA |
-| Greece | Super League Greece | https://en.wikipedia.org/wiki/2024–25_Super_League_Greece | GREECE_SUPER_LEAGUE |
+| Greece | Super League Greece 🏆 | https://en.wikipedia.org/wiki/2025–26_Super_League_Greece | GREECE_SUPER_LEAGUE |
 | Hungary | Hungarian NB I | https://en.wikipedia.org/wiki/2024–25_Nemzeti_Bajnokság_I | HUNGARY_NBI |
+| Israel | Israeli Premier League 🏆 | https://en.wikipedia.org/wiki/2025–26_Israeli_Premier_League | ISRAEL_PREMIER_LEAGUE |
 | Italy | Serie A | https://en.wikipedia.org/wiki/2024–25_Serie_A | ITALY_SERIE_A |
 | Netherlands | Eredivisie | https://en.wikipedia.org/wiki/2024–25_Eredivisie | NETHERLANDS_EREDIVISIE |
 | Northern Ireland | Irish Premiership | https://en.wikipedia.org/wiki/2025–26_NIFL_Premiership | NI_PREMIERSHIP |

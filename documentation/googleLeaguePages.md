@@ -2,6 +2,10 @@
 
 This document provides a comprehensive list of Google Search URLs to fetch football league tables. These URLs can be used as a fallback or alternative source for the MMM-MyTeams-LeagueTable module.
 
+**Caution:** Check that each URL remain valid prior to each new season starting.
+
+🏆 - Denotes that the League splits mid season.
+
 ## European Competitions
 
 | Country | League Name | Google Search URL | showLeague |
@@ -18,13 +22,15 @@ This document provides a comprehensive list of Google Search URLs to fetch footb
 | Austria | Austrian Bundesliga | https://www.google.com/search?q=Austrian+Bundesliga+table | AUSTRIA_BUNDESLIGA |
 | Belgium | Belgian Pro League | https://www.google.com/search?q=Belgian+Pro+League+table | showBelgianProLeague |
 | Croatia | Croatian HNL | https://www.google.com/search?q=Croatian+HNL+table | CROATIA_HNL |
+| Cyprus | Cypriot First Division | https://www.google.com/search?q=Cypriot+First+Division+table | CYPRUS_FIRST_DIVISION |
 | Czech Republic | Czech Liga | https://www.google.com/search?q=Czech+Liga+table | CZECH_LIGA |
 | Denmark | Danish Superliga | https://www.google.com/search?q=Danish+Superliga+table | showSuperliga |
 | England | Premier League | https://www.google.com/search?q=Premier+League+table | showEPL |
 | France | Ligue 1 | https://www.google.com/search?q=Ligue+1+table | showLigue1 |
 | Germany | Bundesliga | https://www.google.com/search?q=Bundesliga+table | showBundesliga |
-| Greece | Greek Super League | https://www.google.com/search?q=Greek+Super+League+table | showGreekSuperLeague |
+| Greece | Greek Super League | https://www.google.com/search?q=Greek+Super+League+table | GREECE_SUPER_LEAGUE |
 | Hungary | Hungarian NB I | https://www.google.com/search?q=Hungarian+NB+I+table | HUNGARY_NBI |
+| Israel | Israeli Premier League | https://www.google.com/search?q=Israeli+Premier+League+table | ISRAEL_PREMIER_LEAGUE |
 | Italy | Serie A | https://www.google.com/search?q=Serie+A+table | showSerieA |
 | Netherlands | Eredivisie | https://www.google.com/search?q=Eredivisie+table | showEredivisie |
 | Northern Ireland | Irish Premiership | https://www.google.com/search?q=Irish+Premiership+table | NI_PREMIERSHIP |

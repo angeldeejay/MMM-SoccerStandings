@@ -24,7 +24,7 @@ Soccerway uses a unique ID for each season (`r#####`).
 
 ## 2. League Split Verification
 
-Leagues with mid-season splits (Romania, Scotland, Austria, etc.) may change their format or naming conventions on Wikipedia each season.
+Leagues with mid-season splits (Romania, Scotland, Greece, Cyprus, Israel, Austria, etc.) may change their format or naming conventions on Wikipedia each season.
 *   **Action**: Verify the `LEAGUE_SPLITS` constant in `MMM-MyTeams-LeagueTable.js`.
 *   **Check Keywords**: Ensure the `keywords` in each group (and `championshipKeywords` / `relegationKeywords`) match the actual `<h2>` to `<h4>` headings used in the new season's Wikipedia article (e.g., "Championship round" vs. "Play-off Round").
 *   **Check Sizes**: Verify if the number of teams in each group has changed (e.g., Belgium sometimes changes group sizes).
@@ -44,7 +44,24 @@ New teams are promoted to top-tier leagues every season.
 *   **Update Mappings**: Add new team name to image path mappings in `team-logo-mappings.js`.
 *   **Add Images**: Ensure the corresponding `.png` crest image is added to the `images/crests/` subfolder.
 
-## 4. Security & Performance Review
+## 4. Automated Maintenance Tools
+
+The module includes specialized Python scripts in the `tools/` directory to automate common maintenance tasks and reduce the risk of manual configuration errors.
+
+### A. League Split Registry Update (`fix_splits.py`)
+When adding new split-season leagues (like Greece, Cyprus, or Israel), use this script to automatically update the `LEAGUE_SPLITS` constant and provider URL maps in `MMM-MyTeams-LeagueTable.js`.
+*   **Usage**: `python tools/fix_splits.py`
+*   **Features**:
+    - Automatically adds new league configurations to the registry.
+    - Updates BBC and Wikipedia URL maps with the correct paths.
+    - Ensures all league IDs are synchronized across the codebase.
+    - Fully annotated in English for easy customization.
+
+### B. Documentation Sync (`fix_docs.py`)
+Use this script to synchronize documentation changes across multiple markdown files after significant module updates.
+*   **Usage**: `python tools/fix_docs.py`
+
+## 5. Security & Performance Review
 
 *   **Linting**: Run `npm run lint` regularly to ensure code quality.
 *   **Dependencies**: Run `npm audit` to check for security vulnerabilities in the underlying `node-fetch` or other packages.

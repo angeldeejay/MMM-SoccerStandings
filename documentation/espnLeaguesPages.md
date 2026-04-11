@@ -2,6 +2,10 @@
 
 The module supports fetching league data from **ESPN**, providing a clean and reliable alternative for major and mid-tier global leagues.
 
+**Caution:** Check that each URL remain valid prior to each new season starting.
+
+🏆 - Denotes that the League splits mid season.
+
 ## How to Find ESPN URLs
 
 ESPN standings pages use a simple URL structure. Follow these steps to find a league URL for your config:
@@ -19,7 +23,7 @@ ESPN standings pages use a simple URL structure. Follow these steps to find a le
 | Europe | UEFA Champions League | https://www.espn.com/soccer/standings/_/league/uefa.champions | UEFA_CHAMPIONS_LEAGUE |
 | Europe | UEFA Europa League | https://www.espn.com/soccer/standings/_/league/uefa.europa | UEFA_EUROPA_LEAGUE |
 | Europe | UEFA Europa Conference League | https://www.espn.com/soccer/standings/_/league/uefa.europa.conf | UEFA_EUROPA_CONFERENCE_LEAGUE |
-| Scotland | Scottish Premiership | https://www.espn.com/soccer/standings/_/league/sco.1 | SCOTLAND_PREMIERSHIP |
+| Scotland | Scottish Premiership 🏆 | https://www.espn.com/soccer/standings/_/league/sco.1 | SCOTLAND_PREMIERSHIP |
 | Scotland | Scottish Championship | https://www.espn.com/soccer/standings/_/league/sco.2 | SCOTLAND_CHAMPIONSHIP |
 | England | Premier League | https://www.espn.com/soccer/standings/_/league/eng.1 | ENGLAND_PREMIER_LEAGUE |
 | England | Championship | https://www.espn.com/soccer/standings/_/league/eng.2 | ENGLAND_CHAMPIONSHIP |
@@ -28,20 +32,22 @@ ESPN standings pages use a simple URL structure. Follow these steps to find a le
 | Spain | La Liga | https://www.espn.com/soccer/standings/_/league/esp.1 | SPAIN_LA_LIGA |
 | Italy | Serie A | https://www.espn.com/soccer/standings/_/league/ita.1 | ITALY_SERIE_A |
 | Netherlands | Eredivisie | https://www.espn.com/soccer/standings/_/league/ned.1 | NETHERLANDS_EREDIVISIE |
-| Belgium | Belgian Pro League | https://www.espn.com/soccer/standings/_/league/bel.1 | BELGIUM_PRO_LEAGUE |
+| Belgium | Belgian Pro League 🏆 | https://www.espn.com/soccer/standings/_/league/bel.1 | BELGIUM_PRO_LEAGUE |
+| Cyprus | Cypriot First Division 🏆 | https://www.espn.com/soccer/standings/_/league/cyp.1 | CYPRUS_FIRST_DIVISION |
 | Portugal | Primeira Liga | https://www.espn.com/soccer/standings/_/league/por.1 | PORTUGAL_PRIMEIRA_LIGA |
 | Turkey | Turkish Super Lig | https://www.espn.com/soccer/standings/_/league/tur.1 | TURKEY_SUPER_LIG |
-| Greece | Greek Super League | https://www.espn.com/soccer/standings/_/league/gre.1 | GREECE_SUPER_LEAGUE |
-| Austria | Austrian Bundesliga | https://www.espn.com/soccer/standings/_/league/aut.1 | AUSTRIA_BUNDESLIGA |
-| Denmark | Superligaen | https://www.espn.com/soccer/standings/_/league/den.1 | DENMARK_SUPERLIGAEN |
+| Greece | Greek Super League 🏆 | https://www.espn.com/soccer/standings/_/league/gre.1 | GREECE_SUPER_LEAGUE |
+| Israel | Israeli Premier League 🏆 | https://www.espn.com/soccer/standings/_/league/isr.1 | ISRAEL_PREMIER_LEAGUE |
+| Austria | Austrian Bundesliga 🏆 | https://www.espn.com/soccer/standings/_/league/aut.1 | AUSTRIA_BUNDESLIGA |
+| Denmark | Superligaen 🏆 | https://www.espn.com/soccer/standings/_/league/den.1 | DENMARK_SUPERLIGAEN |
 | Norway | Eliteserien | https://www.espn.com/soccer/standings/_/league/nor.1 | NORWAY_ELITESERIEN |
 | Sweden | Allsvenskan | https://www.espn.com/soccer/standings/_/league/swe.1 | SWEDEN_ALLSVENSKAN |
-| Switzerland | Swiss Super League | https://www.espn.com/soccer/standings/_/league/sui.1 | SWITZERLAND_SUPER_LEAGUE |
-| Romania | Liga I | https://www.espn.com/soccer/standings/_/league/rou.1 | ROMANIA_LIGA_I |
+| Switzerland | Swiss Super League 🏆 | https://www.espn.com/soccer/standings/_/league/sui.1 | SWITZERLAND_SUPER_LEAGUE |
+| Romania | Liga I 🏆 | https://www.espn.com/soccer/standings/_/league/rou.1 | ROMANIA_LIGA_I |
 | Northern Ireland | Irish Premiership | https://www.espn.com/soccer/standings/_/league/nir.1 | NI_PREMIERSHIP |
 | Republic of Ireland | Irish Premier Division | https://www.espn.com/soccer/standings/_/league/irl.1 | IE_PREMIER_DIVISION |
-| Wales | Cymru Premier | https://www.espn.com/soccer/standings/_/league/wal.1 | WALES_PREMIER |
-A_SUPER_LEAGUE |
+| Wales | Cymru Premier 🏆 | https://www.espn.com/soccer/standings/_/league/wal.1 | WALES_PREMIER |
+| Serbia | Serbian Super Liga 🏆 | https://www.espn.com/soccer/standings/_/league/srb.1 | SERBIA_SUPER_LIGA |
 
 
 ## European Domestic Leagues - Tier 2 
