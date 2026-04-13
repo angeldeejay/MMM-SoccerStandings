@@ -31,6 +31,107 @@ const EUROPEAN_LEAGUES = {
 		tier: 1,
 		enabled: false
 	},
+	BELARUS_VYSSHAYA_LIGA: {
+		name: "Vysshaya Liga",
+		country: "Belarus",
+		countryCode: "BY",
+		countryFolder: "Belarus",
+		url: "https://www.bbc.co.uk/sport/football/belarusian-vysshaya-liga/table",
+		tier: 1,
+		enabled: false
+	},
+
+	FINLAND_VEIKKALIGA: {
+		name: "Veikkausliiga",
+		country: "Finland",
+		countryCode: "FI",
+		countryFolder: "Finland",
+		url: "https://www.bbc.co.uk/sport/football/finnish-veikkausliiga/table",
+		tier: 1,
+		enabled: false
+	},
+	ICELAND_URVALSDEILD: {
+		name: "Urvalsdeild",
+		country: "Iceland",
+		countryCode: "IS",
+		countryFolder: "Iceland",
+		url: "https://www.bbc.co.uk/sport/football/icelandic-urvalsdeild/table",
+		tier: 1,
+		enabled: false
+	},
+	LATVIA_VIRSLIGA: {
+		name: "Virsliga",
+		country: "Latvia",
+		countryCode: "LV",
+		countryFolder: "Latvia",
+		url: "https://www.bbc.co.uk/sport/football/latvian-virsliga/table",
+		tier: 1,
+		enabled: false
+	},
+	LITHUANIA_A_LYGA: {
+		name: "A Lyga",
+		country: "Lithuania",
+		countryCode: "LT",
+		countryFolder: "Lithuania",
+		url: "https://www.bbc.co.uk/sport/football/lithuanian-a-lyga/table",
+		tier: 1,
+		enabled: false
+	},
+	ESTONIA_MEISTRILIIGA: {
+		name: "Meistriliiga",
+		country: "Estonia",
+		countryCode: "EE",
+		countryFolder: "Estonia",
+		url: "https://www.bbc.co.uk/sport/football/estonian-meistriliiga/table",
+		tier: 1,
+		enabled: false
+	},
+	FAROE_ISLANDS_FOOTBALL_LEAGUE: {
+		name: "Faroe Islands Football League",
+		country: "Faroe Islands",
+		countryCode: "FO",
+		countryFolder: "Faroe_Islands",
+		url: "https://www.bbc.co.uk/sport/football/faroe-islands-football-league/table",
+		tier: 1,
+		enabled: false
+	},
+	GEORGIA_EULOGE: {
+		name: "Euloge",
+		country: "Georgia",
+		countryCode: "GE",
+		countryFolder: "Georgia",
+		url: "https://www.bbc.co.uk/sport/football/georgian-euloge/table",
+		tier: 1,
+		enabled: false
+	},
+	IRELAND_PREMIER_DIVISION: {
+		name: "Premier Division",
+		country: "Ireland",
+		countryCode: "IE",
+		countryFolder: "Ireland",
+		url: "https://www.bbc.co.uk/sport/football/irish-premier-division/table",
+		tier: 1,
+		enabled: false
+	},
+	NORTHERN_IRELAND_NATIONAL_LEAGUE: {
+		name: "National League",
+		country: "Northern Ireland",
+		countryCode: "GB-NIR",
+		countryFolder: "Northern_Ireland",
+		url: "https://www.bbc.co.uk/sport/football/northern-ireland-national-league/table",
+		tier: 1,
+		enabled: false
+	},
+	BOSNIAN_PREMIER_LEAGUE: {
+		name: "Premier League of Bosnia and Herzegovina",
+		country: "Bosnia and Herzegovina",
+		countryCode: "BA",
+		countryFolder: "Bosnia_and_Herzegovina",
+		url: "https://www.bbc.co.uk/sport/football/bosnian-premier-league/table",
+		tier: 1,
+		enabled: false
+	},
+
 	SWEDEN_ALLSVENSKAN: {
 		name: "Allsvenskan",
 		country: "Sweden",
@@ -66,6 +167,97 @@ const EUROPEAN_LEAGUES = {
 		countryCode: "AT",
 		countryFolder: "Austria",
 		url: "https://www.bbc.co.uk/sport/football/austrian-bundesliga/table",
+		tier: 1,
+		enabled: false
+	},
+	BULGARIA_FIRST_LEAGUE: {
+		name: "First League",
+		country: "Bulgaria",
+		countryCode: "BG",
+		countryFolder: "Bulgaria",
+		url: "https://www.bbc.co.uk/sport/football/bulgarian-first-league/table",
+		tier: 1,
+		enabled: false
+	},
+	KOSOVO_SUPER_LEAGUE: {
+		name: "Super League",
+		country: "Kosovo",
+		countryCode: "XK",
+		countryFolder: "Kosovo",
+		url: "https://www.bbc.co.uk/sport/football/kosovan-super-league/table",
+		tier: 1,
+		enabled: false
+	},
+	SERBIA_SUPER_LIGA: {
+		name: "Serbian Super Liga",
+		country: "Serbia",
+		countryCode: "RS",
+		countryFolder: "Serbia",
+		url: "https://www.bbc.co.uk/sport/football/serbian-super-lig/table",
+		tier: 1,
+		enabled: false
+	},
+	MOLDOVA_SUPER_LIGA: {
+		name: "Super Liga",
+		country: "Moldova",
+		countryCode: "MD",
+		countryFolder: "Moldova",
+		url: "https://www.bbc.co.uk/sport/football/moldovan-super-liga/table",
+		tier: 1,
+		enabled: false
+	},
+	MONTENEGRO_FIRST_LEAGUE: {
+		name: "First League",
+		country: "Montenegro",
+		countryCode: "ME",
+		countryFolder: "Montenegro",
+		url: "https://www.bbc.co.uk/sport/football/montenegrin-first-league/table",
+		tier: 1,
+		enabled: false
+	},
+	NORTH MACEDONIA_FIRST_LEAGUE: {
+		name: "First League",
+		country: "North Macedonia",
+		countryCode: "MK",
+		countryFolder: "North_Macedonia",
+		url: "https://www.bbc.co.uk/sport/football/north-macedonian-first-league/table",
+		tier: 1,
+		enabled: false
+	},
+	SLOVENIA_PRVA_LIGA: {
+		name: "Prva Liga",
+		country: "Slovenia",
+		countryCode: "SI",
+		countryFolder: "Slovenia",
+		url: "https://www.bbc.co.uk/sport/football/slovenian-prva-liga/table",
+		tier: 1,
+		enabled: false
+	},
+    KAZAKHSTAN_PYRKOVKA: {
+		name: "Pyrkovka",
+		country: "Kazakhstan",
+		countryCode: "KZ",
+		countryFolder: "Kazakhstan",
+		url: "https://www.bbc.co.uk/sport/football/kazakhstani-pyrkovka/table",
+		tier: 1,
+		enabled: false
+	},
+	AZERBAIJAN_PYRKOVKA: {
+		name: "Pyrkovka",
+		country: "Azerbaijan",
+		countryCode: "AZ",
+		countryFolder: "Azerbaijan",
+		url: "https://www.bbc.co.uk/sport/football/azerbaijani-pyrkovka/table",
+		tier: 1,
+		enabled: false
+	},
+
+	SLOVAKIA_SUPER_LIGA: {
+		name: "Super Liga",
+		country: "Slovakia",
+		countryCode: "SK",
+		countryFolder: "Slovakia",
+		url: "https://www.bbc.co.uk/sport/football/slovakian-super-liga/table",
 		tier: 1,
 		enabled: false
 	},
@@ -277,7 +469,10 @@ const LEAGUE_REGIONS = {
 	Scandinavia: [
 		"NORWAY_ELITESERIEN",
 		"SWEDEN_ALLSVENSKAN",
-		"DENMARK_SUPERLIGAEN"
+		"DENMARK_SUPERLIGAEN",
+		"FINLAND_VEIKKALIGA",
+		"ICELAND_URVALSDEILD",
+		"LATVIA_VIRSLIGA",
 	],
 	"Central Europe": [
 		"GERMANY_BUNDESLIGA",
@@ -285,23 +480,36 @@ const LEAGUE_REGIONS = {
 		"CZECH_LIGA",
 		"HUNGARY_NBI",
 		"POLAND_EKSTRAKLASA",
-		"SWITZERLAND_SUPER_LEAGUE"
+		"SWITZERLAND_SUPER_LEAGUE",
+		"BULGARIA_FIRST_LEAGUE",
+		"KOSOVO_SUPER_LEAGUE",
+		"SERBIA_SUPER_LIGA",
+		"MOLDOVA_SUPER_LIGA",
+		"MONTENEGRO_FIRST_LEAGUE",
+		"NORTH_MACEDONIA_FIRST_LEAGUE",
 	],
 	"Western Europe": [
 		"FRANCE_LIGUE1",
 		"NETHERLANDS_EREDIVISIE",
-		"BELGIUM_PRO_LEAGUE"
+		"BELGIUM_PRO_LEAGUE",
+
 	],
 	"Southern Europe": [
 		"SPAIN_LA_LIGA",
 		"ITALY_SERIE_A",
-		"PORTUGAL_PRIMEIRA_LIGA"
+		"PORTUGAL_PRIMEIRA_LIGA",
+
 	],
 	"Eastern Europe": [
 		"UKRAINE_PREMIER_LEAGUE",
 		"ROMANIA_LIGA_I",
 		"CROATIA_HNL",
-		"SERBIA_SUPER_LIGA"
+		"SLOVENIA_PRVA_LIGA",
+		"SERBIA_SUPER_LIGA",
+		"SLOVAKIA_SUPER_LIGA",
+		"KAZAKHSTAN_PYRKOVKA",
+		"AZERBAIJAN_PYRKOVKA"
+		
 	],
 	Mediterranean: ["GREECE_SUPER_LEAGUE", "TURKEY_SUPER_LIG", "CYPRUS_FIRST_DIVISION", "ISRAEL_PREMIER_LEAGUE"],
 	"United Kingdom": [
