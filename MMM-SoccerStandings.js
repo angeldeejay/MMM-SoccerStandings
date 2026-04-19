@@ -1659,6 +1659,12 @@ Module.register("MMM-SoccerStandings", {
 				// Update current league
 				self.currentLeague = nextLeague;
 
+				// Reset WC sub-tab to the configured default when auto-cycling enters WC,
+				// matching the same behaviour as the manual league-button click handler.
+				if (nextLeague === "WORLD_CUP_2026") {
+					self.currentSubTab = self.config.defaultWCSubTab || "A";
+				}
+
 				// Reconfigure WC subtab cycling if needed (when entering/leaving WC)
 				self.scheduleWorldCupSubtabCycling();
 
