@@ -1,7 +1,7 @@
 const BaseParser = require("./BaseParser");
 
 /**
- * BBC Parser class for MMM-MyTeams-LeagueTable
+ * BBC Parser class for MMM-SoccerStandings
  * Handles parsing of data from BBC Sport website
  */
 class BBCParser extends BaseParser {
@@ -133,7 +133,7 @@ class BBCParser extends BaseParser {
 			};
 		} catch (error) {
 			console.error(
-				` MMM-MyTeams-LeagueTable: Error parsing ${leagueType} data:`,
+				` MMM-SoccerStandings: Error parsing ${leagueType} data:`,
 				error
 			);
 			return this.parseAlternativeFormat(html, leagueType);

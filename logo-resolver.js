@@ -234,7 +234,7 @@ class LogoResolver {
 	getLogo(teamName, customMappings = {}) {
 		if (!teamName) return null;
 
-		const debug = true; // Temporary for troubleshooting
+		const debug = this.debug || false;
 
 		// 1. Check custom mappings from config first
 		if (customMappings[teamName]) return customMappings[teamName];

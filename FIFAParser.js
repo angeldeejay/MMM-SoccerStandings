@@ -1,7 +1,7 @@
 const BBCParser = require("./BBCParser");
 
 /**
- * FIFA Parser class for MMM-MyTeams-LeagueTable
+ * FIFA Parser class for MMM-SoccerStandings
  * Specifically handles World Cup 2026 data
  * Extends BBCParser as it uses BBC Sport structure for scraping
  */
@@ -40,7 +40,7 @@ class FIFAParser extends BBCParser {
 			}
 		} catch (error) {
 			console.error(
-				" MMM-MyTeams-LeagueTable: Error parsing BBC WC tables:",
+				" MMM-SoccerStandings: Error parsing BBC WC tables:",
 				error.message
 			);
 		}
@@ -85,7 +85,7 @@ class FIFAParser extends BBCParser {
 			}
 		} catch (error) {
 			console.error(
-				" MMM-MyTeams-LeagueTable: Error parsing FIFA WC data:",
+				" MMM-SoccerStandings: Error parsing FIFA WC data:",
 				error.message
 			);
 		}

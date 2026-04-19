@@ -1,5 +1,5 @@
 /**
- * MMM-MyTeams-LeagueTable
+ * MMM-SoccerStandings
  * European Football Leagues Configuration
  *
  * Comprehensive mapping of European top-tier men's professional football leagues
@@ -215,7 +215,7 @@ const EUROPEAN_LEAGUES = {
 		tier: 1,
 		enabled: false
 	},
-	NORTH MACEDONIA_FIRST_LEAGUE: {
+	NORTH_MACEDONIA_FIRST_LEAGUE: {
 		name: "First League",
 		country: "North Macedonia",
 		countryCode: "MK",
@@ -384,15 +384,6 @@ const EUROPEAN_LEAGUES = {
 		tier: 1,
 		enabled: false
 	},
-	SERBIA_SUPER_LIGA: {
-		name: "Serbian Super Liga",
-		country: "Serbia",
-		countryCode: "RS",
-		countryFolder: "Serbia",
-		url: "https://www.bbc.co.uk/sport/football/serbian-super-lig/table",
-		tier: 1,
-		enabled: false
-	},
 
 	// Mediterranean/Balkan
 	GREECE_SUPER_LEAGUE: {
@@ -505,7 +496,6 @@ const LEAGUE_REGIONS = {
 		"ROMANIA_LIGA_I",
 		"CROATIA_HNL",
 		"SLOVENIA_PRVA_LIGA",
-		"SERBIA_SUPER_LIGA",
 		"SLOVAKIA_SUPER_LIGA",
 		"KAZAKHSTAN_PYRKOVKA",
 		"AZERBAIJAN_PYRKOVKA"

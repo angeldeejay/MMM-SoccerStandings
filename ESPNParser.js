@@ -1,7 +1,7 @@
 const BaseParser = require("./BaseParser");
 
 /**
- * ESPN Parser class for MMM-MyTeams-LeagueTable
+ * ESPN Parser class for MMM-SoccerStandings
  * Handles parsing of league tables from ESPN website
  */
 class ESPNParser extends BaseParser {
@@ -72,7 +72,7 @@ class ESPNParser extends BaseParser {
 				leagueType: leagueType
 			};
 		} catch (error) {
-			console.error(` MMM-MyTeams-LeagueTable: [ESPN] Error parsing ${leagueType}:`, error);
+			console.error(` MMM-SoccerStandings: [ESPN] Error parsing ${leagueType}:`, error);
 			return null;
 		}
 	}

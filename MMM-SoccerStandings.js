@@ -1,5 +1,5 @@
 /* MagicMirror²
- * Module:  MMM-MyTeams-LeagueTable
+ * Module:  MMM-SoccerStandings
  *
  * Author: gitgitaway with assistance from Zencoder AI Assistant
  * MIT Licensed.
@@ -12,7 +12,7 @@
  * Enhanced with multi-provider parsing and configurable league selection for 30+ nations.
  */
 
-Module.register("MMM-MyTeams-LeagueTable", {
+Module.register("MMM-SoccerStandings", {
 	// Load external scripts
 	getScripts() {
 		return [
@@ -131,7 +131,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			SCOTLAND_PREMIERSHIP: "Scottish Premiership",
 			SCOTLAND_CHAMPIONSHIP: "Scottish Championship",
 			ENGLAND_PREMIER_LEAGUE: "English Premier League",
-			Cymru_Premier_League: "Cymru Premier",
+			CYMRU_PREMIER_LEAGUE: "Cymru Premier",
 			GERMANY_BUNDESLIGA: "Bundesliga",
 			FRANCE_LIGUE1: "Ligue 1",
 			SPAIN_LA_LIGA: "La Liga",
@@ -293,17 +293,17 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 		if (this.config.debug) {
 			Log.info(
-				` MMM-MyTeams-LeagueTable: Enabled leagues: ${JSON.stringify(this.enabledLeagueCodes)}`
+				` MMM-SoccerStandings: Enabled leagues: ${JSON.stringify(this.enabledLeagueCodes)}`
 			);
 			Log.info(
-				` MMM-MyTeams-LeagueTable: Current league: ${this.currentLeague}`
+				` MMM-SoccerStandings: Current league: ${this.currentLeague}`
 			);
 		}
 
 		// Optionally clear cache once at startup
 		if (this.config.clearCacheOnStart === true) {
 			if (this.config.debug)
-				Log.info(" MMM-MyTeams-LeagueTable: Clearing cache on start");
+				Log.info(" MMM-SoccerStandings: Clearing cache on start");
 			this.sendSocketNotification("CACHE_CLEAR_ALL");
 		}
 
@@ -326,7 +326,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 		if (this.config.debug) {
 			Log.info(
-				` MMM-MyTeams-LeagueTable: Module started with config: ${JSON.stringify(this.config)}`
+				` MMM-SoccerStandings: Module started with config: ${JSON.stringify(this.config)}`
 			);
 		}
 	},
@@ -342,7 +342,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			if (validated) {
 				if (this.config.debug) {
 					Log.info(
-						` MMM-MyTeams-LeagueTable: Using validated date override: ${this.config.dateTimeOverride} -> ${validated.toISOString()}`
+						` MMM-SoccerStandings: Using validated date override: ${this.config.dateTimeOverride} -> ${validated.toISOString()}`
 					);
 				}
 				return validated;
@@ -359,7 +359,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 	validateDateTimeOverride(dateString) {
 		if (!dateString || typeof dateString !== "string") {
 			if (this.config.debug) {
-				Log.warn(` MMM-MyTeams-LeagueTable: Invalid dateTimeOverride type: ${typeof dateString}`);
+				Log.warn(` MMM-SoccerStandings: Invalid dateTimeOverride type: ${typeof dateString}`);
 			}
 			return null;
 		}
@@ -367,13 +367,13 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		const override = new Date(dateString);
 		
 		if (isNaN(override.getTime())) {
-			Log.warn(` MMM-MyTeams-LeagueTable: Invalid dateTimeOverride format: ${dateString}`);
+			Log.warn(` MMM-SoccerStandings: Invalid dateTimeOverride format: ${dateString}`);
 			return null;
 		}
 
 		const year = override.getFullYear();
 		if (year < 1900 || year > 2100) {
-			Log.warn(` MMM-MyTeams-LeagueTable: dateTimeOverride year out of range (1900-2100): ${dateString} (year: ${year})`);
+			Log.warn(` MMM-SoccerStandings: dateTimeOverride year out of range (1900-2100): ${dateString} (year: ${year})`);
 			return null;
 		}
 
@@ -553,7 +553,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 		if (this.config.debug) {
 			Log.info(
-				` MMM-MyTeams-LeagueTable: Built normalized team map with ${Object.keys(this.normalizedTeamLogoMap).length} entries (diacritics removed, Anglicization variants added, case/whitespace normalized, suffix/prefix variants, common abbreviations)`
+				` MMM-SoccerStandings: Built normalized team map with ${Object.keys(this.normalizedTeamLogoMap).length} entries (diacritics removed, Anglicization variants added, case/whitespace normalized, suffix/prefix variants, common abbreviations)`
 			);
 		}
 	},
@@ -579,7 +579,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		if (this.normalizedTeamLogoMap[normalized]) {
 			if (this.config.debug) {
 				Log.info(
-					` MMM-MyTeams-LeagueTable: Found normalized mapping for '${teamName}' as '${normalized}' (diacritics/case/whitespace normalized, Anglicization variants like Köln→koeln supported)`
+					` MMM-SoccerStandings: Found normalized mapping for '${teamName}' as '${normalized}' (diacritics/case/whitespace normalized, Anglicization variants like Köln→koeln supported)`
 				);
 			}
 			return this.normalizedTeamLogoMap[normalized];
@@ -607,7 +607,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		if (stripped !== normalized && this.normalizedTeamLogoMap[stripped]) {
 			if (this.config.debug) {
 				Log.info(
-					` MMM-MyTeams-LeagueTable: Found suffix/prefix variant mapping for '${teamName}' -> '${stripped}'`
+					` MMM-SoccerStandings: Found suffix/prefix variant mapping for '${teamName}' -> '${stripped}'`
 				);
 			}
 			return this.normalizedTeamLogoMap[stripped];
@@ -618,7 +618,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		if (this.fuzzyTeamLogoMap[fuzzy]) {
 			if (this.config.debug) {
 				Log.info(
-					` MMM-MyTeams-LeagueTable: Found fuzzy mapping for '${teamName}' -> '${fuzzy}'`
+					` MMM-SoccerStandings: Found fuzzy mapping for '${teamName}' -> '${fuzzy}'`
 				);
 			}
 			return this.fuzzyTeamLogoMap[fuzzy];
@@ -627,7 +627,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		// Log unmapped teams for debugging
 		if (this.config.debug) {
 			Log.warn(
-				` MMM-MyTeams-LeagueTable: NO MAPPING FOUND for team '${teamName}'. Tried: exact, normalized ('${normalized}'), stripped ('${stripped}'), fuzzy ('${fuzzy}')`
+				` MMM-SoccerStandings: NO MAPPING FOUND for team '${teamName}'. Tried: exact, normalized ('${normalized}'), stripped ('${stripped}'), fuzzy ('${fuzzy}')`
 			);
 		}
 
@@ -645,7 +645,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			this.enabledLeagueCodes = ["WORLD_CUP_2026"];
 			if (this.config.debug) {
 				Log.info(
-					" MMM-MyTeams-LeagueTable: onlyShowWorldCup2026 is enabled. ONLY World Cup 2026 will be shown."
+					" MMM-SoccerStandings: onlyShowWorldCup2026 is enabled. ONLY World Cup 2026 will be shown."
 				);
 			}
 			return; // Skip other league detection
@@ -671,7 +671,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 			if (this.config.debug) {
 				Log.info(
-					` MMM-MyTeams-LeagueTable: Using selectedLeagues config: ${JSON.stringify(this.enabledLeagueCodes)}`
+					` MMM-SoccerStandings: Using selectedLeagues config: ${JSON.stringify(this.enabledLeagueCodes)}`
 				);
 			}
 		}
@@ -701,7 +701,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 			if (this.config.debug) {
 				Log.info(
-					` MMM-MyTeams-LeagueTable: Using legacy league toggles: ${JSON.stringify(this.enabledLeagueCodes)}`
+					` MMM-SoccerStandings: Using legacy league toggles: ${JSON.stringify(this.enabledLeagueCodes)}`
 				);
 			}
 		}
@@ -744,7 +744,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			this.enabledLeagueCodes = ["SCOTLAND_PREMIERSHIP"];
 			if (this.config.debug) {
 				Log.warn(
-					" MMM-MyTeams-LeagueTable: No leagues enabled after filtering, defaulting to SCOTLAND_PREMIERSHIP"
+					" MMM-SoccerStandings: No leagues enabled after filtering, defaulting to SCOTLAND_PREMIERSHIP"
 				);
 			}
 		}
@@ -851,7 +851,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			ROMANIA_LIGA_I: "https://www.google.com/search?q=Romanian+Superliga+table+standings+2025-26",
 			BOLIVIA_LIGA_2: "https://www.google.com/search?q=Bolivia+Copa+Simon+Bolivar+table+2025",
 			SCOTLAND_PREMIERSHIP: "https://www.google.com/search?q=Scottish+Premiership+table+standings",
-			ENGLAND_PREMIER_guesGUE: "https://www.google.com/search?q=Premier+League+table+standings",
+			ENGLAND_PREMIER_LEAGUE: "https://www.google.com/search?q=Premier+League+table+standings",
 			GERMANY_BUNDESLIGA: "https://www.google.com/search?q=Bundesliga+table+standings",
 			FRANCE_LIGUE1: "https://www.google.com/search?q=Ligue+1+table+standings",
 			SPAIN_LA_LIGA: "https://www.google.com/search?q=La+Liga+table+standings",
@@ -999,8 +999,16 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			}
 		};
 
+		// Fall back to european-leagues.js for BBC URL if not in the explicit map
+		const europeanLeagueUrl =
+			typeof EUROPEAN_LEAGUES !== "undefined" &&
+			EUROPEAN_LEAGUES[leagueCode] &&
+			EUROPEAN_LEAGUES[leagueCode].url
+				? EUROPEAN_LEAGUES[leagueCode].url
+				: undefined;
+
 		const urls = {
-			bbc: bbcUrlMap[leagueCode],
+			bbc: bbcUrlMap[leagueCode] || europeanLeagueUrl,
 			google: googleUrlMap[leagueCode],
 			wikipedia: wikipediaUrlMap[leagueCode],
 			espn: espnUrlMap[leagueCode],
@@ -1054,7 +1062,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 	requestAllLeagueData() {
 		if (!this.enabledLeagueCodes || this.enabledLeagueCodes.length === 0) {
 			if (this.config.debug) {
-				Log.warn(" MMM-MyTeams-LeagueTable: No leagues configured to fetch");
+				Log.warn(" MMM-SoccerStandings: No leagues configured to fetch");
 			}
 			return;
 		}
@@ -1243,7 +1251,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 			if (!urls || (!urls.primary && !urls.fallback)) {
 				Log.error(
-					` MMM-MyTeams-LeagueTable: Could not find URL for league code: ${leagueCode}`
+					` MMM-SoccerStandings: Could not find URL for league code: ${leagueCode}`
 				);
 				return; // Skip this league if no URL found
 			}
@@ -1255,7 +1263,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			setTimeout(() => {
 				if (this.config.debug) {
 					Log.info(
-						` MMM-MyTeams-LeagueTable: Requesting data for ${leagueCode} from ${urls.primary || urls.fallback}${splitConfig ? " (split-league)" : ""}`
+						` MMM-SoccerStandings: Requesting data for ${leagueCode} from ${urls.primary || urls.fallback}${splitConfig ? " (split-league)" : ""}`
 					);
 				}
 
@@ -1628,7 +1636,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			// Create a cycling function that will be called at regular intervals
 			const cycleFn = function () {
 				if (self.config.debug) {
-					Log.info(" MMM-MyTeams-LeagueTable: Running cycle function");
+					Log.info(" MMM-SoccerStandings: Running cycle function");
 				}
 
 				// Find current and next league
@@ -1644,7 +1652,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 				if (self.config.debug) {
 					Log.info(
-						` MMM-MyTeams-LeagueTable: Cycling from ${self.currentLeague} to ${nextLeague}`
+						` MMM-SoccerStandings: Cycling from ${self.currentLeague} to ${nextLeague}`
 					);
 				}
 
@@ -1667,14 +1675,14 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 			if (this.config.debug) {
 				Log.info(
-					` MMM-MyTeams-LeagueTable: Auto-cycling enabled with interval ${
+					` MMM-SoccerStandings: Auto-cycling enabled with interval ${
 						interval / 1000
 					} seconds`
 				);
 			}
 		} else if (this.config.debug) {
 			Log.info(
-				" MMM-MyTeams-LeagueTable: Auto-cycling not enabled - need at least 2 leagues"
+				" MMM-SoccerStandings: Auto-cycling not enabled - need at least 2 leagues"
 			);
 		}
 	},
@@ -1732,7 +1740,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			nextUpdate = 3 * 60 * 1000; // 3 minutes
 			if (this.config.debug) {
 				Log.info(
-					` MMM-MyTeams-LeagueTable: ${hasLiveGames ? 'Live' : 'Potential live'} games detected, increasing refresh rate to 3 minutes.`
+					` MMM-SoccerStandings: ${hasLiveGames ? 'Live' : 'Potential live'} games detected, increasing refresh rate to 3 minutes.`
 				);
 			}
 		}
@@ -1744,7 +1752,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 		if (this.config.debug) {
 			Log.info(
-				` MMM-MyTeams-LeagueTable: Next update scheduled in ${nextUpdate / 1000} seconds`
+				` MMM-SoccerStandings: Next update scheduled in ${nextUpdate / 1000} seconds`
 			);
 		}
 	},
@@ -1753,7 +1761,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 	socketNotificationReceived(notification, payload) {
 		if (this.config.debug) {
 			Log.info(
-				` MMM-MyTeams-LeagueTable: Received notification: ${notification}`
+				` MMM-SoccerStandings: Received notification: ${notification}`
 			);
 		}
 
@@ -1774,12 +1782,25 @@ Module.register("MMM-MyTeams-LeagueTable", {
 	processLeagueData(data) {
 		if (this.config.debug) {
 			Log.info(
-				` MMM-MyTeams-LeagueTable: Processing league data for ${data.leagueType}: ${JSON.stringify(data && data.meta ? data.meta : {})}`
+				` MMM-SoccerStandings: Processing league data for ${data.leagueType}: ${JSON.stringify(data && data.meta ? data.meta : {})}`
 			);
 		}
 
 		// Store data for the specific league
 		const leagueType = data.leagueType || "SPFL"; // Default to SPFL if not specified
+
+		// Skip redundant re-render when the fresh fetch returns the same data as the
+		// proactive cache notification (same lastUpdated timestamp → no new information).
+		const existing = this.leagueData[leagueType];
+		if (
+			existing &&
+			data.meta &&
+			existing.meta &&
+			data.meta.lastUpdated === existing.meta.lastUpdated
+		) {
+			return;
+		}
+
 		this.leagueData[leagueType] = data;
 		this.loaded[leagueType] = true;
 
@@ -1838,11 +1859,11 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		const errorSuggestion = error.suggestion || "Please try again later";
 		
 		Log.error(
-			` MMM-MyTeams-LeagueTable: [${errorCategory}] ${errorMessage}`
+			` MMM-SoccerStandings: [${errorCategory}] ${errorMessage}`
 		);
 		
 		if (this.config.debug && error.originalError) {
-			Log.error(` MMM-MyTeams-LeagueTable: Original error: ${error.originalError}`);
+			Log.error(` MMM-SoccerStandings: Original error: ${error.originalError}`);
 		}
 
 		this.error = error;
@@ -1854,13 +1875,13 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			setTimeout(function () {
 				if (self.config.debug) {
 					Log.info(
-						` MMM-MyTeams-LeagueTable: Retrying data fetch (attempt ${self.retryCount})`
+						` MMM-SoccerStandings: Retrying data fetch (attempt ${self.retryCount})`
 					);
 				}
 				self.requestAllLeagueData();
 			}, this.config.retryDelay);
 		} else {
-			Log.error(` MMM-MyTeams-LeagueTable: Max retries exceeded. ${errorSuggestion}`);
+			Log.error(` MMM-SoccerStandings: Max retries exceeded. ${errorSuggestion}`);
 			this.updateDom(this.config.animationSpeed);
 		}
 	},
@@ -1890,19 +1911,19 @@ Module.register("MMM-MyTeams-LeagueTable", {
 				name: "UEFA Champions League",
 				countryFolder: null,
 				countryCode: "EU",
-				logo: "modules/MMM-MyTeams-LeagueTable/images/crests/UEFA-Champions-League/UCL_Trophy.png"
+				logo: "modules/MMM-SoccerStandings/images/crests/UEFA-Champions-League/UCL_Trophy.png"
 			},
 			UEL: {
 				name: "UEFA Europa League",
 				countryFolder: null,
 				countryCode: "EU",
-				logo: "modules/MMM-MyTeams-LeagueTable/images/crests/UEFA-Europa-League/UEL_Trophy.png"
+				logo: "modules/MMM-SoccerStandings/images/crests/UEFA-Europa-League/UEL_Trophy.png"
 			},
 			ECL: {
 				name: "UEFA Conference League",
 				countryFolder: null,
 				countryCode: "EU",
-				logo: "modules/MMM-MyTeams-LeagueTable/images/crests/UEFA-Conference-League/UECL_Trophy.png"
+				logo: "modules/MMM-SoccerStandings/images/crests/UEFA-Conference-League/UECL_Trophy.png"
 			},
 			SCOTLAND_PREMIERSHIP: {
 				name: "Scottish Premiership",
@@ -2038,26 +2059,26 @@ Module.register("MMM-MyTeams-LeagueTable", {
 				name: "FIFA WC 2026",
 				countryFolder: "FIFA-WC26",
 				countryCode: "WC",
-				logo: "modules/MMM-MyTeams-LeagueTable/images/WC_Trophy.png"
+				logo: "modules/MMM-SoccerStandings/images/WC_Trophy.png"
 			},
 			// New EUROPEAN_LEAGUES format codes
 			UEFA_CHAMPIONS_LEAGUE: {
 				name: "UEFA Champions League",
 				countryFolder: null,
 				countryCode: "EU",
-				logo: "modules/MMM-MyTeams-LeagueTable/images/crests/UEFA-Champions-League/UCL_Trophy.png"
+				logo: "modules/MMM-SoccerStandings/images/crests/UEFA-Champions-League/UCL_Trophy.png"
 			},
 			UEFA_EUROPA_LEAGUE: {
 				name: "UEFA Europa League",
 				countryFolder: null,
 				countryCode: "EU",
-				logo: "modules/MMM-MyTeams-LeagueTable/images/crests/UEFA-Europa-League/UEL_Trophy.png"
+				logo: "modules/MMM-SoccerStandings/images/crests/UEFA-Europa-League/UEL_Trophy.png"
 			},
 			UEFA_EUROPA_CONFERENCE_LEAGUE: {
 				name: "UEFA Conference League",
 				countryFolder: null,
 				countryCode: "EU",
-				logo: "modules/MMM-MyTeams-LeagueTable/images/crests/UEFA-Conference-League/UECL_Trophy.png"
+				logo: "modules/MMM-SoccerStandings/images/crests/UEFA-Conference-League/UECL_Trophy.png"
 			}
 		};
 
@@ -2113,7 +2134,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		if (!event) return;
 
 		if (this.config.debug) {
-			Log.info(" MMM-MyTeams-LeagueTable: League button clicked");
+			Log.info(" MMM-SoccerStandings: League button clicked");
 		}
 
 		// Prevent default behavior to avoid any scrolling/jumping issues
@@ -2139,7 +2160,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		if (!button || typeof button.getAttribute !== "function") {
 			if (this.config.debug) {
 				Log.warn(
-					" MMM-MyTeams-LeagueTable: No valid league button found in click event"
+					" MMM-SoccerStandings: No valid league button found in click event"
 				);
 			}
 			return;
@@ -2153,7 +2174,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		if (!leagueCode) {
 			if (this.config.debug) {
 				Log.warn(
-					" MMM-MyTeams-LeagueTable: Clicked element has no data-league attribute"
+					" MMM-SoccerStandings: Clicked element has no data-league attribute"
 				);
 			}
 			return;
@@ -2163,7 +2184,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 		if (league) {
 			if (this.config.debug) {
-				Log.info(` MMM-MyTeams-LeagueTable: Switching to league: ${league}`);
+				Log.info(` MMM-SoccerStandings: Switching to league: ${league}`);
 			}
 
 			if (this.currentLeague !== league) {
@@ -2578,6 +2599,8 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			wrapper.appendChild(offlineIndicator);
 		}
 
+		const currentData = this.leagueData[this.currentLeague];
+
 		// If content is hidden, return wrapper with toggle icon and source in footer
 		if (this.isContentHidden) {
 			const hiddenWrapper = document.createElement("div");
@@ -2657,17 +2680,6 @@ Module.register("MMM-MyTeams-LeagueTable", {
 
 		this._applyThemeOverrides();
 
-		// Skip re-render when content is identical and no error/loading change
-		if (
-			!this.error &&
-			this.loaded[this.currentLeague] &&
-			this._shouldSkipRender()
-		) {
-			const placeholder = document.createElement("div");
-			placeholder.style.display = "none";
-			return placeholder;
-		}
-
 		// Create header with league buttons
 		var headerContainer = document.createElement("div");
 		headerContainer.className = "league-header-container";
@@ -2704,7 +2716,6 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		const metaInfo = document.createElement("div");
 		metaInfo.className = "league-meta-info";
 
-		const currentData = this.leagueData[this.currentLeague];
 		if (currentData && currentData.meta && currentData.meta.lastUpdated) {
 			const lastUpdated = document.createElement("span");
 			lastUpdated.className = "last-updated xsmall dimmed";
@@ -2968,22 +2979,22 @@ Module.register("MMM-MyTeams-LeagueTable", {
 						const flagImg = document.createElement("img");
 						flagImg.className = "flag-image";
 						flagImg.alt = leagueInfo.name;
-						// Construct path to flag image (e.g., "modules/MMM-MyTeams-LeagueTable/images/crests/Scotland/scotland.png")
+						// Construct path to flag image (e.g., "modules/MMM-SoccerStandings/images/crests/Scotland/scotland.png")
 						const countryName = leagueInfo.countryFolder
 							.toLowerCase()
 							.replace(/\s+/g, "-");
-						const flagSrc = `modules/MMM-MyTeams-LeagueTable/images/crests/${leagueInfo.countryFolder}/${countryName}.png`;
+						const flagSrc = `modules/MMM-SoccerStandings/images/crests/${leagueInfo.countryFolder}/${countryName}.png`;
 						this.setupImageLazyLoading(flagImg, flagSrc);
 
 						// Enhanced fallback handling with multiple filename attempts
 						let fallbackAttempts = 0;
 						const flagFallbacks = [
 							// Try with underscores instead of hyphens for spaces
-							`modules/MMM-MyTeams-LeagueTable/images/crests/${leagueInfo.countryFolder}/${leagueInfo.countryFolder.toLowerCase().replace(/\s+/g, "_")}.png`,
+							`modules/MMM-SoccerStandings/images/crests/${leagueInfo.countryFolder}/${leagueInfo.countryFolder.toLowerCase().replace(/\s+/g, "_")}.png`,
 							// Try just the country folder name without subfolder (in case flag is in root)
-							`modules/MMM-MyTeams-LeagueTable/images/crests/${countryName}.png`,
+							`modules/MMM-SoccerStandings/images/crests/${countryName}.png`,
 							// Try country folder with underscores in root
-							`modules/MMM-MyTeams-LeagueTable/images/crests/${leagueInfo.countryFolder.toLowerCase().replace(/\s+/g, "_")}.png`
+							`modules/MMM-SoccerStandings/images/crests/${leagueInfo.countryFolder.toLowerCase().replace(/\s+/g, "_")}.png`
 						];
 
 						flagImg.onload = function () {
@@ -2996,7 +3007,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 								fallbackAttempts++;
 								if (self.config.debug) {
 									Log.info(
-										` MMM-MyTeams-LeagueTable: Flag fallback attempt ${fallbackAttempts} for ${leagueInfo.name}: ${this.src}`
+										` MMM-SoccerStandings: Flag fallback attempt ${fallbackAttempts} for ${leagueInfo.name}: ${this.src}`
 									);
 								}
 							} else {
@@ -3005,7 +3016,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 								fallbackText.style.display = "inline";
 								if (self.config.debug) {
 									Log.warn(
-										` MMM-MyTeams-LeagueTable: Flag image not found for ${leagueInfo.name} (country: ${leagueInfo.countryFolder})`
+										` MMM-SoccerStandings: Flag image not found for ${leagueInfo.name} (country: ${leagueInfo.countryFolder})`
 									);
 								}
 							}
@@ -3275,7 +3286,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		if (!this.loaded[this.currentLeague] && !this.error) {
 			if (this.config.debug) {
 				Log.info(
-					` MMM-MyTeams-LeagueTable: Data not loaded for ${this.currentLeague}. Loaded states: ${JSON.stringify(this.loaded)}`
+					` MMM-SoccerStandings: Data not loaded for ${this.currentLeague}. Loaded states: ${JSON.stringify(this.loaded)}`
 				);
 			}
 
@@ -3283,7 +3294,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			if (this.loaded[this.currentLeague] === undefined) {
 				if (this.config.debug)
 					Log.warn(
-						` MMM-MyTeams-LeagueTable: ${this.currentLeague} was not in loaded map, requesting now`
+						` MMM-SoccerStandings: ${this.currentLeague} was not in loaded map, requesting now`
 					);
 				this.loaded[this.currentLeague] = false;
 				this.requestAllLeagueData();
@@ -3467,7 +3478,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			} else if (currentData.teams) {
 				if (this.config.debug) {
 					Log.info(
-						` MMM-MyTeams-LeagueTable: Creating table for ${
+						` MMM-SoccerStandings: Creating table for ${
 							this.currentLeague
 						} with ${currentData.teams.length} teams`
 					);
@@ -3482,7 +3493,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 		} else {
 			if (this.config.debug) {
 				Log.info(
-					` MMM-MyTeams-LeagueTable: No league data available for ${this.currentLeague}`
+					` MMM-SoccerStandings: No league data available for ${this.currentLeague}`
 				);
 			}
 			contentContainer.textContent = `No league data available for ${this.currentLeague}`;
@@ -3823,7 +3834,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 				}
 				candidates.push("placeholder.svg");
 
-				var basePath = "modules/MMM-MyTeams-LeagueTable/images/";
+				var basePath = "modules/MMM-SoccerStandings/images/";
 				var tryIndex = 0;
 				const moduleInstance = this;
 				const tryNext = (imgEl) => {
@@ -4752,7 +4763,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 				if (logoPath) {
 					const img = document.createElement("img");
 					img.className = "fixture-logo-v2";
-					const logoSrc = `modules/MMM-MyTeams-LeagueTable/images/${logoPath}`;
+					const logoSrc = `modules/MMM-SoccerStandings/images/${logoPath}`;
 					this.setupImageLazyLoading(img, logoSrc);
 					img.onerror = () => (img.style.display = "none");
 					cell.appendChild(img);
@@ -4915,7 +4926,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 				if (logoPath) {
 					const img = document.createElement("img");
 					img.className = "fixture-logo-v2";
-					const logoSrc = `modules/MMM-MyTeams-LeagueTable/images/${logoPath}`;
+					const logoSrc = `modules/MMM-SoccerStandings/images/${logoPath}`;
 					this.setupImageLazyLoading(img, logoSrc);
 					img.onerror = () => (img.style.display = "none");
 					cell.appendChild(img);
@@ -4956,7 +4967,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 			img.decoding = "async";
 			img.width = 14; // stabilize layout
 			img.height = 10;
-			const logoSrc = `modules/MMM-MyTeams-LeagueTable/images/${finalLogoPath}`;
+			const logoSrc = `modules/MMM-SoccerStandings/images/${finalLogoPath}`;
 			this.setupImageLazyLoading(img, logoSrc);
 			img.onerror = () => (img.style.display = "none");
 			flagSpan.appendChild(img);
@@ -5012,7 +5023,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 					if (this.currentSubTab !== targetTab) {
 						if (this.config.debug) {
 							Log.info(
-								` MMM-MyTeams-LeagueTable: Auto-focusing LIVE knockout stage: ${targetTab}`
+								` MMM-SoccerStandings: Auto-focusing LIVE knockout stage: ${targetTab}`
 							);
 						}
 						this.currentSubTab = targetTab;
@@ -5031,7 +5042,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 				if (this.currentSubTab !== liveGroupMatch.group) {
 					if (this.config.debug) {
 						Log.info(
-							` MMM-MyTeams-LeagueTable: Auto-focusing LIVE Group: ${liveGroupMatch.group}`
+							` MMM-SoccerStandings: Auto-focusing LIVE Group: ${liveGroupMatch.group}`
 						);
 					}
 					this.currentSubTab = liveGroupMatch.group;
@@ -5073,7 +5084,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 						if (this.currentSubTab !== targetTab) {
 							if (this.config.debug) {
 								Log.info(
-									` MMM-MyTeams-LeagueTable: Auto-focusing upcoming knockout stage: ${targetTab}`
+									` MMM-SoccerStandings: Auto-focusing upcoming knockout stage: ${targetTab}`
 								);
 							}
 							this.currentSubTab = targetTab;
@@ -5156,7 +5167,7 @@ Module.register("MMM-MyTeams-LeagueTable", {
 	getStyles() {
 		// Ensure the module's stylesheet is loaded by MagicMirror
 		// Note: filename uses current folder spelling. We can rename alongside module folder later.
-		return ["MMM-MyTeams-LeagueTable.css"];
+		return ["MMM-SoccerStandings.css"];
 	},
 
 	// Helper to translate team names if they exist in translation files

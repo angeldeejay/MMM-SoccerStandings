@@ -1,7 +1,7 @@
 const BaseParser = require("./BaseParser");
 
 /**
- * Google Parser class for MMM-MyTeams-LeagueTable
+ * Google Parser class for MMM-SoccerStandings
  * Handles parsing of league tables from Google Search results
  */
 class GoogleParser extends BaseParser {
@@ -87,7 +87,7 @@ class GoogleParser extends BaseParser {
 				leagueType: leagueType
 			};
 		} catch (error) {
-			console.error(` MMM-MyTeams-LeagueTable: [Google] Error parsing ${leagueType}:`, error);
+			console.error(` MMM-SoccerStandings: [Google] Error parsing ${leagueType}:`, error);
 			return null;
 		}
 	}

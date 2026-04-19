@@ -1,5 +1,5 @@
 /**
- * Cache Manager for MMM-MyTeams-LeagueTable
+ * Cache Manager for MMM-SoccerStandings
  *
  * Handles persistent disk caching of league data with:
  * - TTL (Time-To-Live) expiration

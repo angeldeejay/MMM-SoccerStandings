@@ -16,11 +16,11 @@ global.Module = {
 };
 
 // Load the module file
-const moduleContent = fs.readFileSync('MMM-MyTeams-LeagueTable.js', 'utf8');
+const moduleContent = fs.readFileSync('MMM-SoccerStandings.js', 'utf8');
 // Remove Module.register wrapper to get the object
-const objMatch = moduleContent.match(/Module\.register\("MMM-MyTeams-LeagueTable",\s*({[\s\S]*})\);/);
+const objMatch = moduleContent.match(/Module\.register\("MMM-SoccerStandings",\s*({[\s\S]*})\);/);
 if (!objMatch) {
-    console.error("Could not find Module.register in MMM-MyTeams-LeagueTable.js");
+    console.error("Could not find Module.register in MMM-SoccerStandings.js");
     process.exit(1);
 }
 

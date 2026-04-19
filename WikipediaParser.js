@@ -1,7 +1,7 @@
 const BaseParser = require("./BaseParser");
 
 /**
- * Wikipedia Parser class for MMM-MyTeams-LeagueTable
+ * Wikipedia Parser class for MMM-SoccerStandings
  * Handles parsing of league tables from Wikipedia pages.
  *
  * WHY depth-tracking instead of regex for table extraction:
@@ -364,7 +364,7 @@ class WikipediaParser extends BaseParser {
 				leagueType: leagueType
 			};
 		} catch (error) {
-			console.error(` MMM-MyTeams-LeagueTable: [Wikipedia] Error parsing ${leagueType}:`, error);
+			console.error(` MMM-SoccerStandings: [Wikipedia] Error parsing ${leagueType}:`, error);
 			return null;
 		}
 	}

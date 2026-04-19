@@ -1,8 +1,8 @@
 {
-	"name": "MMM-MyTeams-LeagueTable",
+	"name": "MMM-SoccerStandings",
 	"version": "1.0.0",
-	"description": "A MagicMirror² module to display the current SPFL (Scottish Professional Football League) standings",
-	"main": "MMM-MyTeams-LeagueTable.js",
+	"description": "A MagicMirror² module to display football league standings from multiple European competitions",
+	"main": "MMM-SoccerStandings.js",
 	"keywords": [
 		"MagicMirror",
 		"module",
@@ -20,13 +20,13 @@
 		"email": " "
 	},
 	"license": "MIT",
-	"homepage": "https://github.com/gitgitaway/MMM-MyTeams-LeagueTable",
+	"homepage": "https://github.com/gitgitaway/MMM-SoccerStandings",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/gitgitaway/MMM-MyTeams-LeagueTable.git"
+		"url": "https://github.com/gitgitaway/MMM-SoccerStandings.git"
 	},
 	"bugs": {
-		"url": "https://github.com/gitgitaway/MMM-MyTeams-LeagueTable/issues"
+		"url": "https://github.com/gitgitaway/MMM-SoccerStandings/issues"
 	},
 	"engines": {
 		"node": ">=14.0.0"
@@ -45,13 +45,13 @@
 		"test:security": "mocha tests/security.test.js --timeout 10000",
 		"lint": "eslint *.js",
 		"format": "prettier --write *.js *.json *.md",
-		"minify-css": "cleancss -o MMM-MyTeams-LeagueTable.min.css MMM-MyTeams-LeagueTable.css",
+		"minify-css": "cleancss -o MMM-SoccerStandings.min.css MMM-SoccerStandings.css",
 		"build": "npm run minify-css",
 		"audit": "npm audit --audit-level=moderate",
 		"audit:fix": "npm audit fix"
 	},
 	"magicmirror": {
-		"moduleName": "MMM-MyTeams-LeagueTable",
+		"moduleName": "MMM-SoccerStandings",
 		"moduleVersion": "1.0.0",
 		"requiredVersion": "2.1.0"
 	}

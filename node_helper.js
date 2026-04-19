@@ -1,5 +1,5 @@
 /* MagicMirror²
- * Node Helper:  MMM-MyTeams-LeagueTable
+ * Node Helper:  MMM-SoccerStandings
  *
  * By: Assistant
  * MIT Licensed.
@@ -119,7 +119,7 @@ module.exports = NodeHelper.create({
 
 		if (debug)
 			console.log(
-				" MMM-MyTeams-LeagueTable: Resolving logos on server-side..."
+				" MMM-SoccerStandings: Resolving logos on server-side..."
 			);
 
 		// Helper to get logo with caching
@@ -213,7 +213,7 @@ module.exports = NodeHelper.create({
 
 	// Node helper started
 	start() {
-		console.log("Starting node helper for: MMM-MyTeams-LeagueTable");
+		console.log("Starting node helper for: MMM-SoccerStandings");
 		this.config = null;
 
 		// Initialize cache manager
@@ -271,13 +271,13 @@ module.exports = NodeHelper.create({
 
 			this.sendSocketNotification("CACHE_CLEARED", { cleared: cleared });
 			console.log(
-				` MMM-MyTeams-LeagueTable: All caches cleared (${cleared} disk files removed, fixture cache reset, logo cache reset)`
+				` MMM-SoccerStandings: All caches cleared (${cleared} disk files removed, fixture cache reset, logo cache reset)`
 			);
 		} else if (notification === "CACHE_CLEANUP") {
 			const deleted = await this.cache.cleanupExpired();
 			this.sendSocketNotification("CACHE_CLEANUP_DONE", { deleted: deleted });
 			console.log(
-				` MMM-MyTeams-LeagueTable: Cache cleanup complete (${deleted} expired files removed)`
+				` MMM-SoccerStandings: Cache cleanup complete (${deleted} expired files removed)`
 			);
 		}
 	},
@@ -326,7 +326,7 @@ module.exports = NodeHelper.create({
 				? `Chain [${chainIndex + 1}/${providerChain.length}]`
 				: "Single";
 			console.log(
-				` MMM-MyTeams-LeagueTable: Fetching ${leagueType} (${chainInfo}, Provider: ${currentProviderStr})...`
+				` MMM-SoccerStandings: Fetching ${leagueType} (${chainInfo}, Provider: ${currentProviderStr})...`
 			);
 			this.cache.setDebug(true);
 		}
@@ -337,7 +337,7 @@ module.exports = NodeHelper.create({
 			if (nextIdx < providerChain.length) {
 				if (debug) {
 					console.log(
-						` MMM-MyTeams-LeagueTable: [${leagueType}] ${reason}. Trying next provider: ${providerChain[nextIdx].provider}`
+						` MMM-SoccerStandings: [${leagueType}] ${reason}. Trying next provider: ${providerChain[nextIdx].provider}`
 					);
 				}
 				return this.fetchLeagueData(
@@ -353,7 +353,7 @@ module.exports = NodeHelper.create({
 			if (legacyFallback && chainIndex === 0 && providerChain.length === 0) {
 				if (debug) {
 					console.log(
-						` MMM-MyTeams-LeagueTable: [${leagueType}] ${reason}. Trying legacy fallbackUrl.`
+						` MMM-SoccerStandings: [${leagueType}] ${reason}. Trying legacy fallbackUrl.`
 					);
 				}
 				return this.fetchLeagueData(legacyFallback, leagueType, config, 999);
@@ -366,7 +366,7 @@ module.exports = NodeHelper.create({
 		if (useMockData && leagueType !== "WORLD_CUP_2026") {
 			if (debug)
 				console.log(
-					` MMM-MyTeams-LeagueTable: [MOCK MODE] Generating mock data for ${leagueType}`
+					` MMM-SoccerStandings: [MOCK MODE] Generating mock data for ${leagueType}`
 				);
 			const cachedData = await this.cache.get(leagueType);
 			if (cachedData) {
@@ -399,7 +399,7 @@ module.exports = NodeHelper.create({
 				const isValid = this.isDataComplete(cachedData, leagueType, config && config.splitConfig);
 				if (debug) {
 					console.log(
-						` MMM-MyTeams-LeagueTable: [${leagueType}] Cached data is ${isValid ? "complete" : "incomplete"}`
+						` MMM-SoccerStandings: [${leagueType}] Cached data is ${isValid ? "complete" : "incomplete"}`
 					);
 				}
 				if (isValid) {
@@ -420,7 +420,7 @@ module.exports = NodeHelper.create({
 			const html = await this.fetchWebPage(url);
 			if (debug) {
 				console.log(
-					` MMM-MyTeams-LeagueTable: [${leagueType}] Fetched HTML from ${providerName} (${url.substring(0, 80)}...)`
+					` MMM-SoccerStandings: [${leagueType}] Fetched HTML from ${providerName} (${url.substring(0, 80)}...)`
 				);
 			}
 
@@ -468,7 +468,7 @@ module.exports = NodeHelper.create({
 					leagueData.awaitingSplit = true;
 					if (debug) {
 						console.log(
-							` MMM-MyTeams-LeagueTable: [${leagueType}] Phase 1 complete (max played: ${maxPlayed}/${splitCfg.regularSeasonGames}). Awaiting split announcement — serving Phase 1 final standings.`
+							` MMM-SoccerStandings: [${leagueType}] Phase 1 complete (max played: ${maxPlayed}/${splitCfg.regularSeasonGames}). Awaiting split announcement — serving Phase 1 final standings.`
 						);
 					}
 				} else {
@@ -484,7 +484,7 @@ module.exports = NodeHelper.create({
 							: `Phase 2 started but single-group table returned (${leagueData.teams.length} teams) while showAllGroups=true`;
 						if (debug) {
 							console.log(
-								` MMM-MyTeams-LeagueTable: [${leagueType}] ${escalateReason}. Escalating to next provider.`
+								` MMM-SoccerStandings: [${leagueType}] ${escalateReason}. Escalating to next provider.`
 							);
 						}
 						const advanced = await tryNextProvider(escalateReason);
@@ -503,7 +503,7 @@ module.exports = NodeHelper.create({
 				if (!isFreshComplete) {
 					if (debug) {
 						console.log(
-							` MMM-MyTeams-LeagueTable: [${leagueType}] Data from ${providerName} is incomplete (${leagueData.teams.length} teams, all-zero stats or no form).`
+							` MMM-SoccerStandings: [${leagueType}] Data from ${providerName} is incomplete (${leagueData.teams.length} teams, all-zero stats or no form).`
 						);
 					}
 
@@ -512,7 +512,7 @@ module.exports = NodeHelper.create({
 					if (existingCache && this.isDataComplete(existingCache, leagueType, config && config.splitConfig)) {
 						if (debug) {
 							console.log(
-								` MMM-MyTeams-LeagueTable: [${leagueType}] Cache has complete data; serving that instead.`
+								` MMM-SoccerStandings: [${leagueType}] Cache has complete data; serving that instead.`
 							);
 						}
 						existingCache.leagueType = leagueType;
@@ -554,7 +554,7 @@ module.exports = NodeHelper.create({
 			// HTTP / network error - try next provider before giving up.
 			if (debug) {
 				console.log(
-					` MMM-MyTeams-LeagueTable: [${leagueType}] Error from ${providerName}: ${error.message}`
+					` MMM-SoccerStandings: [${leagueType}] Error from ${providerName}: ${error.message}`
 				);
 			}
 
@@ -564,7 +564,7 @@ module.exports = NodeHelper.create({
 			// All providers failed - log and fall back to cached data.
 			this.sendDebugInfo("Error fetching " + leagueType, error.message);
 			console.error(
-				` MMM-MyTeams-LeagueTable: All providers failed for ${leagueType}:`,
+				` MMM-SoccerStandings: All providers failed for ${leagueType}:`,
 				error.message
 			);
 
@@ -633,7 +633,7 @@ module.exports = NodeHelper.create({
 		if (allStatsZero) {
 			if (debug) {
 				console.log(
-					` MMM-MyTeams-LeagueTable: [isDataComplete] ${leagueType}: All ${data.teams.length} teams have zero stats - stub/split page detected, marking incomplete.`
+					` MMM-SoccerStandings: [isDataComplete] ${leagueType}: All ${data.teams.length} teams have zero stats - stub/split page detected, marking incomplete.`
 				);
 			}
 			return false;
@@ -651,7 +651,7 @@ module.exports = NodeHelper.create({
 			const complete = teamsWhoPlayed.length >= Math.ceil(data.teams.length * 0.5);
 			if (debug) {
 				console.log(
-					` MMM-MyTeams-LeagueTable: [isDataComplete] ${leagueType} (source: ${data.source}): ${teamsWhoPlayed.length}/${data.teams.length} teams played. Complete: ${complete}`
+					` MMM-SoccerStandings: [isDataComplete] ${leagueType} (source: ${data.source}): ${teamsWhoPlayed.length}/${data.teams.length} teams played. Complete: ${complete}`
 				);
 			}
 			return complete;
@@ -665,7 +665,7 @@ module.exports = NodeHelper.create({
 
 		if (debug) {
 			console.log(
-				` MMM-MyTeams-LeagueTable: [isDataComplete] ${leagueType}: ${teamsWithForm.length}/${data.teams.length} teams have form.`
+				` MMM-SoccerStandings: [isDataComplete] ${leagueType}: ${teamsWithForm.length}/${data.teams.length} teams have form.`
 			);
 		}
 
@@ -676,7 +676,7 @@ module.exports = NodeHelper.create({
 			if (teamsWhoPlayed.length > 0) {
 				if (debug) {
 					console.log(
-						` MMM-MyTeams-LeagueTable: [isDataComplete] ${leagueType} has played games but no form from BBC. Marking as incomplete.`
+						` MMM-SoccerStandings: [isDataComplete] ${leagueType} has played games but no form from BBC. Marking as incomplete.`
 					);
 				}
 				return false;
@@ -697,7 +697,7 @@ module.exports = NodeHelper.create({
 			if (useMockData) {
 				if (debug)
 					console.log(
-						" MMM-MyTeams-LeagueTable: [MOCK MODE] Generating World Cup mock data"
+						" MMM-SoccerStandings: [MOCK MODE] Generating World Cup mock data"
 					);
 				this.fifaParser.setConfig(config);
 				const mockData = this.fifaParser.generateMockWC2026Data();
@@ -715,7 +715,7 @@ module.exports = NodeHelper.create({
 			if (cachedData) {
 				if (this.config && this.config.debug) {
 					console.log(
-						" MMM-MyTeams-LeagueTable: Serving cached World Cup data immediately"
+						" MMM-SoccerStandings: Serving cached World Cup data immediately"
 					);
 				}
 				cachedData.fromCache = true;
@@ -796,7 +796,7 @@ module.exports = NodeHelper.create({
 			}
 		} catch (error) {
 			console.error(
-				" MMM-MyTeams-LeagueTable: Error fetching World Cup data:",
+				" MMM-SoccerStandings: Error fetching World Cup data:",
 				error.message
 			);
 
@@ -804,7 +804,7 @@ module.exports = NodeHelper.create({
 			const fallbackData = await this.cache.get(leagueType);
 			if (fallbackData) {
 				console.log(
-					" MMM-MyTeams-LeagueTable: Using cached World Cup data as fallback"
+					" MMM-SoccerStandings: Using cached World Cup data as fallback"
 				);
 				fallbackData.fromCache = true;
 				fallbackData.cacheFallback = true;
@@ -832,7 +832,7 @@ module.exports = NodeHelper.create({
 			if (cachedData) {
 				if (this.config && this.config.debug) {
 					console.log(
-						` MMM-MyTeams-LeagueTable: Serving cached ${leagueType} data immediately`
+						` MMM-SoccerStandings: Serving cached ${leagueType} data immediately`
 					);
 				}
 				cachedData.leagueType = leagueType;
@@ -876,7 +876,7 @@ module.exports = NodeHelper.create({
 						cachedMonthParts.push(this.fixtureCache[resKey].html);
 					if (config.debug)
 						console.log(
-							` MMM-MyTeams-LeagueTable: Using cached variants for ${monthStr}`
+							` MMM-SoccerStandings: Using cached variants for ${monthStr}`
 						);
 				}
 			}
@@ -935,7 +935,7 @@ module.exports = NodeHelper.create({
 
 			if (config.debug)
 				console.log(
-					` MMM-MyTeams-LeagueTable: Parsing ${leagueType} with ${allFixturesHtmlParts.length} HTML parts`
+					` MMM-SoccerStandings: Parsing ${leagueType} with ${allFixturesHtmlParts.length} HTML parts`
 				);
 
 			this.bbcParser.setConfig(config);
@@ -975,7 +975,7 @@ module.exports = NodeHelper.create({
 		} catch (error) {
 			this.sendDebugInfo("Error fetching " + leagueType, error.message);
 			console.error(
-				` MMM-MyTeams-LeagueTable: Error fetching ${leagueType} data:`,
+				` MMM-SoccerStandings: Error fetching ${leagueType} data:`,
 				error.message
 			);
 
@@ -1011,7 +1011,7 @@ module.exports = NodeHelper.create({
 				},
 				timeout: 10000,
 				priority: 1, // Normal priority
-				moduleId: "MMM-MyTeams-LeagueTable",
+				moduleId: "MMM-SoccerStandings",
 				deduplicate: true
 			});
 
@@ -1021,7 +1021,7 @@ module.exports = NodeHelper.create({
 
 			return result.data;
 		} catch (error) {
-			console.error(" MMM-MyTeams-LeagueTable: Fetch error:", error.message);
+			console.error(" MMM-SoccerStandings: Fetch error:", error.message);
 			throw error;
 		}
 	},
@@ -1032,14 +1032,14 @@ module.exports = NodeHelper.create({
 			const deleted = await this.cache.cleanupExpired();
 			if (deleted > 0) {
 				console.log(
-					` MMM-MyTeams-LeagueTable: Automatic cache cleanup removed ${deleted} expired entries`
+					` MMM-SoccerStandings: Automatic cache cleanup removed ${deleted} expired entries`
 				);
 			}
 		}, cleanupInterval);
 
 		if (this.config && this.config.debug) {
 			console.log(
-				" MMM-MyTeams-LeagueTable: Cache cleanup scheduled every 6 hours"
+				" MMM-SoccerStandings: Cache cleanup scheduled every 6 hours"
 			);
 		}
 	},

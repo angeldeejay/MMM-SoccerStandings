@@ -1,5 +1,5 @@
 /**
- * Base Parser class for MMM-MyTeams-LeagueTable
+ * Base Parser class for MMM-SoccerStandings
  * Provides common utility methods for parsing league data
  */
 class BaseParser {
@@ -25,7 +25,7 @@ class BaseParser {
 			if (!isNaN(overrideDate.getTime())) {
 				if (this.config.debug) {
 					console.log(
-						` MMM-MyTeams-LeagueTable: [Parser] Using date override: ${this.config.dateTimeOverride} -> ${overrideDate.toISOString()}`
+						` MMM-SoccerStandings: [Parser] Using date override: ${this.config.dateTimeOverride} -> ${overrideDate.toISOString()}`
 					);
 				}
 				return overrideDate;
@@ -48,7 +48,7 @@ class BaseParser {
 	 */
 	logDebug(message) {
 		if (this.config.debug) {
-			console.log(` MMM-MyTeams-LeagueTable: [Parser] ${message}`);
+			console.log(` MMM-SoccerStandings: [Parser] ${message}`);
 		}
 	}
 
@@ -144,7 +144,7 @@ class BaseParser {
 			return tokens;
 		} catch (error) {
 			console.error(
-				" MMM-MyTeams-LeagueTable: [BaseParser] Error in getForm:",
+				" MMM-SoccerStandings: [BaseParser] Error in getForm:",
 				error
 			);
 			return [];
@@ -255,7 +255,7 @@ class BaseParser {
 			goalsAgainst: 0,
 			goalDifference: 0,
 			points: 0,
-			form: ""
+			form: []
 		};
 	}
 

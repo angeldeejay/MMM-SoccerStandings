@@ -1,7 +1,7 @@
 const BaseParser = require("./BaseParser");
 
 /**
- * Soccerway Parser class for MMM-MyTeams-LeagueTable
+ * Soccerway Parser class for MMM-SoccerStandings
  * Handles parsing of data from Soccerway website
  */
 class SoccerwayParser extends BaseParser {
@@ -65,7 +65,7 @@ class SoccerwayParser extends BaseParser {
 				leagueType: leagueType
 			};
 		} catch (error) {
-			console.error(` MMM-MyTeams-LeagueTable: [Soccerway] Error parsing ${leagueType}:`, error);
+			console.error(` MMM-SoccerStandings: [Soccerway] Error parsing ${leagueType}:`, error);
 			return null;
 		}
 	}
