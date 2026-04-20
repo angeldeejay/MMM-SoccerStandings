@@ -5,8 +5,8 @@
  * MIT Licensed.
  *
  * This module displays football league standings from multiple European competitions
- * sourced from BBC Sport, Google Search, Soccerway, and Wikipedia, including top-tier 
- * and second-tier European football leagues, UEFA Champions League, UEFA Europa League, 
+ * sourced from BBC Sport, Google Search, Soccerway, and Wikipedia, including top-tier
+ * and second-tier European football leagues, UEFA Champions League, UEFA Europa League,
  * UEFA Europa Conference League, and FIFA World Cup 2026.
  *
  * Enhanced with multi-provider parsing and configurable league selection for 30+ nations.
@@ -27,11 +27,45 @@ const LEAGUE_SPLITS = {
 		pointsCarryover: "halved",
 		showAllGroups: true,
 		groups: [
-			{ label: "Play-off Group", size: 6, keywords: ["play-off table", "play-off round", "playoff table", "playoff round", "championship round", "championship group", "championship table"] },
-			{ label: "Play-out Group", size: 10, keywords: ["play-out table", "play-out round", "relegation round", "relegation group", "relegation table"] }
+			{
+				label: "Play-off Group",
+				size: 6,
+				keywords: [
+					"play-off table",
+					"play-off round",
+					"playoff table",
+					"playoff round",
+					"championship round",
+					"championship group",
+					"championship table"
+				]
+			},
+			{
+				label: "Play-out Group",
+				size: 10,
+				keywords: [
+					"play-out table",
+					"play-out round",
+					"relegation round",
+					"relegation group",
+					"relegation table"
+				]
+			}
 		],
-		championshipKeywords: ["championship round", "championship group", "playoff round", "play-off round", "play-off table", "playoff table"],
-		relegationKeywords: ["relegation round", "relegation group", "play-out round", "play-out table"],
+		championshipKeywords: [
+			"championship round",
+			"championship group",
+			"playoff round",
+			"play-off round",
+			"play-off table",
+			"playoff table"
+		],
+		relegationKeywords: [
+			"relegation round",
+			"relegation group",
+			"play-out round",
+			"play-out table"
+		],
 		preferGroup: "championship"
 	},
 	SCOTLAND_PREMIERSHIP: {
@@ -41,11 +75,45 @@ const LEAGUE_SPLITS = {
 		pointsCarryover: "all",
 		showAllGroups: true,
 		groups: [
-			{ label: "Top Six", size: 6, keywords: ["top six", "top 6", "championship group", "championship round", "championship table", "upper tier"] },
-			{ label: "Bottom Six", size: 6, keywords: ["bottom six", "bottom 6", "relegation group", "relegation round", "relegation table", "lower tier"] }
+			{
+				label: "Top Six",
+				size: 6,
+				keywords: [
+					"top six",
+					"top 6",
+					"championship group",
+					"championship round",
+					"championship table",
+					"upper tier"
+				]
+			},
+			{
+				label: "Bottom Six",
+				size: 6,
+				keywords: [
+					"bottom six",
+					"bottom 6",
+					"relegation group",
+					"relegation round",
+					"relegation table",
+					"lower tier"
+				]
+			}
 		],
-		championshipKeywords: ["championship group", "top six", "top 6", "upper tier", "championship table"],
-		relegationKeywords: ["relegation group", "bottom six", "bottom 6", "lower tier", "relegation table"],
+		championshipKeywords: [
+			"championship group",
+			"top six",
+			"top 6",
+			"upper tier",
+			"championship table"
+		],
+		relegationKeywords: [
+			"relegation group",
+			"bottom six",
+			"bottom 6",
+			"lower tier",
+			"relegation table"
+		],
 		preferGroup: "championship"
 	},
 	AUSTRIA_BUNDESLIGA: {
@@ -55,11 +123,45 @@ const LEAGUE_SPLITS = {
 		pointsCarryover: "halved",
 		showAllGroups: true,
 		groups: [
-			{ label: "Championship Round", size: 6, keywords: ["championship round", "meistergruppe", "meister-gruppe", "championship group", "top group", "championship table"] },
-			{ label: "Relegation Round", size: 6, keywords: ["relegation round", "qualifikationsgruppe", "relegation group", "bottom group", "relegation table"] }
+			{
+				label: "Championship Round",
+				size: 6,
+				keywords: [
+					"championship round",
+					"meistergruppe",
+					"meister-gruppe",
+					"championship group",
+					"top group",
+					"championship table"
+				]
+			},
+			{
+				label: "Relegation Round",
+				size: 6,
+				keywords: [
+					"relegation round",
+					"qualifikationsgruppe",
+					"relegation group",
+					"bottom group",
+					"relegation table"
+				]
+			}
 		],
-		championshipKeywords: ["championship round", "championship group", "meister-gruppe", "meistergruppe", "top group", "meistergruppe table"],
-		relegationKeywords: ["relegation round", "relegation group", "qualifikationsgruppe", "bottom group", "qualifikationsgruppe table"],
+		championshipKeywords: [
+			"championship round",
+			"championship group",
+			"meister-gruppe",
+			"meistergruppe",
+			"top group",
+			"meistergruppe table"
+		],
+		relegationKeywords: [
+			"relegation round",
+			"relegation group",
+			"qualifikationsgruppe",
+			"bottom group",
+			"qualifikationsgruppe table"
+		],
 		preferGroup: "championship"
 	},
 	BELGIUM_PRO_LEAGUE: {
@@ -69,12 +171,63 @@ const LEAGUE_SPLITS = {
 		pointsCarryover: "halved",
 		showAllGroups: true,
 		groups: [
-			{ label: "Champions' Play-offs", size: 6, keywords: ["champions' play-offs", "champions play-offs", "championship play-offs", "championship playoff", "championship group", "championship round", "top 6", "po1", "play-offs i", "playoffs i"] },
-			{ label: "Europa Play-offs", size: 6, keywords: ["europa play-offs", "europe play-offs", "europa playoffs", "po2", "play-offs ii", "playoffs ii", "europa league play-offs", "conference league play-offs"] },
-			{ label: "Relegation Play-offs", size: 4, keywords: ["relegation play-offs", "relegation playoff", "relegation group", "bottom 4", "relegation table"] }
+			{
+				label: "Champions' Play-offs",
+				size: 6,
+				keywords: [
+					"champions' play-offs",
+					"champions play-offs",
+					"championship play-offs",
+					"championship playoff",
+					"championship group",
+					"championship round",
+					"top 6",
+					"po1",
+					"play-offs i",
+					"playoffs i"
+				]
+			},
+			{
+				label: "Europa Play-offs",
+				size: 6,
+				keywords: [
+					"europa play-offs",
+					"europe play-offs",
+					"europa playoffs",
+					"po2",
+					"play-offs ii",
+					"playoffs ii",
+					"europa league play-offs",
+					"conference league play-offs"
+				]
+			},
+			{
+				label: "Relegation Play-offs",
+				size: 4,
+				keywords: [
+					"relegation play-offs",
+					"relegation playoff",
+					"relegation group",
+					"bottom 4",
+					"relegation table"
+				]
+			}
 		],
-		championshipKeywords: ["champions' play-offs", "champions play-offs", "championship play-offs", "championship playoff", "championship round", "top 6", "championship table"],
-		relegationKeywords: ["relegation play-offs", "relegation group", "bottom group", "relegation table"],
+		championshipKeywords: [
+			"champions' play-offs",
+			"champions play-offs",
+			"championship play-offs",
+			"championship playoff",
+			"championship round",
+			"top 6",
+			"championship table"
+		],
+		relegationKeywords: [
+			"relegation play-offs",
+			"relegation group",
+			"bottom group",
+			"relegation table"
+		],
 		preferGroup: "championship"
 	},
 	SWITZERLAND_SUPER_LEAGUE: {
@@ -84,11 +237,41 @@ const LEAGUE_SPLITS = {
 		pointsCarryover: "all",
 		showAllGroups: true,
 		groups: [
-			{ label: "Championship Group", size: 6, keywords: ["meisterrunde", "championship group", "championship round", "top 6", "championship table"] },
-			{ label: "Relegation Group", size: 6, keywords: ["abstiegsrunde", "relegation group", "relegation round", "bottom 6", "relegation table"] }
+			{
+				label: "Championship Group",
+				size: 6,
+				keywords: [
+					"meisterrunde",
+					"championship group",
+					"championship round",
+					"top 6",
+					"championship table"
+				]
+			},
+			{
+				label: "Relegation Group",
+				size: 6,
+				keywords: [
+					"abstiegsrunde",
+					"relegation group",
+					"relegation round",
+					"bottom 6",
+					"relegation table"
+				]
+			}
 		],
-		championshipKeywords: ["championship group", "meisterrunde", "top 6", "meisterrunde table"],
-		relegationKeywords: ["relegation group", "abstiegsrunde", "bottom 6", "abstiegsrunde table"],
+		championshipKeywords: [
+			"championship group",
+			"meisterrunde",
+			"top 6",
+			"meisterrunde table"
+		],
+		relegationKeywords: [
+			"relegation group",
+			"abstiegsrunde",
+			"bottom 6",
+			"abstiegsrunde table"
+		],
 		preferGroup: "championship"
 	},
 	DENMARK_SUPERLIGAEN: {
@@ -98,11 +281,41 @@ const LEAGUE_SPLITS = {
 		pointsCarryover: "all",
 		showAllGroups: true,
 		groups: [
-			{ label: "Championship Group", size: 6, keywords: ["championship group", "championship round", "top 6", "upper half", "championship table"] },
-			{ label: "Relegation Group", size: 6, keywords: ["relegation group", "relegation round", "bottom 6", "lower half", "relegation table"] }
+			{
+				label: "Championship Group",
+				size: 6,
+				keywords: [
+					"championship group",
+					"championship round",
+					"top 6",
+					"upper half",
+					"championship table"
+				]
+			},
+			{
+				label: "Relegation Group",
+				size: 6,
+				keywords: [
+					"relegation group",
+					"relegation round",
+					"bottom 6",
+					"lower half",
+					"relegation table"
+				]
+			}
 		],
-		championshipKeywords: ["championship group", "top 6", "upper half", "championship table"],
-		relegationKeywords: ["relegation group", "bottom 6", "lower half", "relegation table"],
+		championshipKeywords: [
+			"championship group",
+			"top 6",
+			"upper half",
+			"championship table"
+		],
+		relegationKeywords: [
+			"relegation group",
+			"bottom 6",
+			"lower half",
+			"relegation table"
+		],
 		preferGroup: "championship"
 	},
 	SERBIA_SUPER_LIGA: {
@@ -112,11 +325,41 @@ const LEAGUE_SPLITS = {
 		pointsCarryover: "all",
 		showAllGroups: true,
 		groups: [
-			{ label: "Championship Group", size: 8, keywords: ["championship group", "championship round", "top 8", "first group", "championship table"] },
-			{ label: "Relegation Group", size: 8, keywords: ["relegation group", "relegation round", "bottom 8", "second group", "relegation table"] }
+			{
+				label: "Championship Group",
+				size: 8,
+				keywords: [
+					"championship group",
+					"championship round",
+					"top 8",
+					"first group",
+					"championship table"
+				]
+			},
+			{
+				label: "Relegation Group",
+				size: 8,
+				keywords: [
+					"relegation group",
+					"relegation round",
+					"bottom 8",
+					"second group",
+					"relegation table"
+				]
+			}
 		],
-		championshipKeywords: ["championship group", "top 8", "first group", "championship table"],
-		relegationKeywords: ["relegation group", "bottom 8", "second group", "relegation table"],
+		championshipKeywords: [
+			"championship group",
+			"top 8",
+			"first group",
+			"championship table"
+		],
+		relegationKeywords: [
+			"relegation group",
+			"bottom 8",
+			"second group",
+			"relegation table"
+		],
 		preferGroup: "championship"
 	},
 	CYMRU_PREMIER_LEAGUE: {
@@ -126,11 +369,41 @@ const LEAGUE_SPLITS = {
 		pointsCarryover: "all",
 		showAllGroups: true,
 		groups: [
-			{ label: "Championship Group", size: 6, keywords: ["championship group", "championship round", "top 6", "upper half", "championship table"] },
-			{ label: "Relegation Group", size: 6, keywords: ["relegation group", "relegation round", "bottom 6", "lower half", "relegation table"] }
+			{
+				label: "Championship Group",
+				size: 6,
+				keywords: [
+					"championship group",
+					"championship round",
+					"top 6",
+					"upper half",
+					"championship table"
+				]
+			},
+			{
+				label: "Relegation Group",
+				size: 6,
+				keywords: [
+					"relegation group",
+					"relegation round",
+					"bottom 6",
+					"lower half",
+					"relegation table"
+				]
+			}
 		],
-		championshipKeywords: ["championship group", "top 6", "upper half", "championship table"],
-		relegationKeywords: ["relegation group", "bottom 6", "lower half", "relegation table"],
+		championshipKeywords: [
+			"championship group",
+			"top 6",
+			"upper half",
+			"championship table"
+		],
+		relegationKeywords: [
+			"relegation group",
+			"bottom 6",
+			"lower half",
+			"relegation table"
+		],
 		preferGroup: "championship"
 	},
 	// Greece Super League: 14 teams, 26-game double RR regular season (Phase 1), then THREE groups:
@@ -145,12 +418,55 @@ const LEAGUE_SPLITS = {
 		pointsCarryover: "mixed",
 		showAllGroups: true,
 		groups: [
-			{ label: "Championship Play-offs", size: 4, keywords: ["championship play-offs", "championship play-off", "championship playoff", "championship round", "championship group", "championship table"] },
-			{ label: "Europe Play-offs", size: 4, keywords: ["europe play-offs", "europe play-off", "europa play-offs", "conference league play-offs", "european play-offs", "europe playoff"] },
-			{ label: "Relegation Play-outs", size: 6, keywords: ["relegation play-outs", "relegation play-out", "relegation playoff", "relegation round", "relegation group", "relegation table"] }
+			{
+				label: "Championship Play-offs",
+				size: 4,
+				keywords: [
+					"championship play-offs",
+					"championship play-off",
+					"championship playoff",
+					"championship round",
+					"championship group",
+					"championship table"
+				]
+			},
+			{
+				label: "Europe Play-offs",
+				size: 4,
+				keywords: [
+					"europe play-offs",
+					"europe play-off",
+					"europa play-offs",
+					"conference league play-offs",
+					"european play-offs",
+					"europe playoff"
+				]
+			},
+			{
+				label: "Relegation Play-outs",
+				size: 6,
+				keywords: [
+					"relegation play-outs",
+					"relegation play-out",
+					"relegation playoff",
+					"relegation round",
+					"relegation group",
+					"relegation table"
+				]
+			}
 		],
-		championshipKeywords: ["championship play-offs", "championship play-off", "championship playoff", "championship table"],
-		relegationKeywords: ["relegation play-outs", "relegation play-out", "relegation playoff", "relegation table"],
+		championshipKeywords: [
+			"championship play-offs",
+			"championship play-off",
+			"championship playoff",
+			"championship table"
+		],
+		relegationKeywords: [
+			"relegation play-outs",
+			"relegation play-out",
+			"relegation playoff",
+			"relegation table"
+		],
 		preferGroup: "championship"
 	},
 	// Cyprus First Division: 14 teams, 26-game double RR regular season (Phase 1), then TWO groups:
@@ -164,11 +480,43 @@ const LEAGUE_SPLITS = {
 		pointsCarryover: "all",
 		showAllGroups: true,
 		groups: [
-			{ label: "Championship Round", size: 6, keywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"] },
-			{ label: "Relegation Round", size: 8, keywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"] }
+			{
+				label: "Championship Round",
+				size: 6,
+				keywords: [
+					"championship round",
+					"championship playoff",
+					"championship group",
+					"top 6",
+					"championship table"
+				]
+			},
+			{
+				label: "Relegation Round",
+				size: 8,
+				keywords: [
+					"relegation round",
+					"relegation playoff",
+					"relegation group",
+					"bottom 8",
+					"relegation table"
+				]
+			}
 		],
-		championshipKeywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"],
-		relegationKeywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"],
+		championshipKeywords: [
+			"championship round",
+			"championship playoff",
+			"championship group",
+			"top 6",
+			"championship table"
+		],
+		relegationKeywords: [
+			"relegation round",
+			"relegation playoff",
+			"relegation group",
+			"bottom 8",
+			"relegation table"
+		],
 		preferGroup: "championship"
 	},
 	// Israel Premier League: 14 teams, 26-game double RR regular season (Phase 1), then TWO groups:
@@ -181,11 +529,43 @@ const LEAGUE_SPLITS = {
 		pointsCarryover: "all",
 		showAllGroups: true,
 		groups: [
-			{ label: "Championship Round", size: 6, keywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"] },
-			{ label: "Relegation Round", size: 8, keywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"] }
+			{
+				label: "Championship Round",
+				size: 6,
+				keywords: [
+					"championship round",
+					"championship playoff",
+					"championship group",
+					"top 6",
+					"championship table"
+				]
+			},
+			{
+				label: "Relegation Round",
+				size: 8,
+				keywords: [
+					"relegation round",
+					"relegation playoff",
+					"relegation group",
+					"bottom 8",
+					"relegation table"
+				]
+			}
 		],
-		championshipKeywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"],
-		relegationKeywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"],
+		championshipKeywords: [
+			"championship round",
+			"championship playoff",
+			"championship group",
+			"top 6",
+			"championship table"
+		],
+		relegationKeywords: [
+			"relegation round",
+			"relegation playoff",
+			"relegation group",
+			"bottom 8",
+			"relegation table"
+		],
 		preferGroup: "championship"
 	}
 };
@@ -212,8 +592,8 @@ Module.register("MMM-SoccerStandings", {
 		updateInterval: 30 * 60 * 1000, // How often to refresh (ms) – default: 30 min
 		retryDelay: 15000, // Delay between retry attempts after an error (ms)
 		maxRetries: 3, // Stop retrying after this many failures
-		animationSpeed: 2000, // DOM update animation speed (ms)
-		fadeSpeed: 4000, // Fade animation speed (ms)
+		animationSpeed: 0, // DOM update animation speed (ms)
+		fadeSpeed: 0, // Fade animation speed (ms)
 		colored: true, // Color rows by standing (top/UEFA/relegation)
 		maxTeams: 36, // 0 = show all teams
 		highlightTeams: ["Celtic", "Hearts"], // Emphasize teams by exact name
@@ -346,7 +726,7 @@ Module.register("MMM-SoccerStandings", {
 		opacityOverride: null, // null=auto,  set to  1.0 to force full opacity
 
 		// Debug
-		debug: true, // Set to true to enable console logging
+		debug: false, // Set to true to enable console logging
 		provider: "auto", // Data provider: "auto", "bbc", "soccerway", "wikipedia", "espn", "google"
 		dateTimeOverride: null, // Override system date/time for testing. Use ISO date format (e.g., "2026-01-15" or "2026-01-15T14:30:00Z"). null = use system date
 
@@ -437,9 +817,7 @@ Module.register("MMM-SoccerStandings", {
 			Log.info(
 				` MMM-SoccerStandings: Enabled leagues: ${JSON.stringify(this.enabledLeagueCodes)}`
 			);
-			Log.info(
-				` MMM-SoccerStandings: Current league: ${this.currentLeague}`
-			);
+			Log.info(` MMM-SoccerStandings: Current league: ${this.currentLeague}`);
 		}
 
 		// Optionally clear cache once at startup
@@ -480,7 +858,9 @@ Module.register("MMM-SoccerStandings", {
 	 */
 	getCurrentDate() {
 		if (this.config.dateTimeOverride) {
-			const validated = this.validateDateTimeOverride(this.config.dateTimeOverride);
+			const validated = this.validateDateTimeOverride(
+				this.config.dateTimeOverride
+			);
 			if (validated) {
 				if (this.config.debug) {
 					Log.info(
@@ -501,21 +881,27 @@ Module.register("MMM-SoccerStandings", {
 	validateDateTimeOverride(dateString) {
 		if (!dateString || typeof dateString !== "string") {
 			if (this.config.debug) {
-				Log.warn(` MMM-SoccerStandings: Invalid dateTimeOverride type: ${typeof dateString}`);
+				Log.warn(
+					` MMM-SoccerStandings: Invalid dateTimeOverride type: ${typeof dateString}`
+				);
 			}
 			return null;
 		}
 
 		const override = new Date(dateString);
-		
+
 		if (isNaN(override.getTime())) {
-			Log.warn(` MMM-SoccerStandings: Invalid dateTimeOverride format: ${dateString}`);
+			Log.warn(
+				` MMM-SoccerStandings: Invalid dateTimeOverride format: ${dateString}`
+			);
 			return null;
 		}
 
 		const year = override.getFullYear();
 		if (year < 1900 || year > 2100) {
-			Log.warn(` MMM-SoccerStandings: dateTimeOverride year out of range (1900-2100): ${dateString} (year: ${year})`);
+			Log.warn(
+				` MMM-SoccerStandings: dateTimeOverride year out of range (1900-2100): ${dateString} (year: ${year})`
+			);
 			return null;
 		}
 
@@ -526,10 +912,14 @@ Module.register("MMM-SoccerStandings", {
 		return this.getCurrentDate().toLocaleDateString("en-CA");
 	},
 
-	// Standardize team names for comparisons and logo lookups
+	// Standardize team names for comparisons and logo lookups.
+	// INTENTIONAL DUPLICATE of logo-resolver.js::normalize() — kept here because
+	// the frontend runs in the Electron browser context where Node.js require() is
+	// unavailable, so the logic cannot be shared via a common module at runtime.
+	// If you update the normalization logic, update logo-resolver.js::normalize() too.
 	normalizeTeamName(str) {
 		if (!str) return "";
-		
+
 		// 1. Resolve aliases if defined (use the raw name first, trimmed and lowercase)
 		const lookupKey = str.trim().toLowerCase();
 		if (this.teamAliases && this.teamAliases[lookupKey]) {
@@ -541,7 +931,8 @@ Module.register("MMM-SoccerStandings", {
 		result = result.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 		// 3. Lowercase and strip common tournament suffixes/words
-		return result.toLowerCase()
+		return result
+			.toLowerCase()
 			.replace(/\([^)]*\)/g, "") // Strip anything in parentheses like (Host) or (Title Holder)
 			.replace(/\b(and|the|of|rep|republic)\b/g, "") // Strip common words
 			.replace(/&/g, " ")
@@ -723,35 +1114,59 @@ Module.register("MMM-SoccerStandings", {
 		// These provide the most reliable static HTML fallback for split-league phases (e.g. Romania).
 		const wikipediaUrlMap = {
 			ROMANIA_LIGA_I: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Liga_I",
-			BOLIVIA_LIGA_2: "https://en.wikipedia.org/wiki/2025_Copa_Sim%C3%B3n_Bol%C3%ADvar_(Bolivia)",
-			Austria: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Austrian_Football_Bundesliga",
-			SCOTLAND_PREMIERSHIP: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Scottish_Premiership",
-			SCOTLAND_CHAMPIONSHIP: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Scottish_Championship",
-			ENGLAND_PREMIER_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Premier_League",
-			ENGLAND_CHAMPIONSHIP: "https://en.wikipedia.org/wiki/2025%E2%80%9326_EFL_Championship",
-			GERMANY_BUNDESLIGA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Bundesliga",
+			BOLIVIA_LIGA_2:
+				"https://en.wikipedia.org/wiki/2025_Copa_Sim%C3%B3n_Bol%C3%ADvar_(Bolivia)",
+			Austria:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Austrian_Football_Bundesliga",
+			SCOTLAND_PREMIERSHIP:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Scottish_Premiership",
+			SCOTLAND_CHAMPIONSHIP:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Scottish_Championship",
+			ENGLAND_PREMIER_LEAGUE:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Premier_League",
+			ENGLAND_CHAMPIONSHIP:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_EFL_Championship",
+			GERMANY_BUNDESLIGA:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Bundesliga",
 			FRANCE_LIGUE1: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Ligue_1",
 			SPAIN_LA_LIGA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_La_Liga",
 			ITALY_SERIE_A: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Serie_A",
-			NETHERLANDS_EREDIVISIE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Eredivisie",
-			BELGIUM_PRO_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Belgian_Pro_League",
-			PORTUGAL_PRIMEIRA_LIGA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Primeira_Liga",
-			TURKEY_SUPER_LIG: "https://en.wikipedia.org/wiki/2025%E2%80%9326_S%C3%BCper_Lig",
-			GREECE_SUPER_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Super_League_Greece",
-			AUSTRIA_BUNDESLIGA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Austrian_Football_Bundesliga",
-			DENMARK_SUPERLIGAEN: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Danish_Superliga",
+			NETHERLANDS_EREDIVISIE:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Eredivisie",
+			BELGIUM_PRO_LEAGUE:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Belgian_Pro_League",
+			PORTUGAL_PRIMEIRA_LIGA:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Primeira_Liga",
+			TURKEY_SUPER_LIG:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_S%C3%BCper_Lig",
+			GREECE_SUPER_LEAGUE:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Super_League_Greece",
+			AUSTRIA_BUNDESLIGA:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Austrian_Football_Bundesliga",
+			DENMARK_SUPERLIGAEN:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Danish_Superliga",
 			NORWAY_ELITESERIEN: "https://en.wikipedia.org/wiki/2026_Eliteserien",
 			SWEDEN_ALLSVENSKAN: "https://en.wikipedia.org/wiki/2026_Allsvenskan",
-			SWITZERLAND_SUPER_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Swiss_Super_League",
-			UKRAINE_PREMIER_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Ukrainian_Premier_League",
-			CROATIA_HNL: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Croatian_Football_League",
-			SERBIA_SUPER_LIGA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Serbian_SuperLiga",
-			HUNGARY_NBI: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Nemzeti_Bajnoks%C3%A1g_I",
-			POLAND_EKSTRAKLASA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Ekstraklasa",
-			CZECH_LIGA: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Czech_First_League",
-			CYMRU_PREMIER_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Cymru_Premier",
-			CYPRUS_FIRST_DIVISION: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Cypriot_First_Division",
-			ISRAEL_PREMIER_LEAGUE: "https://en.wikipedia.org/wiki/2025%E2%80%9326_Israeli_Premier_League",
+			SWITZERLAND_SUPER_LEAGUE:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Swiss_Super_League",
+			UKRAINE_PREMIER_LEAGUE:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Ukrainian_Premier_League",
+			CROATIA_HNL:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Croatian_Football_League",
+			SERBIA_SUPER_LIGA:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Serbian_SuperLiga",
+			HUNGARY_NBI:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Nemzeti_Bajnoks%C3%A1g_I",
+			POLAND_EKSTRAKLASA:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Ekstraklasa",
+			CZECH_LIGA:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Czech_First_League",
+			CYMRU_PREMIER_LEAGUE:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Cymru_Premier",
+			CYPRUS_FIRST_DIVISION:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Cypriot_First_Division",
+			ISRAEL_PREMIER_LEAGUE:
+				"https://en.wikipedia.org/wiki/2025%E2%80%9326_Israeli_Premier_League"
 		};
 
 		// Map of league codes to their Soccerway URLs
@@ -759,70 +1174,102 @@ Module.register("MMM-SoccerStandings", {
 		// Soccerway uses heavy JS rendering; results may vary with a simple HTTP GET request.
 		// Season IDs below are for 2025-26; update r##### IDs if season changes.
 		const soccerwayUrlMap = {
-			
-			Austria: "https://int.soccerway.com/national/austria/bundesliga/20252026/regular-season/r87207/",
-			BOLIVIA_LIGA_2: "https://int.soccerway.com/national/bolivia/nacional-b/2025/regular-season/r86100/",
-			SCOTLAND_PREMIERSHIP: "https://int.soccerway.com/national/scotland/premier-league/20252026/regular-season/r87208/",
-			ENGLAND_PREMIER_LEAGUE: "https://int.soccerway.com/national/england/premier-league/20252026/regular-season/r87209/",
-			GERMANY_BUNDESLIGA: "https://int.soccerway.com/national/germany/bundesliga/20252026/regular-season/r87210/",
-			FRANCE_LIGUE1: "https://int.soccerway.com/national/france/ligue-1/20252026/regular-season/r87211/",
-			SPAIN_LA_LIGA: "https://int.soccerway.com/national/spain/primera-division/20252026/regular-season/r87212/",
-			ITALY_SERIE_A: "https://int.soccerway.com/national/italy/serie-a/20252026/regular-season/r87213/",
-			CYMRU_PREMIER_LEAGUE: "https://int.soccerway.com/national/wales/cymru-premier/20252026/regular-season/r87300/",
+			Austria:
+				"https://int.soccerway.com/national/austria/bundesliga/20252026/regular-season/r87207/",
+			BOLIVIA_LIGA_2:
+				"https://int.soccerway.com/national/bolivia/nacional-b/2025/regular-season/r86100/",
+			SCOTLAND_PREMIERSHIP:
+				"https://int.soccerway.com/national/scotland/premier-league/20252026/regular-season/r87208/",
+			ENGLAND_PREMIER_LEAGUE:
+				"https://int.soccerway.com/national/england/premier-league/20252026/regular-season/r87209/",
+			GERMANY_BUNDESLIGA:
+				"https://int.soccerway.com/national/germany/bundesliga/20252026/regular-season/r87210/",
+			FRANCE_LIGUE1:
+				"https://int.soccerway.com/national/france/ligue-1/20252026/regular-season/r87211/",
+			SPAIN_LA_LIGA:
+				"https://int.soccerway.com/national/spain/primera-division/20252026/regular-season/r87212/",
+			ITALY_SERIE_A:
+				"https://int.soccerway.com/national/italy/serie-a/20252026/regular-season/r87213/",
+			CYMRU_PREMIER_LEAGUE:
+				"https://int.soccerway.com/national/wales/cymru-premier/20252026/regular-season/r87300/"
 		};
 
 		// Map of league codes to their Google Search URLs (last-resort fallback)
 		// GoogleParser searches for sports snippet tables in Google's HTML response.
 		const googleUrlMap = {
-			ROMANIA_LIGA_I: "https://www.google.com/search?q=Romanian+Superliga+table+standings+2025-26",
-			BOLIVIA_LIGA_2: "https://www.google.com/search?q=Bolivia+Copa+Simon+Bolivar+table+2025",
-			SCOTLAND_PREMIERSHIP: "https://www.google.com/search?q=Scottish+Premiership+table+standings",
-			ENGLAND_PREMIER_LEAGUE: "https://www.google.com/search?q=Premier+League+table+standings",
-			GERMANY_BUNDESLIGA: "https://www.google.com/search?q=Bundesliga+table+standings",
+			ROMANIA_LIGA_I:
+				"https://www.google.com/search?q=Romanian+Superliga+table+standings+2025-26",
+			BOLIVIA_LIGA_2:
+				"https://www.google.com/search?q=Bolivia+Copa+Simon+Bolivar+table+2025",
+			SCOTLAND_PREMIERSHIP:
+				"https://www.google.com/search?q=Scottish+Premiership+table+standings",
+			ENGLAND_PREMIER_LEAGUE:
+				"https://www.google.com/search?q=Premier+League+table+standings",
+			GERMANY_BUNDESLIGA:
+				"https://www.google.com/search?q=Bundesliga+table+standings",
 			FRANCE_LIGUE1: "https://www.google.com/search?q=Ligue+1+table+standings",
 			SPAIN_LA_LIGA: "https://www.google.com/search?q=La+Liga+table+standings",
 			ITALY_SERIE_A: "https://www.google.com/search?q=Serie+A+table+standings",
-			AUSTRIA_BUNDESLIGA: "https://www.google.com/search?q=Austrian+Bundesliga+table+standings",
-			BELGIUM_PRO_LEAGUE: "https://www.google.com/search?q=Belgian+Pro+League+table+standings",
-			CYMRU_PREMIER_LEAGUE: "https://www.google.com/search?q=Cymru+Premier+League+table+standings",
+			AUSTRIA_BUNDESLIGA:
+				"https://www.google.com/search?q=Austrian+Bundesliga+table+standings",
+			BELGIUM_PRO_LEAGUE:
+				"https://www.google.com/search?q=Belgian+Pro+League+table+standings",
+			CYMRU_PREMIER_LEAGUE:
+				"https://www.google.com/search?q=Cymru+Premier+League+table+standings"
 		};
 
 		// Map of league codes to their ESPN standings URLs.
 		// ESPN uses a consistent URL pattern: /soccer/standings/_/league/<code>
 		// These are year-independent (no season ID needed).
 		const espnUrlMap = {
-			SCOTLAND_PREMIERSHIP: "https://www.espn.com/soccer/standings/_/league/sco.1",
-			SCOTLAND_CHAMPIONSHIP: "https://www.espn.com/soccer/standings/_/league/sco.2",
-			ENGLAND_PREMIER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/eng.1",
-			ENGLAND_CHAMPIONSHIP: "https://www.espn.com/soccer/standings/_/league/eng.2",
-			GERMANY_BUNDESLIGA: "https://www.espn.com/soccer/standings/_/league/ger.1",
+			SCOTLAND_PREMIERSHIP:
+				"https://www.espn.com/soccer/standings/_/league/sco.1",
+			SCOTLAND_CHAMPIONSHIP:
+				"https://www.espn.com/soccer/standings/_/league/sco.2",
+			ENGLAND_PREMIER_LEAGUE:
+				"https://www.espn.com/soccer/standings/_/league/eng.1",
+			ENGLAND_CHAMPIONSHIP:
+				"https://www.espn.com/soccer/standings/_/league/eng.2",
+			GERMANY_BUNDESLIGA:
+				"https://www.espn.com/soccer/standings/_/league/ger.1",
 			FRANCE_LIGUE1: "https://www.espn.com/soccer/standings/_/league/fra.1",
 			SPAIN_LA_LIGA: "https://www.espn.com/soccer/standings/_/league/esp.1",
 			ITALY_SERIE_A: "https://www.espn.com/soccer/standings/_/league/ita.1",
-			NETHERLANDS_EREDIVISIE: "https://www.espn.com/soccer/standings/_/league/ned.1",
-			BELGIUM_PRO_LEAGUE: "https://www.espn.com/soccer/standings/_/league/bel.1",
-			PORTUGAL_PRIMEIRA_LIGA: "https://www.espn.com/soccer/standings/_/league/por.1",
+			NETHERLANDS_EREDIVISIE:
+				"https://www.espn.com/soccer/standings/_/league/ned.1",
+			BELGIUM_PRO_LEAGUE:
+				"https://www.espn.com/soccer/standings/_/league/bel.1",
+			PORTUGAL_PRIMEIRA_LIGA:
+				"https://www.espn.com/soccer/standings/_/league/por.1",
 			TURKEY_SUPER_LIG: "https://www.espn.com/soccer/standings/_/league/tur.1",
-			GREECE_SUPER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/gre.1",
-			AUSTRIA_BUNDESLIGA: "https://www.espn.com/soccer/standings/_/league/aut.1",
-			DENMARK_SUPERLIGAEN: "https://www.espn.com/soccer/standings/_/league/den.1",
-			NORWAY_ELITESERIEN: "https://www.espn.com/soccer/standings/_/league/nor.1",
-			SWEDEN_ALLSVENSKAN: "https://www.espn.com/soccer/standings/_/league/swe.1",
-			SWITZERLAND_SUPER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/sui.1",
+			GREECE_SUPER_LEAGUE:
+				"https://www.espn.com/soccer/standings/_/league/gre.1",
+			AUSTRIA_BUNDESLIGA:
+				"https://www.espn.com/soccer/standings/_/league/aut.1",
+			DENMARK_SUPERLIGAEN:
+				"https://www.espn.com/soccer/standings/_/league/den.1",
+			NORWAY_ELITESERIEN:
+				"https://www.espn.com/soccer/standings/_/league/nor.1",
+			SWEDEN_ALLSVENSKAN:
+				"https://www.espn.com/soccer/standings/_/league/swe.1",
+			SWITZERLAND_SUPER_LEAGUE:
+				"https://www.espn.com/soccer/standings/_/league/sui.1",
 			ROMANIA_LIGA_I: "https://www.espn.com/soccer/standings/_/league/rou.1",
 			CROATIA_HNL: "https://www.espn.com/soccer/standings/_/league/cro.1",
 			SERBIA_SUPER_LIGA: "https://www.espn.com/soccer/standings/_/league/srb.1",
-			UKRAINE_PREMIER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/ukr.1",
+			UKRAINE_PREMIER_LEAGUE:
+				"https://www.espn.com/soccer/standings/_/league/ukr.1",
 			HUNGARY_NBI: "https://www.espn.com/soccer/standings/_/league/hun.1",
-			POLAND_EKSTRAKLASA: "https://www.espn.com/soccer/standings/_/league/pol.1",
+			POLAND_EKSTRAKLASA:
+				"https://www.espn.com/soccer/standings/_/league/pol.1",
 			CZECH_LIGA: "https://www.espn.com/soccer/standings/_/league/cze.1",
-			CYMRU_PREMIER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/wal.1",
-			CYPRUS_FIRST_DIVISION: "https://www.espn.com/soccer/standings/_/league/cyp.1",
-			ISRAEL_PREMIER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/isr.1",
+			CYMRU_PREMIER_LEAGUE:
+				"https://www.espn.com/soccer/standings/_/league/wal.1",
+			CYPRUS_FIRST_DIVISION:
+				"https://www.espn.com/soccer/standings/_/league/cyp.1",
+			ISRAEL_PREMIER_LEAGUE:
+				"https://www.espn.com/soccer/standings/_/league/isr.1"
 		};
-
-
-
 
 		// Map of league codes to their BBC Sport URLs
 		const bbcUrlMap = {
@@ -945,41 +1392,78 @@ Module.register("MMM-SoccerStandings", {
 		// filtering out any entries where the URL is missing.
 		const buildChain = (...providerOrder) =>
 			providerOrder
-				.map(p => (urls[p] ? { url: urls[p], provider: p } : null))
+				.map((p) => (urls[p] ? { url: urls[p], provider: p } : null))
 				.filter(Boolean);
 
 		// Explicit provider selection: put the requested provider first, then
 		// fall back through the remaining ordered chain.
 		if (provider === "wikipedia" && urls.wikipedia) {
 			const chain = buildChain("wikipedia", "espn", "bbc", "google");
-			return { primary: chain[0].url, fallback: chain[1]?.url, providerChain: chain };
+			return {
+				primary: chain[0].url,
+				fallback: chain[1]?.url,
+				providerChain: chain
+			};
 		}
 
 		if (provider === "espn" && urls.espn) {
 			const chain = buildChain("espn", "wikipedia", "bbc", "google");
-			return { primary: chain[0].url, fallback: chain[1]?.url, providerChain: chain };
+			return {
+				primary: chain[0].url,
+				fallback: chain[1]?.url,
+				providerChain: chain
+			};
 		}
 
 		if (provider === "soccerway" && urls.soccerway) {
-			const chain = buildChain("soccerway", "wikipedia", "espn", "bbc", "google");
-			return { primary: chain[0].url, fallback: chain[1]?.url, providerChain: chain };
+			const chain = buildChain(
+				"soccerway",
+				"wikipedia",
+				"espn",
+				"bbc",
+				"google"
+			);
+			return {
+				primary: chain[0].url,
+				fallback: chain[1]?.url,
+				providerChain: chain
+			};
 		}
 
 		if (provider === "google" && urls.google) {
 			const chain = buildChain("google", "wikipedia", "espn", "bbc");
-			return { primary: chain[0].url, fallback: chain[1]?.url, providerChain: chain };
+			return {
+				primary: chain[0].url,
+				fallback: chain[1]?.url,
+				providerChain: chain
+			};
 		}
 
 		if (provider === "bbc" && urls.bbc) {
-			const chain = buildChain("bbc", "wikipedia", "espn", "soccerway", "google");
-			return { primary: chain[0].url, fallback: chain[1]?.url, providerChain: chain };
+			const chain = buildChain(
+				"bbc",
+				"wikipedia",
+				"espn",
+				"soccerway",
+				"google"
+			);
+			return {
+				primary: chain[0].url,
+				fallback: chain[1]?.url,
+				providerChain: chain
+			};
 		}
 
 		// "auto" mode: BBC first, then Wikipedia (most reliable static HTML for split leagues),
 		// then ESPN, then Soccerway, then Google as last resort.
 		const chain = buildChain("bbc", "wikipedia", "espn", "soccerway", "google");
-		if (chain.length === 0) return { primary: null, fallback: null, providerChain: [] };
-		return { primary: chain[0].url, fallback: chain[1]?.url, providerChain: chain };
+		if (chain.length === 0)
+			return { primary: null, fallback: null, providerChain: [] };
+		return {
+			primary: chain[0].url,
+			fallback: chain[1]?.url,
+			providerChain: chain
+		};
 	},
 
 	// ===== NEW: Request data for all enabled leagues (dynamic) =====
@@ -1079,9 +1563,9 @@ Module.register("MMM-SoccerStandings", {
 	 */
 	addKeyboardNavigation(element, callback) {
 		if (!element) return;
-		
+
 		element.setAttribute("tabindex", "0");
-		
+
 		element.addEventListener("keydown", (e) => {
 			if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
 				e.preventDefault();
@@ -1103,10 +1587,14 @@ Module.register("MMM-SoccerStandings", {
 			return;
 		}
 		const teamRow = active.closest("[data-team-name]");
-		this._savedFocusTeam = teamRow ? teamRow.getAttribute("data-team-name") : null;
+		this._savedFocusTeam = teamRow
+			? teamRow.getAttribute("data-team-name")
+			: null;
 		this._savedFocusClass = active.className || null;
 		if (this.config.debug) {
-			Log.info(`[A11Y-08] Saved focus state: team="${this._savedFocusTeam}" class="${this._savedFocusClass}"`);
+			Log.info(
+				`[A11Y-08] Saved focus state: team="${this._savedFocusTeam}" class="${this._savedFocusClass}"`
+			);
 		}
 	},
 
@@ -1121,18 +1609,25 @@ Module.register("MMM-SoccerStandings", {
 		const wrapper = document.getElementById(`mtlt-${this.identifier}`);
 		if (!wrapper) return;
 
-		const teamRow = wrapper.querySelector(`[data-team-name="${CSS.escape(this._savedFocusTeam)}"]`);
+		const teamRow = wrapper.querySelector(
+			`[data-team-name="${CSS.escape(this._savedFocusTeam)}"]`
+		);
 		if (teamRow) {
 			let target = null;
 			if (this._savedFocusClass) {
-				target = teamRow.querySelector(`.${this._savedFocusClass.trim().split(/\s+/)[0]}`);
+				target = teamRow.querySelector(
+					`.${this._savedFocusClass.trim().split(/\s+/)[0]}`
+				);
 			}
 			const focusEl = target || teamRow;
 			if (focusEl.getAttribute("tabindex") === null) {
 				focusEl.setAttribute("tabindex", "-1");
 			}
 			focusEl.focus({ preventScroll: true });
-			this.announceToScreenReader(`Table updated. Focus restored to ${this._savedFocusTeam}`, true);
+			this.announceToScreenReader(
+				`Table updated. Focus restored to ${this._savedFocusTeam}`,
+				true
+			);
 			if (this.config.debug) {
 				Log.info(`[A11Y-08] Restored focus to team="${this._savedFocusTeam}"`);
 			}
@@ -1148,37 +1643,44 @@ Module.register("MMM-SoccerStandings", {
 	 */
 	setupLazyLoading() {
 		// Check if Intersection Observer is supported
-		if (!('IntersectionObserver' in window)) {
+		if (!("IntersectionObserver" in window)) {
 			// Fallback to immediate loading on older browsers
 			this.imageObserver = null;
 			if (this.config.debug) {
-				Log.info('[PERF-08] IntersectionObserver not supported - using immediate loading');
+				Log.info(
+					"[PERF-08] IntersectionObserver not supported - using immediate loading"
+				);
 			}
 			return;
 		}
 
-		this.imageObserver = new IntersectionObserver((entries) => {
-			entries.forEach(entry => {
-				if (entry.isIntersecting) {
-					const img = entry.target;
-					const dataSrc = img.getAttribute('data-src');
-					if (dataSrc) {
-						img.src = dataSrc;
-						img.removeAttribute('data-src');
-						this.imageObserver.unobserve(img);
-						
-						if (this.config.debug) {
-							Log.info(`[PERF-08] Lazy loaded image: ${dataSrc.substring(dataSrc.lastIndexOf('/') + 1)}`);
+		this.imageObserver = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						const img = entry.target;
+						const dataSrc = img.getAttribute("data-src");
+						if (dataSrc) {
+							img.src = dataSrc;
+							img.removeAttribute("data-src");
+							this.imageObserver.unobserve(img);
+
+							if (this.config.debug) {
+								Log.info(
+									`[PERF-08] Lazy loaded image: ${dataSrc.substring(dataSrc.lastIndexOf("/") + 1)}`
+								);
+							}
 						}
 					}
-				}
-			});
-		}, {
-			rootMargin: '50px' // Start loading 50px before entering viewport
-		});
+				});
+			},
+			{
+				rootMargin: "50px" // Start loading 50px before entering viewport
+			}
+		);
 
 		if (this.config.debug) {
-			Log.info('[PERF-08] Intersection Observer initialized for lazy loading');
+			Log.info("[PERF-08] Intersection Observer initialized for lazy loading");
 		}
 	},
 
@@ -1190,15 +1692,16 @@ Module.register("MMM-SoccerStandings", {
 	setupImageLazyLoading(img, src) {
 		if (this.imageObserver) {
 			// Use Intersection Observer
-			img.setAttribute('data-src', src);
+			img.setAttribute("data-src", src);
 			// Use transparent SVG as placeholder
-			img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"%3E%3C/svg%3E';
-			img.loading = 'lazy'; // Keep as fallback for browsers without IntersectionObserver
+			img.src =
+				'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg"%3E%3C/svg%3E';
+			img.loading = "lazy"; // Keep as fallback for browsers without IntersectionObserver
 			this.imageObserver.observe(img);
 		} else {
 			// Fallback to immediate loading
 			img.src = src;
-			img.loading = 'lazy';
+			img.loading = "lazy";
 		}
 	},
 
@@ -1206,11 +1709,13 @@ Module.register("MMM-SoccerStandings", {
 	 * UX helper: Setup offline/online detection and status updates (UX-07).
 	 */
 	setupOfflineDetection() {
-		window.addEventListener('online', () => this.handleOnlineStatus(true));
-		window.addEventListener('offline', () => this.handleOnlineStatus(false));
+		window.addEventListener("online", () => this.handleOnlineStatus(true));
+		window.addEventListener("offline", () => this.handleOnlineStatus(false));
 
 		if (this.config.debug) {
-			Log.info(`[UX-07] Offline detection initialized. Current status: ${this.isOnline ? 'Online' : 'Offline'}`);
+			Log.info(
+				`[UX-07] Offline detection initialized. Current status: ${this.isOnline ? "Online" : "Offline"}`
+			);
 		}
 	},
 
@@ -1223,14 +1728,20 @@ Module.register("MMM-SoccerStandings", {
 		this.isOnline = isOnline;
 
 		if (!isOnline) {
-			this.announceToScreenReader('Internet connection lost - showing cached data', true);
+			this.announceToScreenReader(
+				"Internet connection lost - showing cached data",
+				true
+			);
 			if (this.config.debug) {
-				Log.warn('[UX-07] Connection lost - entering offline mode');
+				Log.warn("[UX-07] Connection lost - entering offline mode");
 			}
 		} else if (wasOffline) {
-			this.announceToScreenReader('Internet connection restored - updating data', true);
+			this.announceToScreenReader(
+				"Internet connection restored - updating data",
+				true
+			);
 			if (this.config.debug) {
-				Log.info('[UX-07] Connection restored - updating data');
+				Log.info("[UX-07] Connection restored - updating data");
 			}
 			// Trigger data refresh
 			this.requestAllLeagueData();
@@ -1246,13 +1757,13 @@ Module.register("MMM-SoccerStandings", {
 	createOfflineIndicator() {
 		if (this.isOnline) return null;
 
-		const offlineIndicator = document.createElement('div');
-		offlineIndicator.className = 'offline-indicator';
-		offlineIndicator.setAttribute('role', 'status');
-		offlineIndicator.setAttribute('aria-live', 'polite');
+		const offlineIndicator = document.createElement("div");
+		offlineIndicator.className = "offline-indicator";
+		offlineIndicator.setAttribute("role", "status");
+		offlineIndicator.setAttribute("aria-live", "polite");
 
-		const icon = this.createIcon('fas fa-wifi-slash');
-		const text = document.createTextNode(' Offline Mode - Showing Cached Data');
+		const icon = this.createIcon("fas fa-wifi-slash");
+		const text = document.createTextNode(" Offline Mode - Showing Cached Data");
 
 		offlineIndicator.appendChild(icon);
 		offlineIndicator.appendChild(text);
@@ -1358,7 +1869,7 @@ Module.register("MMM-SoccerStandings", {
 				self.scheduleWorldCupSubtabCycling();
 
 				// Use MagicMirror's built-in animation for a reliable transition
-				self.updateDom(self.config.animationSpeed || 300);
+				self.updateDom();
 			};
 
 			// Set up the interval to run continuously
@@ -1403,8 +1914,8 @@ Module.register("MMM-SoccerStandings", {
 		const nowMs = Date.now();
 		const todayDateStr = (() => {
 			const d = new Date();
-			const mm = String(d.getMonth() + 1).padStart(2, '0');
-			const dd = String(d.getDate()).padStart(2, '0');
+			const mm = String(d.getMonth() + 1).padStart(2, "0");
+			const dd = String(d.getDate()).padStart(2, "0");
 			return `${d.getFullYear()}-${mm}-${dd}`;
 		})();
 
@@ -1435,7 +1946,7 @@ Module.register("MMM-SoccerStandings", {
 			nextUpdate = 3 * 60 * 1000; // 3 minutes
 			if (this.config.debug) {
 				Log.info(
-					` MMM-SoccerStandings: ${hasLiveGames ? 'Live' : 'Potential live'} games detected, increasing refresh rate to 3 minutes.`
+					` MMM-SoccerStandings: ${hasLiveGames ? "Live" : "Potential live"} games detected, increasing refresh rate to 3 minutes.`
 				);
 			}
 		}
@@ -1455,9 +1966,7 @@ Module.register("MMM-SoccerStandings", {
 	// Handle notifications from node_helper
 	socketNotificationReceived(notification, payload) {
 		if (this.config.debug) {
-			Log.info(
-				` MMM-SoccerStandings: Received notification: ${notification}`
-			);
+			Log.info(` MMM-SoccerStandings: Received notification: ${notification}`);
 		}
 
 		switch (notification) {
@@ -1482,7 +1991,7 @@ Module.register("MMM-SoccerStandings", {
 		}
 
 		// Store data for the specific league
-		const leagueType = data.leagueType || "SPFL"; // Default to SPFL if not specified
+		const leagueType = data.leagueType || data.league || "UNKNOWN";
 
 		// Skip redundant re-render when the fresh fetch returns the same data as the
 		// proactive cache notification (same lastUpdated timestamp → no new information).
@@ -1517,7 +2026,7 @@ Module.register("MMM-SoccerStandings", {
 		this.announceDataUpdate(leagueName);
 
 		// Use debounced DOM update to batch multiple league updates together
-		this.debouncedUpdateDom(this.config.animationSpeed);
+		this.debouncedUpdateDom();
 	},
 
 	// ===== NEW: Debounced DOM Update =====
@@ -1531,9 +2040,9 @@ Module.register("MMM-SoccerStandings", {
 		this.saveFocusState();
 
 		this.updateDomTimer = setTimeout(() => {
-			this.updateDom(speed || this.config.animationSpeed);
+			this.updateDom();
 			this.updateDomTimer = null;
-			const restoreDelay = (speed || this.config.animationSpeed || 0) + 150;
+			const restoreDelay = 150;
 			setTimeout(() => this.restoreFocusState(), restoreDelay);
 		}, 200);
 	},
@@ -1543,11 +2052,9 @@ Module.register("MMM-SoccerStandings", {
 		const errorMessage = error.userMessage || error.message || String(error);
 		const errorCategory = error.category || "Unknown";
 		const errorSuggestion = error.suggestion || "Please try again later";
-		
-		Log.error(
-			` MMM-SoccerStandings: [${errorCategory}] ${errorMessage}`
-		);
-		
+
+		Log.error(` MMM-SoccerStandings: [${errorCategory}] ${errorMessage}`);
+
 		if (this.config.debug && error.originalError) {
 			Log.error(` MMM-SoccerStandings: Original error: ${error.originalError}`);
 		}
@@ -1567,220 +2074,79 @@ Module.register("MMM-SoccerStandings", {
 				self.requestAllLeagueData();
 			}, this.config.retryDelay);
 		} else {
-			Log.error(` MMM-SoccerStandings: Max retries exceeded. ${errorSuggestion}`);
-			this.updateDom(this.config.animationSpeed);
+			Log.error(
+				` MMM-SoccerStandings: Max retries exceeded. ${errorSuggestion}`
+			);
+			this.updateDom();
 		}
 	},
 
-	// Get league information from EUROPEAN_LEAGUES (if available) or legacy config
+	// Get league information. Primary source: EUROPEAN_LEAGUES (loaded via getScripts).
+	// Overrides only for entries that need data not in EUROPEAN_LEAGUES (logos, WC).
 	getLeagueInfo(leagueCode) {
-		// Map of league codes to their information
-		// This includes new EUROPEAN_LEAGUES format and legacy codes
-		const leagueMapping = {
-			// Legacy codes (for backward compatibility)
-			SPFL: {
-				name: "Scottish Premiership",
-				countryFolder: "Scotland",
-				countryCode: "SC"
+		// Resolve legacy short codes to canonical codes first
+		const canonical = this.normalizeLeagueCode(leagueCode);
+
+		// Entries that need extra data (logo paths) not carried by EUROPEAN_LEAGUES
+		const overrides = {
+			WORLD_CUP_2026: {
+				name: "FIFA WC 2026",
+				countryFolder: "FIFA-WC26",
+				countryCode: "WC",
+				logo: `modules/${this.name}/images/WC_Trophy.png`
 			},
-			SPFLC: {
-				name: "Scottish Championship",
-				countryFolder: "Scotland",
-				countryCode: "SC"
-			},
-			EPL: {
-				name: "English Premier League",
-				countryFolder: "England",
-				countryCode: "EN"
+			UEFA_CHAMPIONS_LEAGUE: {
+				name: "UEFA Champions League",
+				countryFolder: null,
+				countryCode: "EU",
+				logo: `modules/${this.name}/images/crests/UEFA-Champions-League/UCL_Trophy.png`
 			},
 			UCL: {
 				name: "UEFA Champions League",
 				countryFolder: null,
 				countryCode: "EU",
-				logo: "modules/MMM-SoccerStandings/images/crests/UEFA-Champions-League/UCL_Trophy.png"
-			},
-			UEL: {
-				name: "UEFA Europa League",
-				countryFolder: null,
-				countryCode: "EU",
-				logo: "modules/MMM-SoccerStandings/images/crests/UEFA-Europa-League/UEL_Trophy.png"
-			},
-			ECL: {
-				name: "UEFA Conference League",
-				countryFolder: null,
-				countryCode: "EU",
-				logo: "modules/MMM-SoccerStandings/images/crests/UEFA-Conference-League/UECL_Trophy.png"
-			},
-			SCOTLAND_PREMIERSHIP: {
-				name: "Scottish Premiership",
-				countryFolder: "Scotland",
-				countryCode: "SC"
-			},
-			SCOTLAND_CHAMPIONSHIP: {
-				name: "Scottish Championship",
-				countryFolder: "Scotland",
-				countryCode: "SC"
-			},
-			ENGLAND_PREMIER_LEAGUE: {
-				name: "English Premier League",
-				countryFolder: "England",
-				countryCode: "EN"
-			},
-			GERMANY_BUNDESLIGA: {
-				name: "Bundesliga",
-				countryFolder: "Germany",
-				countryCode: "DE"
-			},
-			FRANCE_LIGUE1: {
-				name: "Ligue 1",
-				countryFolder: "France",
-				countryCode: "FR"
-			},
-			SPAIN_LA_LIGA: {
-				name: "La Liga",
-				countryFolder: "Spain",
-				countryCode: "ES"
-			},
-			ITALY_SERIE_A: {
-				name: "Serie A",
-				countryFolder: "Italy",
-				countryCode: "IT"
-			},
-			NETHERLANDS_EREDIVISIE: {
-				name: "Eredivisie",
-				countryFolder: "The_Netherlands",
-				countryCode: "NL"
-			},
-			BELGIUM_PRO_LEAGUE: {
-				name: "Belgian Pro League",
-				countryFolder: "Belgium",
-				countryCode: "BE"
-			},
-			PORTUGAL_PRIMEIRA_LIGA: {
-				name: "Primeira Liga",
-				countryFolder: "Portugal",
-				countryCode: "PT"
-			},
-			GREECE_SUPER_LEAGUE: {
-				name: "Greek Super League",
-				countryFolder: "Greece",
-				countryCode: "GR"
-			},
-			TURKEY_SUPER_LIG: {
-				name: "Turkish Super Lig",
-				countryFolder: "Turkey",
-				countryCode: "TR"
-			},
-			UKRAINE_PREMIER_LEAGUE: {
-				name: "Ukrainian Premier League",
-				countryFolder: "Ukraine",
-				countryCode: "UA"
-			},
-			ROMANIA_LIGA_I: {
-				name: "Liga I",
-				countryFolder: "Romania",
-				countryCode: "RO"
-			},
-			CROATIA_HNL: {
-				name: "Croatian HNL",
-				countryFolder: "Croatia",
-				countryCode: "HR"
-			},
-			SERBIA_SUPER_LIGA: {
-				name: "Serbian Super Liga",
-				countryFolder: "Serbia",
-				countryCode: "RS"
-			},
-			AUSTRIA_BUNDESLIGA: {
-				name: "Austrian Bundesliga",
-				countryFolder: "Austria",
-				countryCode: "AT"
-			},
-			CZECH_LIGA: {
-				name: "Czech Liga",
-				countryFolder: "Czech Republic",
-				countryCode: "CZ"
-			},
-			HUNGARY_NBI: {
-				name: "Hungarian NB I",
-				countryFolder: "Hungary",
-				countryCode: "HU"
-			},
-			POLAND_EKSTRAKLASA: {
-				name: "Ekstraklasa",
-				countryFolder: "Poland",
-				countryCode: "PL"
-			},
-			SWITZERLAND_SUPER_LEAGUE: {
-				name: "Swiss Super League",
-				countryFolder: "Switzerland",
-				countryCode: "CH"
-			},
-			SWEDEN_ALLSVENSKAN: {
-				name: "Allsvenskan",
-				countryFolder: "Sweden",
-				countryCode: "SE"
-			},
-			NORWAY_ELITESERIEN: {
-				name: "Eliteserien",
-				countryFolder: "Norway",
-				countryCode: "NO"
-			},
-			DENMARK_SUPERLIGAEN: {
-				name: "Superligaen",
-				countryFolder: "Denmark",
-				countryCode: "DK"
-			},
-			CYMRU_PREMIER_LEAGUE: {
-				name: "Cymru Premier",
-				countryFolder: "Wales",
-				countryCode: "WA"
-			},
-			ENGLAND_CHAMPIONSHIP: {
-				name: "EFL Championship",
-				countryFolder: "England",
-				countryCode: "EN"
-			},
-			WORLD_CUP_2026: {
-				name: "FIFA WC 2026",
-				countryFolder: "FIFA-WC26",
-				countryCode: "WC",
-				logo: "modules/MMM-SoccerStandings/images/WC_Trophy.png"
-			},
-			// New EUROPEAN_LEAGUES format codes
-			UEFA_CHAMPIONS_LEAGUE: {
-				name: "UEFA Champions League",
-				countryFolder: null,
-				countryCode: "EU",
-				logo: "modules/MMM-SoccerStandings/images/crests/UEFA-Champions-League/UCL_Trophy.png"
+				logo: `modules/${this.name}/images/crests/UEFA-Champions-League/UCL_Trophy.png`
 			},
 			UEFA_EUROPA_LEAGUE: {
 				name: "UEFA Europa League",
 				countryFolder: null,
 				countryCode: "EU",
-				logo: "modules/MMM-SoccerStandings/images/crests/UEFA-Europa-League/UEL_Trophy.png"
+				logo: `modules/${this.name}/images/crests/UEFA-Europa-League/UEL_Trophy.png`
+			},
+			UEL: {
+				name: "UEFA Europa League",
+				countryFolder: null,
+				countryCode: "EU",
+				logo: `modules/${this.name}/images/crests/UEFA-Europa-League/UEL_Trophy.png`
 			},
 			UEFA_EUROPA_CONFERENCE_LEAGUE: {
 				name: "UEFA Conference League",
 				countryFolder: null,
 				countryCode: "EU",
-				logo: "modules/MMM-SoccerStandings/images/crests/UEFA-Conference-League/UECL_Trophy.png"
+				logo: `modules/${this.name}/images/crests/UEFA-Conference-League/UECL_Trophy.png`
+			},
+			ECL: {
+				name: "UEFA Conference League",
+				countryFolder: null,
+				countryCode: "EU",
+				logo: `modules/${this.name}/images/crests/UEFA-Conference-League/UECL_Trophy.png`
 			}
 		};
 
-		if (leagueMapping[leagueCode]) {
-			return leagueMapping[leagueCode];
-		}
+		if (overrides[canonical]) return overrides[canonical];
+		if (overrides[leagueCode]) return overrides[leagueCode];
 
-		// Fallback: construct result from EUROPEAN_LEAGUES for any code not hardcoded above
-		if (typeof EUROPEAN_LEAGUES !== "undefined" && EUROPEAN_LEAGUES[leagueCode]) {
-			const entry = EUROPEAN_LEAGUES[leagueCode];
+		// Primary: derive from EUROPEAN_LEAGUES
+		const src =
+			typeof EUROPEAN_LEAGUES !== "undefined" &&
+			(EUROPEAN_LEAGUES[canonical] || EUROPEAN_LEAGUES[leagueCode]);
+		if (src) {
 			return {
-				name: entry.name,
-				country: entry.country,
-				countryCode: entry.countryCode,
-				countryFolder: entry.countryFolder,
-				flag: entry.countryCode?.toLowerCase()
+				name: src.name,
+				country: src.country,
+				countryCode: src.countryCode,
+				countryFolder: src.countryFolder,
+				flag: src.countryCode?.toLowerCase()
 			};
 		}
 
@@ -1922,10 +2288,16 @@ Module.register("MMM-SoccerStandings", {
 						const sLower = s.toLowerCase();
 						const hasNear = fixtures.some((f) => {
 							if (!f.date || !f.stage) return false;
-							return f.stage.toLowerCase() === sLower &&
-								f.date >= todayStr && f.date <= nearDate;
+							return (
+								f.stage.toLowerCase() === sLower &&
+								f.date >= todayStr &&
+								f.date <= nearDate
+							);
 						});
-						if (hasNear) { detectedStage = s; break; }
+						if (hasNear) {
+							detectedStage = s;
+							break;
+						}
 					}
 
 					if (!detectedStage) {
@@ -1943,7 +2315,7 @@ Module.register("MMM-SoccerStandings", {
 				}
 
 				// Use MagicMirror's built-in animation for a reliable transition
-				this.updateDom(this.config.animationSpeed || 300);
+				this.updateDom();
 
 				// Reset auto-cycling timer if we're manually changing leagues
 				if (this.config.autoCycle && this.cycleTimer) {
@@ -2083,9 +2455,9 @@ Module.register("MMM-SoccerStandings", {
 	 */
 	announceToScreenReader(message, force = false) {
 		if (!message) return;
-		
+
 		const now = Date.now();
-		
+
 		// Throttle announcements to prevent spam
 		if (!force && now - this.lastAnnouncement < this.announcementThrottle) {
 			if (this.config.debug) {
@@ -2093,13 +2465,13 @@ Module.register("MMM-SoccerStandings", {
 			}
 			return;
 		}
-		
+
 		this.lastAnnouncement = now;
-		
+
 		if (!this.ariaLiveRegion) {
 			this.createAriaLiveRegion();
 		}
-		
+
 		// Clear and set new message (forces screen reader to announce)
 		this.ariaLiveRegion.textContent = "";
 		setTimeout(() => {
@@ -2145,7 +2517,7 @@ Module.register("MMM-SoccerStandings", {
 		}
 
 		const filter = this.config.fixtureDateFilter;
-		
+
 		// No filtering if filter is null/undefined
 		if (!filter) {
 			return fixtures;
@@ -2153,7 +2525,7 @@ Module.register("MMM-SoccerStandings", {
 
 		const now = new Date();
 		const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-		
+
 		let startDate, endDate;
 
 		// Handle preset filters
@@ -2177,7 +2549,9 @@ Module.register("MMM-SoccerStandings", {
 				default:
 					// Invalid filter string, return all
 					if (this.config.debug) {
-						Log.warn(`[FILTER] Invalid filter preset: ${filter}. Use "today", "week", or "month"`);
+						Log.warn(
+							`[FILTER] Invalid filter preset: ${filter}. Use "today", "week", or "month"`
+						);
 					}
 					return fixtures;
 			}
@@ -2186,16 +2560,17 @@ Module.register("MMM-SoccerStandings", {
 		else if (typeof filter === "object" && filter.start && filter.end) {
 			startDate = new Date(filter.start);
 			endDate = new Date(filter.end);
-			
+
 			// Validate dates
 			if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
 				if (this.config.debug) {
-					Log.warn(`[FILTER] Invalid custom date range: ${filter.start} to ${filter.end}`);
+					Log.warn(
+						`[FILTER] Invalid custom date range: ${filter.start} to ${filter.end}`
+					);
 				}
 				return fixtures;
 			}
-		}
-		else {
+		} else {
 			// Invalid filter format
 			if (this.config.debug) {
 				Log.warn(`[FILTER] Invalid filter format:`, filter);
@@ -2206,15 +2581,17 @@ Module.register("MMM-SoccerStandings", {
 		// Filter fixtures within date range
 		const filtered = fixtures.filter((fix) => {
 			if (!fix.date) return false; // Skip fixtures without dates
-			
+
 			const fixtureDate = new Date(fix.date);
 			if (isNaN(fixtureDate.getTime())) return false; // Skip invalid dates
-			
+
 			return fixtureDate >= startDate && fixtureDate <= endDate;
 		});
 
 		if (this.config.debug) {
-			Log.info(`[FILTER] Filtered ${fixtures.length} fixtures to ${filtered.length} (${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()})`);
+			Log.info(
+				`[FILTER] Filtered ${fixtures.length} fixtures to ${filtered.length} (${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()})`
+			);
 		}
 
 		return filtered;
@@ -2274,14 +2651,20 @@ Module.register("MMM-SoccerStandings", {
 		wrapper.className = "soccer-standings";
 		wrapper.id = `mtlt-${this.identifier}`;
 		wrapper.setAttribute("data-league", this.currentLeague);
-		
+
 		// Apply table density class (UX-04)
-		if (this.config.tableDensity && ["compact", "normal", "comfortable"].includes(this.config.tableDensity)) {
+		if (
+			this.config.tableDensity &&
+			["compact", "normal", "comfortable"].includes(this.config.tableDensity)
+		) {
 			wrapper.classList.add(`density-${this.config.tableDensity}`);
 		}
-		
+
 		// Apply theme class (DES-02)
-		if (this.config.theme && ["light", "dark", "auto"].includes(this.config.theme)) {
+		if (
+			this.config.theme &&
+			["light", "dark", "auto"].includes(this.config.theme)
+		) {
 			wrapper.classList.add(`theme-${this.config.theme}`);
 		}
 		if (this.isContentHidden) {
@@ -2332,16 +2715,16 @@ Module.register("MMM-SoccerStandings", {
 				});
 
 				const sourceSpan = document.createElement("span");
-		sourceSpan.className = "dimmed xsmall";
-		sourceSpan.textContent = `Source: ${src}`;
-		sourceContainer.appendChild(sourceSpan);
+				sourceSpan.className = "dimmed xsmall";
+				sourceSpan.textContent = `Source: ${src}`;
+				sourceContainer.appendChild(sourceSpan);
 
-		sourceContainer.appendChild(document.createTextNode(" • "));
+				sourceContainer.appendChild(document.createTextNode(" • "));
 
-		const updatedSpan = document.createElement("span");
-		updatedSpan.className = "dimmed xsmall last-updated";
-		updatedSpan.textContent = `${this.translate("LAST_UPDATED")}: ${ts}`;
-		sourceContainer.appendChild(updatedSpan);
+				const updatedSpan = document.createElement("span");
+				updatedSpan.className = "dimmed xsmall last-updated";
+				updatedSpan.textContent = `${this.translate("LAST_UPDATED")}: ${ts}`;
+				sourceContainer.appendChild(updatedSpan);
 				footer.appendChild(sourceContainer);
 			}
 
@@ -2433,17 +2816,17 @@ Module.register("MMM-SoccerStandings", {
 			staleWarning.style.fontWeight = "bold";
 			staleWarning.style.padding = "2px 8px";
 			staleWarning.style.borderRadius = "3px";
-			
+
 			// Calculate age of data (UX-03)
 			let dataAge = 0;
 			let ageColor = "#ffa500"; // Default orange
 			let ageSeverity = "medium";
-			
+
 			if (currentData.meta && currentData.meta.lastUpdated) {
 				const lastUpdate = new Date(currentData.meta.lastUpdated);
 				const now = new Date();
 				dataAge = Math.floor((now - lastUpdate) / (1000 * 60)); // Age in minutes
-				
+
 				// Color gradient based on age (UX-03)
 				if (dataAge < 60) {
 					// < 1 hour: Green
@@ -2459,14 +2842,14 @@ Module.register("MMM-SoccerStandings", {
 					ageSeverity = "stale";
 				}
 			}
-			
+
 			staleWarning.style.color = ageColor;
 			staleWarning.style.border = `1px solid ${ageColor}`;
 			staleWarning.setAttribute("data-severity", ageSeverity);
 
 			if (currentData.cacheFallback) {
 				staleWarning.appendChild(this.createIcon("fas fa-history"));
-				
+
 				// Enhanced message with age (UX-03)
 				let ageText = " STALE";
 				if (dataAge > 0) {
@@ -2478,7 +2861,7 @@ Module.register("MMM-SoccerStandings", {
 						ageText = ` ${Math.floor(dataAge / 1440)}d ago`;
 					}
 				}
-				
+
 				staleWarning.appendChild(document.createTextNode(ageText));
 				staleWarning.title = `Live fetch failed: Showing cached data from ${Math.floor(dataAge / 60)} hours ${dataAge % 60} minutes ago`;
 			} else {
@@ -2505,25 +2888,27 @@ Module.register("MMM-SoccerStandings", {
 			awaitingBadge.style.color = "#64B5F6";
 			awaitingBadge.style.border = "1px solid #64B5F6";
 			awaitingBadge.setAttribute("aria-label", "Awaiting Phase 2 Split");
-			awaitingBadge.title = "Phase 1 complete — awaiting the league split announcement for Phase 2 groups.";
+			awaitingBadge.title =
+				"Phase 1 complete — awaiting the league split announcement for Phase 2 groups.";
 			awaitingBadge.appendChild(this.createIcon("fas fa-hourglass-half"));
 			awaitingBadge.appendChild(document.createTextNode(" AWAITING SPLIT"));
 			metaInfo.appendChild(awaitingBadge);
 		}
 
 		// Add manual refresh button
-		const refreshBtn = document.createElement("span");
-		refreshBtn.className = "refresh-btn fas fa-sync-alt small";
+		const refreshBtn = document.createElement("button");
+		refreshBtn.className = "refresh-btn";
 		refreshBtn.title = "Refresh Data";
 		refreshBtn.setAttribute("aria-label", "Refresh Data");
-		refreshBtn.setAttribute("role", "button");
-		refreshBtn.style.cursor = "pointer";
-		refreshBtn.style.marginLeft = "8px";
+		refreshBtn.appendChild(this.createIcon("fas fa-sync-alt"));
 
 		const refreshHandler = () => {
 			this.requestAllLeagueData();
-			refreshBtn.classList.add("fa-spin");
-			setTimeout(() => refreshBtn.classList.remove("fa-spin"), 2000);
+			const icon = refreshBtn.querySelector("i");
+			if (icon) icon.classList.add("fa-spin");
+			setTimeout(() => {
+				if (icon) icon.classList.remove("fa-spin");
+			}, 2000);
 		};
 
 		refreshBtn.addEventListener("click", refreshHandler);
@@ -2532,18 +2917,19 @@ Module.register("MMM-SoccerStandings", {
 
 		// Add Clear Cache button when enabled
 		if (this.config.clearCacheButton === true) {
-			const clearBtn = document.createElement("span");
-			clearBtn.className = "clear-cache-btn fas fa-trash-alt small";
+			const clearBtn = document.createElement("button");
+			clearBtn.className = "clear-cache-btn";
 			clearBtn.title = "Clear Cache";
 			clearBtn.setAttribute("aria-label", "Clear Cache");
-			clearBtn.setAttribute("role", "button");
-			clearBtn.style.cursor = "pointer";
-			clearBtn.style.marginLeft = "8px";
+			clearBtn.appendChild(this.createIcon("fas fa-trash-alt"));
 
 			const clearHandler = () => {
 				this.sendSocketNotification("CACHE_CLEAR_ALL");
-				clearBtn.classList.add("fa-spin");
-				setTimeout(() => clearBtn.classList.remove("fa-spin"), 1500);
+				const icon = clearBtn.querySelector("i");
+				if (icon) icon.classList.add("fa-spin");
+				setTimeout(() => {
+					if (icon) icon.classList.remove("fa-spin");
+				}, 1500);
 			};
 
 			clearBtn.addEventListener("click", clearHandler);
@@ -2552,9 +2938,8 @@ Module.register("MMM-SoccerStandings", {
 		}
 
 		// Pin control and countdown in header
-		const pinBtn = document.createElement("span");
-		pinBtn.className = "pin-btn fas fa-thumbtack small";
-		pinBtn.setAttribute("role", "button");
+		const pinBtn = document.createElement("button");
+		pinBtn.className = "pin-btn";
 		pinBtn.setAttribute("aria-pressed", this._pinned);
 		pinBtn.setAttribute(
 			"aria-label",
@@ -2563,9 +2948,8 @@ Module.register("MMM-SoccerStandings", {
 		pinBtn.title = this._pinned
 			? "Unpin (resume auto-cycling)"
 			: "Pin (pause auto-cycling)";
-		pinBtn.style.cursor = "pointer";
-		pinBtn.style.marginLeft = "8px";
-		
+		pinBtn.appendChild(this.createIcon("fas fa-thumbtack"));
+
 		const pinHandler = () => {
 			this._pinned = !this._pinned;
 			pinBtn.classList.toggle("active", this._pinned);
@@ -2587,7 +2971,7 @@ Module.register("MMM-SoccerStandings", {
 				this._startHeaderCountdown();
 			}
 		};
-		
+
 		pinBtn.addEventListener("click", pinHandler);
 		this.addKeyboardNavigation(pinBtn, pinHandler);
 		metaInfo.appendChild(pinBtn);
@@ -2867,7 +3251,7 @@ Module.register("MMM-SoccerStandings", {
 						btn.setAttribute("role", "tab");
 						btn.addEventListener("click", () => {
 							this.currentSubTab = groupLetter;
-							this.updateDom(this.config.animationSpeed);
+							this.updateDom();
 						});
 						subTabsFragment.appendChild(btn);
 					}
@@ -2906,7 +3290,7 @@ Module.register("MMM-SoccerStandings", {
 							btn.setAttribute("role", "tab");
 							btn.addEventListener("click", () => {
 								this.currentSubTab = ko.id;
-								this.updateDom(this.config.animationSpeed);
+								this.updateDom();
 							});
 							subTabsFragment.appendChild(btn);
 						}
@@ -2919,7 +3303,7 @@ Module.register("MMM-SoccerStandings", {
 				tableBtn.textContent = "Table";
 				tableBtn.addEventListener("click", () => {
 					this.currentSubTab = "Table";
-					this.updateDom(this.config.animationSpeed);
+					this.updateDom();
 				});
 				subTabsFragment.appendChild(tableBtn);
 
@@ -2955,7 +3339,7 @@ Module.register("MMM-SoccerStandings", {
 							btn.setAttribute("role", "tab");
 							btn.addEventListener("click", () => {
 								this.currentSubTab = ko.id;
-								this.updateDom(this.config.animationSpeed);
+								this.updateDom();
 							});
 							subTabsFragment.appendChild(btn);
 						}
@@ -2974,7 +3358,7 @@ Module.register("MMM-SoccerStandings", {
 			typeof this.config.maxTableHeight === "number" &&
 			this.config.maxTableHeight > 0
 		) {
-			contentContainer.style.maxHeight = `${this.config.maxTableHeight}px`;
+			// contentContainer.style.maxHeight = `${this.config.maxTableHeight}px`;
 		}
 
 		// Show loading message if data not loaded yet
@@ -3011,62 +3395,65 @@ Module.register("MMM-SoccerStandings", {
 			const skeletonLoader = document.createElement("div");
 			skeletonLoader.className = "skeleton-loader";
 			skeletonLoader.setAttribute("role", "status");
-			skeletonLoader.setAttribute("aria-label", `Loading ${leagueDisplayName} data`);
+			skeletonLoader.setAttribute(
+				"aria-label",
+				`Loading ${leagueDisplayName} data`
+			);
 
 			// Skeleton header
 			const skeletonHeader = document.createElement("div");
 			skeletonHeader.className = "skeleton-header";
-			
+
 			const skeletonTitle = document.createElement("div");
 			skeletonTitle.className = "skeleton-title";
 			skeletonHeader.appendChild(skeletonTitle);
-			
+
 			const skeletonMeta = document.createElement("div");
 			skeletonMeta.className = "skeleton-meta";
 			skeletonHeader.appendChild(skeletonMeta);
-			
+
 			skeletonLoader.appendChild(skeletonHeader);
 
 			// Skeleton table rows (show 10 rows as placeholder)
 			const skeletonTable = document.createElement("div");
 			skeletonTable.className = "skeleton-table";
-			
+
 			for (let i = 0; i < 10; i++) {
 				const skeletonRow = document.createElement("div");
 				skeletonRow.className = "skeleton-row";
-				
+
 				// Position
 				const posCell = document.createElement("div");
 				posCell.className = "skeleton-cell position";
 				skeletonRow.appendChild(posCell);
-				
+
 				// Logo
 				const logoCell = document.createElement("div");
 				logoCell.className = "skeleton-cell logo";
 				skeletonRow.appendChild(logoCell);
-				
+
 				// Team name
 				const teamCell = document.createElement("div");
 				teamCell.className = "skeleton-cell team";
 				skeletonRow.appendChild(teamCell);
-				
+
 				// Stats (P, W, D, L, GF, GA, GD, Pts)
 				for (let j = 0; j < 8; j++) {
 					const statCell = document.createElement("div");
 					statCell.className = "skeleton-cell stat";
 					skeletonRow.appendChild(statCell);
 				}
-				
+
 				// Form
 				const formCell = document.createElement("div");
 				formCell.className = "skeleton-cell form";
 				skeletonRow.appendChild(formCell);
-				
+
 				skeletonTable.appendChild(skeletonRow);
 			}
-			
+
 			skeletonLoader.appendChild(skeletonTable);
-			
+
 			// Add subtle loading text below skeleton
 			const loadingText = document.createElement("div");
 			loadingText.className = "dimmed xsmall";
@@ -3075,7 +3462,7 @@ Module.register("MMM-SoccerStandings", {
 			loadingText.textContent = `${this.translate("LOADING")} ${leagueDisplayName}...`;
 			loadingText.setAttribute("aria-live", "polite");
 			skeletonLoader.appendChild(loadingText);
-			
+
 			// Add loading timeout warning after 10 seconds
 			if (!this._loadingWarningTimer) {
 				this._loadingWarningTimer = setTimeout(() => {
@@ -3085,7 +3472,8 @@ Module.register("MMM-SoccerStandings", {
 						slowWarning.style.textAlign = "center";
 						slowWarning.style.marginTop = "10px";
 						slowWarning.style.color = "#FFC107";
-						slowWarning.textContent = "Still loading... This is taking longer than expected";
+						slowWarning.textContent =
+							"Still loading... This is taking longer than expected";
 						slowWarning.setAttribute("role", "alert");
 						skeletonLoader.appendChild(slowWarning);
 					}
@@ -3113,11 +3501,14 @@ Module.register("MMM-SoccerStandings", {
 
 			// Display enhanced error message with category
 			const errorText = document.createElement("div");
-			const errorCategory = this.error.category ? `[${this.error.category}] ` : "";
-			const errorMessage = this.error.userMessage || this.error.message || "Source Unavailable";
+			const errorCategory = this.error.category
+				? `[${this.error.category}] `
+				: "";
+			const errorMessage =
+				this.error.userMessage || this.error.message || "Source Unavailable";
 			errorText.textContent = ` ${errorCategory}${errorMessage}`;
 			errorState.appendChild(errorText);
-			
+
 			// Display suggestion if available
 			if (this.error.suggestion) {
 				const suggestionText = document.createElement("div");
@@ -3134,7 +3525,7 @@ Module.register("MMM-SoccerStandings", {
 				this.retryCount = 0;
 				this.error = null;
 				this.requestAllLeagueData();
-				this.updateDom(this.config.animationSpeed);
+				this.updateDom();
 			});
 			errorState.appendChild(retryBtn);
 
@@ -3223,38 +3614,19 @@ Module.register("MMM-SoccerStandings", {
 			});
 
 			const sourceSpan = document.createElement("span");
-		sourceSpan.className = "dimmed xsmall";
-		sourceSpan.textContent = `Source: ${src}`;
-		sourceContainer.appendChild(sourceSpan);
+			sourceSpan.className = "dimmed xsmall";
+			sourceSpan.textContent = `Source: ${src}`;
+			sourceContainer.appendChild(sourceSpan);
 
-		sourceContainer.appendChild(document.createTextNode(" • "));
+			sourceContainer.appendChild(document.createTextNode(" • "));
 
-		const updatedSpan = document.createElement("span");
-		updatedSpan.className = "dimmed xsmall last-updated";
-		updatedSpan.textContent = `${this.translate("LAST_UPDATED")}: ${ts}`;
-		sourceContainer.appendChild(updatedSpan);
+			const updatedSpan = document.createElement("span");
+			updatedSpan.className = "dimmed xsmall last-updated";
+			updatedSpan.textContent = `${this.translate("LAST_UPDATED")}: ${ts}`;
+			sourceContainer.appendChild(updatedSpan);
 			backToTopControls.appendChild(sourceContainer);
 		}
 
-		// Right side: Back to Top button
-		var backToTopBtn = document.createElement("button");
-		backToTopBtn.type = "button";
-		backToTopBtn.className = "back-to-top-btn";
-		
-		// Use FontAwesome icon for consistency (DES-01)
-		const topIcon = this.createIcon("fas fa-chevron-up");
-		topIcon.style.marginRight = "4px";
-		backToTopBtn.appendChild(topIcon);
-		
-		const topText = document.createTextNode(" Top");
-		backToTopBtn.appendChild(topText);
-		
-		backToTopBtn.addEventListener(
-			"click",
-			this.handleBackToTopClick.bind(this)
-		);
-
-		backToTopControls.appendChild(backToTopBtn);
 		contentContainer.appendChild(backToTopControls);
 
 		wrapperFragment.appendChild(contentContainer);
@@ -3312,7 +3684,10 @@ Module.register("MMM-SoccerStandings", {
 		const headerTable = document.createElement("table");
 		headerTable.className = "small spfl-table header-only";
 		headerTable.setAttribute("role", "table");
-		headerTable.setAttribute("aria-label", `${this.config.leagueHeaders[this.currentLeague] || this.currentLeague} Standings Table`);
+		headerTable.setAttribute(
+			"aria-label",
+			`${this.config.leagueHeaders[this.currentLeague] || this.currentLeague} Standings Table`
+		);
 
 		const thead = document.createElement("thead");
 		const headerRow = document.createElement("tr");
@@ -3363,7 +3738,10 @@ Module.register("MMM-SoccerStandings", {
 		const bodyTable = document.createElement("table");
 		bodyTable.className = "small spfl-table body-only";
 		bodyTable.setAttribute("role", "table");
-		bodyTable.setAttribute("aria-label", `${this.config.leagueHeaders[this.currentLeague] || this.currentLeague} Standings Data`);
+		bodyTable.setAttribute(
+			"aria-label",
+			`${this.config.leagueHeaders[this.currentLeague] || this.currentLeague} Standings Data`
+		);
 		const tbody = document.createElement("tbody");
 
 		// Compute column count for split-group separator colspan
@@ -3388,7 +3766,7 @@ Module.register("MMM-SoccerStandings", {
 			Array.isArray(leagueData.splitGroups) &&
 			leagueData.splitGroups.length > 1
 		) {
-			leagueData.splitGroups.forEach(group => {
+			leagueData.splitGroups.forEach((group) => {
 				_groupsToRender.push({ label: group.label, teams: group.teams || [] });
 			});
 		} else {
@@ -3422,247 +3800,257 @@ Module.register("MMM-SoccerStandings", {
 			}
 			_totalTeamsRendered += teamsToShow.length;
 
-		teamsToShow.forEach((team, index) => {
-			var row = document.createElement("tr");
-			row.className = "team-row";
-			// Add alternating shade on the second+ groups so they visually separate
-			if (groupIndex % 2 === 1) row.classList.add("split-group-alt");
-			row.setAttribute("role", "row");
-			row.setAttribute("aria-rowindex", index + 1);
-			if (team.name) {
-				row.setAttribute("data-team-name", team.name);
-			}
-			const pos = team.position || "-";
-			const pts = team.points || "0";
-
-			row.setAttribute(
-				"aria-label",
-				`${team.name}, rank ${pos}, ${pts} points`
-			);
-
-			if (this.config.colored) {
-				const uefaLeagues = [
-					"UEFA_CHAMPIONS_LEAGUE",
-					"UEFA_EUROPA_LEAGUE",
-					"UEFA_EUROPA_CONFERENCE_LEAGUE",
-					"UCL",
-					"UEL",
-					"ECL"
-				];
-				const isUEFA = uefaLeagues.includes(leagueKey);
-
-				if (isUEFA) {
-					// UEFA League Phase: 1-8 Promotion, 25-36 Elimination
-					if (team.position <= 8) {
-						row.classList.add("promotion-zone");
-					} else if (team.position >= 25 && team.position <= 36) {
-						row.classList.add("uefa-elimination-zone");
-					}
-				} else if (leagueKey !== "WORLD_CUP_2026") {
-					// For split-league groups, colour based on position within the group
-					if (groupIndex === 0) {
-						// Championship / top group: top positions highlighted
-						if (team.position <= 2) row.classList.add("promotion-zone");
-						else if (team.position <= 4) row.classList.add("uefa-zone");
-					} else {
-						// Relegation / lower groups: bottom positions highlighted
-						if (team.position >= teamsToShow.length - 1)
-							row.classList.add("relegation-zone");
-					}
+			teamsToShow.forEach((team, index) => {
+				var row = document.createElement("tr");
+				row.className = "team-row";
+				// Add alternating shade on the second+ groups so they visually separate
+				if (groupIndex % 2 === 1) row.classList.add("split-group-alt");
+				row.setAttribute("role", "row");
+				row.setAttribute("aria-rowindex", index + 1);
+				if (team.name) {
+					row.setAttribute("data-team-name", team.name);
 				}
-			}
+				const pos = team.position || "-";
+				const pts = team.points || "0";
 
-			if (this.config.highlightTeams.includes(team.name)) {
-				row.classList.add("highlighted");
-			}
+				row.setAttribute(
+					"aria-label",
+					`${team.name}, rank ${pos}, ${pts} points`
+				);
 
-			// Apply custom team colors (DES-06)
-			if (this.config.customTeamColors && typeof this.config.customTeamColors === "object") {
-				const customColor = this.config.customTeamColors[team.name];
-				if (customColor) {
-					// Validate hex color format
-					if (/^#[0-9A-F]{6}$/i.test(customColor)) {
-						row.style.backgroundColor = customColor;
-						row.setAttribute("data-custom-color", customColor);
-						if (this.config.debug) {
-							Log.info(`[CUSTOM-COLOR] Applied ${customColor} to ${team.name}`);
+				if (this.config.colored) {
+					const uefaLeagues = [
+						"UEFA_CHAMPIONS_LEAGUE",
+						"UEFA_EUROPA_LEAGUE",
+						"UEFA_EUROPA_CONFERENCE_LEAGUE",
+						"UCL",
+						"UEL",
+						"ECL"
+					];
+					const isUEFA = uefaLeagues.includes(leagueKey);
+
+					if (isUEFA) {
+						// UEFA League Phase: 1-8 Promotion, 25-36 Elimination
+						if (team.position <= 8) {
+							row.classList.add("promotion-zone");
+						} else if (team.position >= 25 && team.position <= 36) {
+							row.classList.add("uefa-elimination-zone");
 						}
-					} else if (this.config.debug) {
-						Log.warn(`[CUSTOM-COLOR] Invalid color format for ${team.name}: ${customColor}. Use #RRGGBB format.`);
+					} else if (leagueKey !== "WORLD_CUP_2026") {
+						// For split-league groups, colour based on position within the group
+						if (groupIndex === 0) {
+							// Championship / top group: top positions highlighted
+							if (team.position <= 2) row.classList.add("promotion-zone");
+							else if (team.position <= 4) row.classList.add("uefa-zone");
+						} else {
+							// Relegation / lower groups: bottom positions highlighted
+							if (team.position >= teamsToShow.length - 1)
+								row.classList.add("relegation-zone");
+						}
 					}
 				}
-			}
 
-			if (this.config.showPosition) {
-				var posCell = document.createElement("td");
-				posCell.textContent = Number.isFinite(team.position)
-					? team.position
-					: "-";
-				posCell.className = "position-cell";
-				row.appendChild(posCell);
-			}
-
-			var teamCell = document.createElement("td");
-			teamCell.className = "team-cell";
-
-			if (this.config.showTeamLogos) {
-				var img = document.createElement("img");
-				img.className = "team-logo";
-				img.width = 18;
-				img.height = 18;
-
-				var resolvedLogo = team.logo || this.getTeamLogoMapping(team.name);
-				var slug = (team.name || "")
-					.toLowerCase()
-					.replace(/[^a-z0-9]+/g, "-")
-					.replace(/^-+|-+$/g, "");
-				var candidates = [];
-
-				if (resolvedLogo) candidates.push(resolvedLogo);
-				if (team.name && team.name !== "undefined") {
-					if (countryFolder) {
-						candidates.push(`crests/${countryFolder}/${slug}.svg`);
-						candidates.push(`crests/${countryFolder}/${slug}.png`);
-					}
-					candidates.push(`crests/${slug}.svg`);
-					candidates.push(`crests/${slug}.png`);
-				}
-				candidates.push("placeholder.svg");
-
-				var basePath = "modules/MMM-SoccerStandings/images/";
-				var tryIndex = 0;
-				const moduleInstance = this;
-				const tryNext = (imgEl) => {
-					if (tryIndex >= candidates.length) {
-						imgEl.remove();
-						return;
-					}
-					const logoSrc = basePath + candidates[tryIndex];
-					if (tryIndex === 0) {
-						moduleInstance.setupImageLazyLoading(imgEl, logoSrc);
-					} else {
-						imgEl.src = logoSrc;
-					}
-					tryIndex++;
-				};
-				img.onerror = function () {
-					tryNext(this);
-				};
-				tryNext(img);
-				teamCell.appendChild(img);
-			}
-
-			var nameSpan = document.createElement("span");
-			nameSpan.className = "team-name";
-			nameSpan.textContent = this.translateTeamName(team.name);
-			teamCell.appendChild(nameSpan);
-			row.appendChild(teamCell);
-
-			if (this.config.showPlayedGames) {
-				var td = document.createElement("td");
-				td.textContent = Number.isFinite(team.played) ? team.played : "-";
-				td.className = "played-cell";
-				row.appendChild(td);
-			}
-			if (this.config.showWon) {
-				var td = document.createElement("td");
-				td.textContent = Number.isFinite(team.won) ? team.won : "-";
-				td.className = "won-cell";
-				row.appendChild(td);
-			}
-			if (this.config.showDrawn) {
-				var td = document.createElement("td");
-				td.textContent = Number.isFinite(team.drawn) ? team.drawn : "-";
-				td.className = "drawn-cell";
-				row.appendChild(td);
-			}
-			if (this.config.showLost) {
-				var td = document.createElement("td");
-				td.textContent = Number.isFinite(team.lost) ? team.lost : "-";
-				td.className = "lost-cell";
-				row.appendChild(td);
-			}
-			if (this.config.showGoalsFor) {
-				var td = document.createElement("td");
-				td.textContent = Number.isFinite(team.goalsFor) ? team.goalsFor : "-";
-				td.className = "gf-cell";
-				row.appendChild(td);
-			}
-			if (this.config.showGoalsAgainst) {
-				var td = document.createElement("td");
-				td.textContent = Number.isFinite(team.goalsAgainst)
-					? team.goalsAgainst
-					: "-";
-				td.className = "ga-cell";
-				row.appendChild(td);
-			}
-			if (this.config.showGoalDifference) {
-				var td = document.createElement("td");
-				var gd = Number.isFinite(team.goalDifference)
-					? team.goalDifference
-					: null;
-				td.textContent = gd === null ? "-" : gd > 0 ? `+${gd}` : String(gd);
-				td.className = "gd-cell";
-				if (gd > 0) td.classList.add("positive");
-				else if (gd < 0) td.classList.add("negative");
-				row.appendChild(td);
-			}
-			if (this.config.showPoints) {
-				var td = document.createElement("td");
-				td.textContent = Number.isFinite(team.points) ? team.points : "-";
-				td.className = "points-cell";
-				row.appendChild(td);
-			}
-			if (this.config.showForm) {
-				var formCell = document.createElement("td");
-				formCell.className = "form-cell";
-				var formWrapper = document.createElement("div");
-				formWrapper.className = this.config.enhancedIndicatorShapes
-					? "form-tokens form-tokens--enhanced"
-					: "form-tokens form-tokens--flat";
-
-				var formArr = Array.isArray(team.form) ? team.form : [];
-				var maxGames = Math.max(1, Number(this.config.formMaxGames) || 5);
-				if (formArr.length > maxGames) formArr = formArr.slice(-maxGames);
-
-				for (var p = 0; p < maxGames - formArr.length; p++) {
-					var span = document.createElement("span");
-					span.textContent = "-";
-					span.className = "form-missing";
-					formWrapper.appendChild(span);
+				if (this.config.highlightTeams.includes(team.name)) {
+					row.classList.add("highlighted");
 				}
 
-				formArr.forEach((match) => {
-					var span = document.createElement("span");
-					span.textContent = match.result;
-					if (match.result === "W") span.className = "form-win";
-					else if (match.result === "D") span.className = "form-draw";
-					else if (match.result === "L") span.className = "form-loss";
-					else span.className = "form-missing";
-					formWrapper.appendChild(span);
-				});
-				formCell.appendChild(formWrapper);
-				row.appendChild(formCell);
-			}
+				// Apply custom team colors (DES-06)
+				if (
+					this.config.customTeamColors &&
+					typeof this.config.customTeamColors === "object"
+				) {
+					const customColor = this.config.customTeamColors[team.name];
+					if (customColor) {
+						// Validate hex color format
+						if (/^#[0-9A-F]{6}$/i.test(customColor)) {
+							row.style.backgroundColor = customColor;
+							row.setAttribute("data-custom-color", customColor);
+							if (this.config.debug) {
+								Log.info(
+									`[CUSTOM-COLOR] Applied ${customColor} to ${team.name}`
+								);
+							}
+						} else if (this.config.debug) {
+							Log.warn(
+								`[CUSTOM-COLOR] Invalid color format for ${team.name}: ${customColor}. Use #RRGGBB format.`
+							);
+						}
+					}
+				}
+
+				if (this.config.showPosition) {
+					var posCell = document.createElement("td");
+					posCell.textContent = Number.isFinite(team.position)
+						? team.position
+						: "-";
+					posCell.className = "position-cell";
+					row.appendChild(posCell);
+				}
+
+				var teamCell = document.createElement("td");
+				teamCell.className = "team-cell";
+
+				if (this.config.showTeamLogos) {
+					var img = document.createElement("img");
+					img.className = "team-logo";
+					img.width = 18;
+					img.height = 18;
+
+					var resolvedLogo = team.logo || this.getTeamLogoMapping(team.name);
+					var slug = (team.name || "")
+						.toLowerCase()
+						.replace(/[^a-z0-9]+/g, "-")
+						.replace(/^-+|-+$/g, "");
+					var candidates = [];
+
+					if (resolvedLogo) candidates.push(resolvedLogo);
+					if (team.name && team.name !== "undefined") {
+						if (countryFolder) {
+							candidates.push(`crests/${countryFolder}/${slug}.svg`);
+							candidates.push(`crests/${countryFolder}/${slug}.png`);
+						}
+						candidates.push(`crests/${slug}.svg`);
+						candidates.push(`crests/${slug}.png`);
+					}
+					candidates.push("placeholder.svg");
+
+					var basePath = "modules/MMM-SoccerStandings/images/";
+					var tryIndex = 0;
+					const moduleInstance = this;
+					const tryNext = (imgEl) => {
+						if (tryIndex >= candidates.length) {
+							imgEl.remove();
+							return;
+						}
+						const logoSrc = basePath + candidates[tryIndex];
+						if (tryIndex === 0) {
+							moduleInstance.setupImageLazyLoading(imgEl, logoSrc);
+						} else {
+							imgEl.src = logoSrc;
+						}
+						tryIndex++;
+					};
+					img.onerror = function () {
+						tryNext(this);
+					};
+					tryNext(img);
+					teamCell.appendChild(img);
+				}
+
+				var nameSpan = document.createElement("span");
+				nameSpan.className = "team-name";
+				nameSpan.textContent = this.translateTeamName(team.name);
+				teamCell.appendChild(nameSpan);
+				row.appendChild(teamCell);
+
+				if (this.config.showPlayedGames) {
+					var td = document.createElement("td");
+					td.textContent = Number.isFinite(team.played) ? team.played : "-";
+					td.className = "played-cell";
+					row.appendChild(td);
+				}
+				if (this.config.showWon) {
+					var td = document.createElement("td");
+					td.textContent = Number.isFinite(team.won) ? team.won : "-";
+					td.className = "won-cell";
+					row.appendChild(td);
+				}
+				if (this.config.showDrawn) {
+					var td = document.createElement("td");
+					td.textContent = Number.isFinite(team.drawn) ? team.drawn : "-";
+					td.className = "drawn-cell";
+					row.appendChild(td);
+				}
+				if (this.config.showLost) {
+					var td = document.createElement("td");
+					td.textContent = Number.isFinite(team.lost) ? team.lost : "-";
+					td.className = "lost-cell";
+					row.appendChild(td);
+				}
+				if (this.config.showGoalsFor) {
+					var td = document.createElement("td");
+					td.textContent = Number.isFinite(team.goalsFor) ? team.goalsFor : "-";
+					td.className = "gf-cell";
+					row.appendChild(td);
+				}
+				if (this.config.showGoalsAgainst) {
+					var td = document.createElement("td");
+					td.textContent = Number.isFinite(team.goalsAgainst)
+						? team.goalsAgainst
+						: "-";
+					td.className = "ga-cell";
+					row.appendChild(td);
+				}
+				if (this.config.showGoalDifference) {
+					var td = document.createElement("td");
+					var gd = Number.isFinite(team.goalDifference)
+						? team.goalDifference
+						: null;
+					td.textContent = gd === null ? "-" : gd > 0 ? `+${gd}` : String(gd);
+					td.className = "gd-cell";
+					if (gd > 0) td.classList.add("positive");
+					else if (gd < 0) td.classList.add("negative");
+					row.appendChild(td);
+				}
+				if (this.config.showPoints) {
+					var td = document.createElement("td");
+					td.textContent = Number.isFinite(team.points) ? team.points : "-";
+					td.className = "points-cell";
+					row.appendChild(td);
+				}
+				if (this.config.showForm) {
+					var formCell = document.createElement("td");
+					formCell.className = "form-cell";
+					var formWrapper = document.createElement("div");
+					formWrapper.className = this.config.enhancedIndicatorShapes
+						? "form-tokens form-tokens--enhanced"
+						: "form-tokens form-tokens--flat";
+
+					var formArr = Array.isArray(team.form) ? team.form : [];
+					var maxGames = Math.max(1, Number(this.config.formMaxGames) || 5);
+					if (formArr.length > maxGames) formArr = formArr.slice(-maxGames);
+
+					for (var p = 0; p < maxGames - formArr.length; p++) {
+						var span = document.createElement("span");
+						span.className = "form-missing fas fa-circle-question";
+						formWrapper.appendChild(span);
+					}
+
+					formArr.forEach((match) => {
+						var span = document.createElement("span");
+						// span.textContent = match.result;
+						if (match.result === "W") span.className = "form-win fas fa-check-circle";
+						else if (match.result === "D") span.className = "form-draw fas fa-minus-circle";
+						else if (match.result === "L") span.className = "form-loss fas fa-xmark-circle";
+						else span.className = "form-missing fas fa-question-circle";
+						formWrapper.appendChild(span);
+					});
+					formCell.appendChild(formWrapper);
+					row.appendChild(formCell);
+				}
 
 				tbody.appendChild(row);
-		}); // end teamsToShow.forEach
-
+			}); // end teamsToShow.forEach
 		}); // end _groupsToRender.forEach
 
 		bodyTable.appendChild(tbody);
 
 		scrollContainer.appendChild(bodyTable);
-		
+
 		// Apply virtual scrolling optimizations if enabled and threshold exceeded (PERF-03)
-		if (this.config.enableVirtualScrolling && _totalTeamsRendered >= this.config.virtualScrollThreshold) {
+		if (
+			this.config.enableVirtualScrolling &&
+			_totalTeamsRendered >= this.config.virtualScrollThreshold
+		) {
 			scrollContainer.classList.add("virtual-scroll-container");
 			bodyTable.classList.add("virtual-scrolling-enabled");
 			if (this.config.debug) {
-				Log.info(`[VIRTUAL-SCROLL] Enabled for ${_totalTeamsRendered} rows (threshold: ${this.config.virtualScrollThreshold})`);
+				Log.info(
+					`[VIRTUAL-SCROLL] Enabled for ${_totalTeamsRendered} rows (threshold: ${this.config.virtualScrollThreshold})`
+				);
 			}
 		}
-		
+
 		outerWrapper.appendChild(scrollContainer);
 
 		setTimeout(() => {
@@ -3709,7 +4097,7 @@ Module.register("MMM-SoccerStandings", {
 			// If groups complete, stop group cycling and jump to Rd32
 			if (this.isWorldCupStageComplete("GROUPS")) {
 				this.currentSubTab = "Rd32";
-				this.updateDom(this.config.animationSpeed || 300);
+				this.updateDom();
 				return;
 			}
 			// If Playoff complete, set Rd16; then QF; then SF; then TP; then Final
@@ -3720,7 +4108,7 @@ Module.register("MMM-SoccerStandings", {
 					this.isWorldCupStageComplete(order[i])
 				) {
 					this.currentSubTab = order[i + 1];
-					this.updateDom(this.config.animationSpeed || 300);
+					this.updateDom();
 					break;
 				}
 			}
@@ -3755,12 +4143,12 @@ Module.register("MMM-SoccerStandings", {
 						clearInterval(this.wcSubtabTimer);
 						this.wcSubtabTimer = null;
 						this.currentSubTab = "Rd32";
-						this.updateDom(this.config.animationSpeed || 300);
+						this.updateDom();
 						return;
 					}
 					idx = (idx + 1) % groupsToShow.length;
 					this.currentSubTab = groupsToShow[idx];
-					this.updateDom(this.config.animationSpeed || 300);
+					this.updateDom();
 				}, interval);
 			}, interval);
 		} else {
@@ -3933,7 +4321,13 @@ Module.register("MMM-SoccerStandings", {
 
 				const recomputedResults = allFixtures.filter((f) => {
 					const status = (f.status || "").toUpperCase();
-					if (status === "FT" || status === "PEN" || status === "PENS" || status === "AET") return true;
+					if (
+						status === "FT" ||
+						status === "PEN" ||
+						status === "PENS" ||
+						status === "AET"
+					)
+						return true;
 					if (f.live === true) return true;
 					if (/\d+'|HT|LIVE/i.test(status)) return true;
 					// BBC sometimes omits the FT status marker for completed fixtures.
@@ -3952,8 +4346,13 @@ Module.register("MMM-SoccerStandings", {
 					if (f.date !== todayStr) return false;
 					const status = (f.status || "").toUpperCase();
 					const isFinishedOrLive =
-						status === "FT" || status === "PEN" || status === "PENS" || status === "AET" ||
-						status === "LIVE" || f.live || /\d+'|HT/i.test(status);
+						status === "FT" ||
+						status === "PEN" ||
+						status === "PENS" ||
+						status === "AET" ||
+						status === "LIVE" ||
+						f.live ||
+						/\d+'|HT/i.test(status);
 					// A today fixture with no status and no live flag is assumed finished
 					if (!status && !f.live) return false;
 					return !isFinishedOrLive;
@@ -3963,12 +4362,20 @@ Module.register("MMM-SoccerStandings", {
 					if (f.date <= todayStr) return false;
 					const status = (f.status || "").toUpperCase();
 					const isFinishedOrLive =
-						status === "FT" || status === "PEN" || status === "PENS" || status === "AET" ||
-						status === "LIVE" || f.live || /\d+'|HT/i.test(status);
+						status === "FT" ||
+						status === "PEN" ||
+						status === "PENS" ||
+						status === "AET" ||
+						status === "LIVE" ||
+						f.live ||
+						/\d+'|HT/i.test(status);
 					return !isFinishedOrLive;
 				});
 
-				const combinedResults = [...recomputedLive, ...recomputedResults.filter((f) => !recomputedLive.includes(f))];
+				const combinedResults = [
+					...recomputedLive,
+					...recomputedResults.filter((f) => !recomputedLive.includes(f))
+				];
 
 				const stages = {
 					results: combinedResults,
@@ -3977,16 +4384,18 @@ Module.register("MMM-SoccerStandings", {
 				};
 
 				if (this.config.debug) {
-					Log.info(`[UEFA-STAGES] Recomputed for today=${todayStr}: results=${stages.results.length} today=${stages.today.length} future=${stages.future.length}`);
+					Log.info(
+						`[UEFA-STAGES] Recomputed for today=${todayStr}: results=${stages.results.length} today=${stages.today.length} future=${stages.future.length}`
+					);
 				}
 
 				// Map each stage to its typical month(s) for filtering.
 				// Broadened to avoid missing fixtures due to scheduling overlaps.
 				const stageMonthMap = {
-					Playoff: ["01", "02", "03"],    // Jan (unlikely), Feb (main), March (rare)
-					Rd16: ["02", "03", "04"],       // Feb, March (main), April (rare)
-					QF: ["03", "04", "05"],         // March, April (main), May (rare)
-					SF: ["04", "05", "06"]          // April, May (main), June (rare)
+					Playoff: ["01", "02", "03"], // Jan (unlikely), Feb (main), March (rare)
+					Rd16: ["02", "03", "04"], // Feb, March (main), April (rare)
+					QF: ["03", "04", "05"], // March, April (main), May (rare)
+					SF: ["04", "05", "06"] // April, May (main), June (rare)
 				};
 
 				const allowedMonths = stageMonthMap[subTab] || [];
@@ -4034,7 +4443,11 @@ Module.register("MMM-SoccerStandings", {
 				stageFuture.sort(sortByDateTime);
 
 				// Determine if the round is completed (00:01 on the day after the last kickoff)
-				const allStageFixtures = [...stageResults, ...stageToday, ...stageFuture];
+				const allStageFixtures = [
+					...stageResults,
+					...stageToday,
+					...stageFuture
+				];
 				let lastKickoffDate = "";
 				allStageFixtures.forEach((f) => {
 					if (f.date && f.date > lastKickoffDate) {
@@ -4054,10 +4467,10 @@ Module.register("MMM-SoccerStandings", {
 				// Sections dynamically share increased height (+60px total)
 				const splitViewContainer = document.createElement("div");
 				splitViewContainer.className = "uefa-split-view-container";
-				
+
 				const hasResults = stageResults.length > 0;
-				const hasUpcoming = (stageToday.length + stageFuture.length) > 0;
-				
+				const hasUpcoming = stageToday.length + stageFuture.length > 0;
+
 				if (hasResults && hasUpcoming) {
 					splitViewContainer.classList.add("dual-sections");
 				} else if (hasResults) {
@@ -4476,7 +4889,10 @@ Module.register("MMM-SoccerStandings", {
 				const status = (fix.status || "").toUpperCase();
 				const todayDateStr = this.getCurrentDateString();
 				const isFinished =
-					status === "FT" || status === "AET" || status === "PEN" || status === "PENS" ||
+					status === "FT" ||
+					status === "AET" ||
+					status === "PEN" ||
+					status === "PENS" ||
 					// BBC sometimes omits FT status — treat past-date, non-live fixtures as finished.
 					(!status && !fix.live && fix.date && fix.date < todayDateStr);
 				const isLive = fix.live === true || /\d+'|HT|LIVE/i.test(status);
@@ -4492,7 +4908,8 @@ Module.register("MMM-SoccerStandings", {
 				// Additional safety: if fixture has time but no status, it's definitely upcoming
 				const hasKickoffTime =
 					fix.time && fix.time !== "vs" && /\d{1,2}:\d{2}/.test(fix.time);
-				const definitelyUpcoming = hasKickoffTime && !status && !hasMatchScore && !isFinished;
+				const definitelyUpcoming =
+					hasKickoffTime && !status && !hasMatchScore && !isFinished;
 
 				// DEBUG: Log ALL fixtures to diagnose issues
 				if (this.config.debug) {
@@ -4507,7 +4924,9 @@ Module.register("MMM-SoccerStandings", {
 				if (isUpcoming || definitelyUpcoming) {
 					scoreText = fix.time || "TBD";
 					if (this.config.debug) {
-						Log.info(`[FIXTURE-DISPLAY] Upcoming fixture - showing time: "${scoreText}"`);
+						Log.info(
+							`[FIXTURE-DISPLAY] Upcoming fixture - showing time: "${scoreText}"`
+						);
 					}
 				}
 				// For live fixtures: show current match score
@@ -4519,7 +4938,9 @@ Module.register("MMM-SoccerStandings", {
 						scoreText = fix.score || "0 - 0";
 					}
 					if (this.config.debug) {
-						Log.info(`[FIXTURE-DISPLAY] Live fixture - showing score: "${scoreText}"`);
+						Log.info(
+							`[FIXTURE-DISPLAY] Live fixture - showing score: "${scoreText}"`
+						);
 					}
 				}
 				// For finished fixtures: show final score
@@ -4530,7 +4951,9 @@ Module.register("MMM-SoccerStandings", {
 						scoreText = fix.score || "vs";
 					}
 					if (this.config.debug) {
-						Log.info(`[FIXTURE-DISPLAY] Finished fixture - showing score: "${scoreText}"`);
+						Log.info(
+							`[FIXTURE-DISPLAY] Finished fixture - showing score: "${scoreText}"`
+						);
 					}
 				}
 				// Fallback: if we can't determine state, prefer time over score
@@ -4538,12 +4961,16 @@ Module.register("MMM-SoccerStandings", {
 					if (hasKickoffTime) {
 						scoreText = fix.time;
 						if (this.config.debug) {
-							Log.info(`[FIXTURE-DISPLAY] Unknown state but has time - showing time: "${scoreText}"`);
+							Log.info(
+								`[FIXTURE-DISPLAY] Unknown state but has time - showing time: "${scoreText}"`
+							);
 						}
 					} else {
 						scoreText = fix.score || "vs";
 						if (this.config.debug) {
-							Log.info(`[FIXTURE-DISPLAY] Unknown state - showing score: "${scoreText}"`);
+							Log.info(
+								`[FIXTURE-DISPLAY] Unknown state - showing score: "${scoreText}"`
+							);
 						}
 					}
 				}
@@ -4570,7 +4997,9 @@ Module.register("MMM-SoccerStandings", {
 					statusDiv.textContent = displayStatus;
 					scoreWrapper.appendChild(statusDiv);
 					if (this.config.debug) {
-						Log.info(`[FIXTURE-DISPLAY] Showing status tag: "${displayStatus}"`);
+						Log.info(
+							`[FIXTURE-DISPLAY] Showing status tag: "${displayStatus}"`
+						);
 					}
 				} else if (isUpcoming || definitelyUpcoming) {
 					if (this.config.debug) {
@@ -4819,9 +5248,7 @@ Module.register("MMM-SoccerStandings", {
 
 	// Return the list of CSS files to load for this module
 	getStyles() {
-		// Ensure the module's stylesheet is loaded by MagicMirror
-		// Note: filename uses current folder spelling. We can rename alongside module folder later.
-		return ["MMM-SoccerStandings.css"];
+		return ["font-awesome.css", "MMM-SoccerStandings.css"];
 	},
 
 	// Helper to translate team names if they exist in translation files
@@ -4917,7 +5344,7 @@ Module.register("MMM-SoccerStandings", {
 
 		// Font color override
 		if (this.config.fontColorOverride) {
-			css += `.soccer-standings * { color: ${this.config.fontColorOverride} !important; }\n`;
+			// css += `.soccer-standings * { color: ${this.config.fontColorOverride} !important; }\n`;
 		}
 
 		// Opacity override (exclude back-to-top-controls which manages its own visibility)
@@ -4958,9 +5385,11 @@ Module.register("MMM-SoccerStandings", {
 		toggleIcon.title = this.isContentHidden
 			? this.translate("SHOW_LEAGUE_TABLE")
 			: this.translate("HIDE_LEAGUE_TABLE");
-		
+
 		// Use FontAwesome icon for consistency (DES-01)
-		const iconClass = this.isContentHidden ? "fas fa-chevron-up" : "fas fa-chevron-down";
+		const iconClass = this.isContentHidden
+			? "fas fa-chevron-up"
+			: "fas fa-chevron-down";
 		const icon = this.createIcon(iconClass);
 		toggleIcon.appendChild(icon);
 		toggleIcon.style.cursor = "pointer";

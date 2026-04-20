@@ -1,0 +1,272 @@
+/*    MMM-SoccerStandings CSS Styles
+ * 
+ * This file contains all the styling for the Football League Table module
+ * Includes responsive design, color coding for different league positions,
+ * and support for multiple leagues (SPFL, UCL, UEL, ECL)
+ */
+
+/* ==========================================
+   SCSS tokens extracted conservatively from repeated values
+   to preserve the existing compiled output and cascade.
+   ========================================== */
+
+$white: #fff;
+$white-full: #ffffff;
+$gold: #ffd700;
+$celtic-green: #018749;
+
+$gray-ccc: #ccc;
+$gray-aaa: #aaa;
+$gray-888: #888;
+$gray-666: #666;
+$gray-555: #555;
+$gray-444: #444;
+$gray-333: #333;
+
+$red-live: #ff3333;
+$danger-red: #dc3545;
+$success-green: #28a745;
+$success-green-alt: #5cb85c;
+$warning-amber: #f0ad4e;
+$blue-accent: #4d94ff;
+$surface-dark: #3a3a3a;
+
+$white-03: rgba(255, 255, 255, 0.03);
+$white-05: rgba(255, 255, 255, 0.05);
+$white-07: rgba(255, 255, 255, 0.07);
+$white-08: rgba(255, 255, 255, 0.08);
+$white-10: rgba(255, 255, 255, 0.1);
+$white-12: rgba(255, 255, 255, 0.12);
+$white-15: rgba(255, 255, 255, 0.15);
+$white-18: rgba(255, 255, 255, 0.18);
+$white-20: rgba(255, 255, 255, 0.2);
+$white-25: rgba(255, 255, 255, 0.25);
+$white-30: rgba(255, 255, 255, 0.3);
+$white-35: rgba(255, 255, 255, 0.35);
+$white-40: rgba(255, 255, 255, 0.4);
+$white-50: rgba(255, 255, 255, 0.5);
+$white-65: rgba(255, 255, 255, 0.65);
+$white-75: rgba(255, 255, 255, 0.75);
+
+$black-50: rgba(0, 0, 0, 0.5);
+$black-90: rgba(0, 0, 0, 0.9);
+$header-surface: rgba(34, 34, 34, 0.95);
+
+$featured-tab-leagues: (
+  "WORLD_CUP_2026",
+  "UEFA_CHAMPIONS_LEAGUE",
+  "UEFA_EUROPA_LEAGUE",
+  "UEFA_EUROPA_CONFERENCE_LEAGUE",
+  "UCL",
+  "UEL",
+  "ECL"
+);
+
+$league-active-colors: (
+  ("SPFL"): rgba(0, 135, 73, 0.7),
+  ("UCL", "UEFA_CHAMPIONS_LEAGUE"): rgba(30, 144, 255, 0.7),
+  ("UEL", "UEFA_EUROPA_LEAGUE"): rgba(255, 140, 0, 0.7),
+  ("ECL", "UEFA_EUROPA_CONFERENCE_LEAGUE"): rgba(50, 205, 50, 0.7),
+  ("EPL"): rgba(63, 16, 126, 0.7),
+  ("SPFLC"): rgba(220, 20, 60, 0.7),
+  ("SCOTLAND_PREMIERSHIP", "SCOTLAND_CHAMPIONSHIP"): rgba(0, 135, 73, 0.7),
+  ("ENGLAND_PREMIER_LEAGUE"): rgba(63, 16, 126, 0.7),
+  ("GERMANY_BUNDESLIGA"): rgba(200, 16, 46, 0.7),
+  ("FRANCE_LIGUE1"): rgba(0, 85, 164, 0.7),
+  ("SPAIN_LA_LIGA"): rgba(255, 196, 0, 0.7),
+  ("ITALY_SERIE_A"): rgba(0, 87, 184, 0.7),
+  ("NETHERLANDS_EREDIVISIE"): rgba(255, 112, 67, 0.7),
+  ("BELGIUM_PRO_LEAGUE"): rgba(255, 197, 0, 0.7),
+  ("PORTUGAL_PRIMEIRA_LIGA"): rgba(0, 119, 55, 0.7),
+  ("GREECE_SUPER_LEAGUE"): rgba(0, 112, 192, 0.7),
+  ("TURKEY_SUPER_LIG"): rgba(206, 17, 38, 0.7),
+  ("UKRAINE_PREMIER_LEAGUE"): rgba(0, 91, 187, 0.7),
+  ("ROMANIA_LIGA_I"): rgba(0, 150, 136, 0.7),
+  ("CROATIA_HNL"): rgba(255, 0, 0, 0.7),
+  ("SERBIA_SUPER_LIGA"): rgba(0, 56, 147, 0.7),
+  ("AUSTRIA_BUNDESLIGA"): rgba(237, 27, 36, 0.7),
+  ("CZECH_LIGA"): rgba(17, 35, 126, 0.7),
+  ("HUNGARY_NBI"): rgba(206, 17, 38, 0.7),
+  ("POLAND_EKSTRAKLASA"): rgba(255, 0, 0, 0.7),
+  ("SWITZERLAND_SUPER_LEAGUE"): rgba(255, 0, 0, 0.7),
+  ("SWEDEN_ALLSVENSKAN"): rgba(0, 85, 152, 0.7),
+  ("NORWAY_ELITESERIEN"): rgba(186, 12, 47, 0.7),
+  ("DENMARK_SUPERLIGAEN"): rgba(196, 0, 0, 0.7)
+);
+
+$subtab-active-colors: (
+  ("WORLD_CUP_2026"): $gold,
+  ("UEFA_CHAMPIONS_LEAGUE", "UCL"): #1e90ff,
+  ("UEFA_EUROPA_LEAGUE", "UEL"): #ff8c00,
+  ("UEFA_EUROPA_CONFERENCE_LEAGUE", "ECL"): #32cd32
+);
+
+$theme-light-vars: (
+  theme-bg-primary: #f5f5f5,
+  theme-bg-secondary: $white-full,
+  theme-bg-hover: #e8e8e8,
+  theme-text-primary: #222222,
+  theme-text-secondary: #666666,
+  theme-text-muted: #999999,
+  theme-border: #cccccc,
+  theme-border-light: #e0e0e0,
+  theme-accent: #0066cc,
+  theme-success: $success-green,
+  theme-warning: #ffc107,
+  theme-danger: $danger-red,
+  theme-info: #17a2b8,
+  theme-first-place: rgba(212, 175, 55, 0.2),
+  theme-uefa-zone: rgba(0, 123, 255, 0.15),
+  theme-relegation-zone: rgba(220, 53, 69, 0.15),
+  theme-form-win: $success-green,
+  theme-form-draw: #ffc107,
+  theme-form-loss: $danger-red,
+  theme-button-bg: $white-full,
+  theme-button-text: #333333,
+  theme-button-hover-bg: #0066cc,
+  theme-button-hover-text: $white-full,
+  theme-button-active-bg: #0052a3,
+  theme-live-bg: $danger-red,
+  theme-live-text: $white-full,
+  theme-stale-fresh: $success-green,
+  theme-stale-moderate: #ffc107,
+  theme-stale-old: $danger-red
+);
+
+$theme-dark-vars: (
+  theme-bg-primary: #000000,
+  theme-bg-secondary: #111111,
+  theme-bg-hover: #222222,
+  theme-text-primary: $white-full,
+  theme-text-secondary: #aaaaaa,
+  theme-text-muted: #666666,
+  theme-border: #333333,
+  theme-border-light: #222222,
+  theme-accent: $blue-accent,
+  theme-success: $success-green-alt,
+  theme-warning: $warning-amber,
+  theme-danger: #d9534f,
+  theme-info: #5bc0de,
+  theme-first-place: rgba(255, 215, 0, 0.2),
+  theme-uefa-zone: rgba(77, 148, 255, 0.2),
+  theme-relegation-zone: rgba(217, 83, 79, 0.2),
+  theme-form-win: $success-green-alt,
+  theme-form-draw: $warning-amber,
+  theme-form-loss: #d9534f,
+  theme-button-bg: $surface-dark,
+  theme-button-text: #f0f0f0,
+  theme-button-hover-bg: $blue-accent,
+  theme-button-hover-text: $white-full,
+  theme-button-active-bg: #3a7bd5,
+  theme-live-bg: #d9534f,
+  theme-live-text: $white-full,
+  theme-stale-fresh: $success-green-alt,
+  theme-stale-moderate: $warning-amber,
+  theme-stale-old: #d9534f
+);
+
+$theme-auto-dark-vars: (
+  theme-bg-primary: #1a1a1a,
+  theme-bg-secondary: #2d2d2d,
+  theme-bg-hover: $surface-dark,
+  theme-text-primary: #f0f0f0,
+  theme-text-secondary: #b0b0b0,
+  theme-text-muted: #808080,
+  theme-border: #444444,
+  theme-border-light: $surface-dark,
+  theme-accent: $blue-accent,
+  theme-success: $success-green-alt,
+  theme-warning: $warning-amber,
+  theme-danger: #d9534f,
+  theme-form-win: $success-green-alt,
+  theme-form-draw: $warning-amber,
+  theme-form-loss: #d9534f,
+  theme-button-bg: $surface-dark,
+  theme-button-text: #f0f0f0,
+  theme-button-hover-bg: $blue-accent,
+  theme-button-active-bg: #3a7bd5
+);
+
+@mixin css-vars($vars) {
+  @each $name, $value in $vars {
+    --#{$name}: #{$value};
+  }
+}
+
+@mixin thin-scrollbar-x($height, $thumb, $track, $radius: 2px) {
+  scrollbar-width: thin;
+  scrollbar-color: $thumb $track;
+
+  &::-webkit-scrollbar {
+    height: $height;
+    display: block;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track;
+    border-radius: $radius;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb;
+    border-radius: $radius;
+  }
+}
+
+@mixin thin-scrollbar-y($width, $thumb, $track: transparent, $radius: 3px, $bg: transparent) {
+  scrollbar-width: thin;
+  scrollbar-color: $thumb $track;
+
+  &::-webkit-scrollbar {
+    width: $width;
+    background: $bg;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb;
+    border-radius: $radius;
+  }
+}
+
+@mixin density-row-spacing($padding, $line-height: null) {
+  .team-row td,
+  .table-header-row th {
+    padding: $padding;
+
+    @if $line-height != null {
+      line-height: $line-height;
+    }
+  }
+}
+
+@mixin density-logo-size($size) {
+  .team-logo,
+  .fixture-logo,
+  .fixture-logo-v2 {
+    width: $size;
+    height: $size;
+  }
+}
+
+%league-btn-pass-through {
+  pointer-events: none;
+}
+
+:root {
+  /* Responsive font sizes using clamp for fluid typography */
+  --mtlt-font-size-title: clamp(15px, 1.6vw, 19px);
+  --mtlt-font-size-header: clamp(13px, 1.3vw, 17px);
+  --mtlt-font-size-table: clamp(13px, 1.2vw, 16px);
+  --mtlt-font-size-small: clamp(11px, 1vw, 14px);
+  --mtlt-font-size-xsmall: clamp(10px, 0.9vw, 13px);
+
+  /* Animation timing */
+  --mtlt-transition-speed: 0ms;
+
+  /* Table height - set to 490px to show 12-14 teams (Increased from 450px) */
+  --mtlt-max-table-height: 490px;
+}

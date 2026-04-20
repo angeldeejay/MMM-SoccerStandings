@@ -4,8 +4,8 @@
  * By: Assistant
  * MIT Licensed.
  *
- * This node helper fetches SPFL league data from BBC Sport website
- * and processes it for display in the MagicMirror module.
+ * This node helper fetches soccer league standings from multiple providers
+ * (BBC Sport, ESPN, Soccerway, Wikipedia, Google) and processes them for display.
  */
 
 const SharedRequestManager = require("./shared-request-manager.js");
@@ -114,6 +114,15 @@ module.exports = NodeHelper.create({
 	resolveLogos(data, config) {
 		if (!data) return data;
 
+		// Normalise meta: parsers write lastUpdated/source at root level;
+		// frontend expects data.meta.lastUpdated for dedup and display.
+		if (!data.meta) {
+			data.meta = {
+				lastUpdated: data.lastUpdated || new Date().toISOString(),
+				source: data.source || "Unknown"
+			};
+		}
+
 		const customMappings = (config && config.teamLogoMap) || {};
 		const debug = config && config.debug;
 
@@ -122,9 +131,14 @@ module.exports = NodeHelper.create({
 				" MMM-SoccerStandings: Resolving logos on server-side..."
 			);
 
+		// Pre-compute once — avoids JSON.stringify(customMappings) per team lookup
+		const customMappingsKey = Object.keys(customMappings).length > 0
+			? JSON.stringify(customMappings)
+			: "";
+
 		// Helper to get logo with caching
 		const getCachedLogo = (teamName) => {
-			const cacheKey = `${teamName}_${JSON.stringify(customMappings)}`;
+			const cacheKey = customMappingsKey ? `${teamName}_${customMappingsKey}` : teamName;
 			if (this.resolvedLogoCache.has(cacheKey)) {
 				return this.resolvedLogoCache.get(cacheKey);
 			}

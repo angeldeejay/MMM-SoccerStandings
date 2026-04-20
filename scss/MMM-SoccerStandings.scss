@@ -1,0 +1,10 @@
+// Modular SCSS entrypoint for MMM-SoccerStandings
+// Split from the idiomatic SCSS pass into maintainable partials.
+// Compilation order is preserved to keep cascade behavior intact.
+
+@use "abstracts";
+@use "base-and-standings";
+@use "fixtures-and-wc";
+@use "accessibility";
+@use "skeleton";
+@use "advanced";

@@ -32,23 +32,24 @@
 		"node": ">=14.0.0"
 	},
 	"dependencies": {
-		"node-fetch": "^2.7.0"
+		"node-fetch": "^3.3.2"
 	},
 	"devDependencies": {
-		"clean-css-cli": "^5.6.0",
-		"eslint": "^8.0.0",
-		"mocha": "^10.0.0",
-		"prettier": "^2.0.0"
+		"eslint": "^10.2.1",
+		"mocha": "^11.7.5",
+		"prettier": "^3.8.3",
+		"sass": "^1.99.0"
 	},
 	"scripts": {
 		"test": "npm run test:security",
 		"test:security": "mocha tests/security.test.js --timeout 10000",
 		"lint": "eslint *.js",
 		"format": "prettier --write *.js *.json *.md",
-		"minify-css": "cleancss -o MMM-SoccerStandings.min.css MMM-SoccerStandings.css",
-		"build": "npm run minify-css",
 		"audit": "npm audit --audit-level=moderate",
-		"audit:fix": "npm audit fix"
+		"audit:fix": "npm audit fix",
+		"scss:build": "sass scss/MMM-SoccerStandings.scss MMM-SoccerStandings.css",
+		"scss:watch": "sass --watch scss/MMM-SoccerStandings.scss:MMM-SoccerStandings.css",
+		"postinstall": "sass scss/MMM-SoccerStandings.scss MMM-SoccerStandings.css"
 	},
 	"magicmirror": {
 		"moduleName": "MMM-SoccerStandings",

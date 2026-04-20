@@ -1,0 +1,673 @@
+@use "abstracts" as *;
+
+/* Main container styling */
+.soccer-standings {
+	color: $white;
+	line-height: 1;
+	font-size: var(--mtlt-font-size-table);
+	position: relative;
+	width: 100%;
+	max-width: 100%; /* Added max-width to prevent table from expanding too much */
+	min-width: fit-content; /* Set a minimum width for all tables */
+	margin: 0 auto 120px auto; /* Moved up 30px from the bottom */
+	contain: content; /* P-06: Improve browser reflow performance */
+	overflow: hidden; /* Prevent horizontal scrollbars at module level */
+}
+
+/* League header container with buttons */
+.league-header-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 10px;
+	padding-bottom: 5px;
+	border-bottom: 2px solid $gray-555;
+	width: 100%;
+	max-width: 100%;
+	min-width: fit-content; /* Set a minimum width for all tables */
+}
+
+/* League title styling */
+.league-title {
+	font-size: var(--mtlt-font-size-header);
+	font-weight: 500;
+	color: $gray-ccc;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 60%; /* Prevent title from taking too much space */
+}
+
+/* Meta info styling (Last Updated and Refresh) */
+.league-meta-info {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-left: auto;
+	flex-shrink: 0; /* Don't allow icons to shrink */
+}
+
+.last-updated {
+	font-size: var(--mtlt-font-size-xsmall);
+	font-weight: 400;
+	font-style: italic;
+}
+
+/* Shared base styling for all three header action buttons.
+   Explicit colour and background ensure they are always visible
+   regardless of the parent element's inherited colour. */
+.refresh-btn,
+.clear-cache-btn,
+.pin-btn {
+	/* Reset browser button defaults */
+	appearance: none;
+	-webkit-appearance: none;
+	font-family: inherit;
+	line-height: 1;
+	/* Visual style */
+	color: $white-75;
+	font-size: 14px;
+	padding: 3px 5px;
+	border-radius: 4px;
+	background: $white-08;
+	border: 1px solid $white-18;
+	transition:
+		color 0.25s ease,
+		background 0.25s ease,
+		transform 0.25s ease,
+		border-color 0.25s ease;
+	cursor: pointer;
+}
+
+/* Hover state: brighten all three buttons identically */
+.refresh-btn:hover,
+.clear-cache-btn:hover,
+.pin-btn:hover {
+	color: $white-full !important;
+	background: $white-20;
+	border-color: $white-40;
+}
+
+/* Spin animation plays while a fetch is in progress */
+.refresh-btn i.fa-spin,
+.clear-cache-btn i.fa-spin {
+	color: $white !important;
+}
+
+/* Pin button: bright red background when the display is pinned (paused) */
+.pin-btn.active {
+	color: #ff6b6b !important;
+	background: rgba(255, 59, 59, 0.25) !important;
+	border-color: rgba(255, 100, 100, 0.5) !important;
+}
+
+/* Animate the thumbtack rotation when toggling pin state */
+.pin-btn {
+	transform-origin: center;
+	transition:
+		color 0.25s ease,
+		background 0.25s ease,
+		transform 0.2s ease,
+		border-color 0.25s ease;
+}
+.pin-btn.active {
+	transform: rotate(-45deg); /* Tilted thumbtack = pinned */
+}
+
+/* League tabs wrapper for horizontal scroll indicators */
+.league-tabs-wrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+	width: 100%;
+	margin-bottom: 5px;
+}
+
+/* League buttons container.
+   When more leagues are configured than fit on screen the container
+   scrolls horizontally. A thin styled scrollbar is always shown so
+   the user knows more content is available without needing to hover. */
+.league-buttons-container {
+	display: flex;
+	gap: 5px;
+	overflow-x: auto;
+	overflow-y: hidden;
+	padding: 5px 0 7px 0; /* extra bottom padding gives the scrollbar room */
+	-webkit-overflow-scrolling: touch;
+	width: 100%;
+	scroll-behavior: smooth;
+
+	@include thin-scrollbar-x(3px, $white-35, $white-07);
+
+	&::-webkit-scrollbar-thumb {
+		transition: background 0ms ease;
+
+		&:hover {
+			background: $white-65;
+		}
+	}
+}
+
+/* Scroll indicator arrow buttons (previous / next).
+   Positioned absolutely inside the .league-tabs-wrapper (which is
+   position: relative).  They start hidden and fade in only when
+   the container actually has hidden content in that direction.
+   Positioned at the inner edges (not negative offsets) so they
+   remain visible even when the module is flush with the screen edge. */
+.tab-scroll-btn {
+	background: rgba(30, 30, 30, 0.75);
+	border: 1px solid $white-25;
+	color: $white;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 9px;
+	z-index: 10;
+	transition:
+		opacity 0.2s ease,
+		background 0.2s ease,
+		transform 0.15s ease;
+	opacity: 0;
+	visibility: hidden;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+
+	&.visible {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	&:hover {
+		background: $black-90;
+		border-color: $white-50;
+		transform: translateY(-50%) scale(1.15);
+	}
+
+	/* Keep arrows inside the wrapper boundary (not at negative offsets) */
+	&.prev {
+		left: 2px;
+	}
+
+	&.next {
+		right: 2px;
+	}
+}
+
+/* League button styling */
+.league-btn {
+	background: $white-10;
+	border: none;
+	color: $gray-ccc;
+	padding: 4px 8px;
+	font-size: var(--mtlt-font-size-small);
+	border-radius: 3px;
+	cursor: pointer;
+	transition: all 0ms ease;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-weight: 500;
+	opacity: 0.7; /* Inactive buttons have reduced opacity */
+
+	&:hover {
+		background: $white-20;
+		transform: scale(1.05);
+	}
+
+	&.active {
+		color: $white;
+		font-weight: bold;
+		box-shadow: 0 0 8px $white-30;
+		opacity: 1; /* Active buttons fully opaque */
+		/* background-color: #999999 !important; /* Active buttons use light green background - !important overrides league-specific colors */
+	}
+
+	/* Gold border for World Cup tab */
+	&.gold-border {
+		border: 2px solid $gold !important;
+		box-shadow: 0 0 10px rgba(255, 215, 0, 0.5) !important;
+		opacity: 1 !important;
+	}
+
+	/* Flag image styling - replaces emoji flags with actual PNG images */
+	.flag-image {
+		width: 16px;
+		height: 12px;
+		display: inline-block;
+		object-fit: contain;
+		margin: 0;
+		padding: 0;
+		border-radius: 2px;
+		pointer-events: none; /* Ensure clicks pass through to the button */
+	}
+
+	/* 50% size increase for World Cup and UEFA competition tab images (P-08) */
+	@each $league in $featured-tab-leagues {
+		&[data-league="#{$league}"] .flag-image {
+			width: 32px;
+			height: 24px;
+		}
+	}
+
+	/* Fallback for emoji flags (if image fails to load) */
+	.flag-emoji {
+		font-size: 16px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+		pointer-events: none; /* Ensure clicks pass through to the button */
+	}
+
+	/* 50% size increase for World Cup and UEFA competition tab emojis (P-08) */
+	@each $league in $featured-tab-leagues {
+		&[data-league="#{$league}"] .flag-emoji {
+			font-size: 24px;
+		}
+	}
+
+	/* League abbreviation text */
+	.league-abbr {
+		font-size: var(--mtlt-font-size-xsmall);
+		font-weight: 600;
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+		display: inline-block;
+		pointer-events: none; /* Ensure clicks pass through to the button */
+	}
+}
+
+/* Different colors for each league button when active */
+@each $league-codes, $color in $league-active-colors {
+	@each $league-code in $league-codes {
+		.league-btn[data-league="#{$league-code}"].active {
+			background: $color;
+		}
+	}
+}
+
+/* Back to top button control container - sticky at bottom of scroll area */
+.back-to-top-controls {
+	flex: 0 0 auto; /* Don't grow or shrink */
+	position: sticky; /* Ensure it sticks to bottom of module */
+	bottom: 0;
+	display: flex !important; /* Always visible (Task: Make source footer sticky) */
+	justify-content: space-between !important; /* Space items out */
+	align-items: center !important;
+	padding: 4px 8px !important; /* Reduced padding */
+	background: rgba(0, 0, 0, 0.8) !important; /* Darker background for readability */
+	border-top: 1px solid $white-10 !important; /* subtle top border */
+	z-index: 50 !important; /* above table content, below header */
+	transition: opacity 0ms ease-in-out !important;
+	pointer-events: auto !important; /* always clickable */
+}
+
+/* Visibility classes kept for compatibility but overridden by base class always-on behavior */
+.back-to-top-controls.visible {
+	display: flex !important;
+}
+
+/* Back to top button - styled to match original but positioned within scroll container */
+.back-to-top-btn {
+	background: $celtic-green; /* Celtic green */
+	color: $white;
+	border: 1px solid $white-25;
+	border-radius: 4px;
+	padding: 6px 8px;
+	font-size: 11px;
+	line-height: 1;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0ms ease;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.back-to-top-btn:hover {
+	opacity: 1; /* full opacity on hover */
+	transform: translateY(-3px); /* lift effect on hover */
+	box-shadow: 0 4px 10px $black-50;
+}
+
+/* Content container for scrollable table */
+.league-content-container {
+	/* Limited to 450px to show 12 teams */
+	// max-height: var(--mtlt-max-table-height, 450px);
+	width: 100%;
+	max-width: 100%;
+	min-width: fit-content; /* Set a minimum width for all tables */
+	overflow-y: hidden; /* Prevent double scrollbars - scrolling happens in league-body-scroll */
+	overflow-x: hidden; /* Remove horizontal scrollbar */
+	position: relative;
+	scrollbar-width: thin;
+	scrollbar-color: $white-20 rgba(0, 0, 0, 0.1);
+	scroll-behavior: smooth; /* Enable smooth scrolling */
+	display: flex;
+	flex-direction: column;
+	animation: mtlt-fade-in var(--mtlt-transition-speed) ease-out;
+	contain: content; /* P-06: Optimize browser reflows/repaints */
+}
+
+@keyframes mtlt-fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(5px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Table header styling */
+.spfl-header {
+	font-size: var(--mtlt-font-size-header);
+	font-weight: bold;
+	text-align: left;
+	margin-bottom: 10px;
+	color: $gray-ccc;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	border-bottom: 2px solid $gray-555;
+	padding-bottom: 5px;
+}
+
+/* Table body styling */
+.spfl-table {
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0 2px;
+	table-layout: auto; /* Allow columns to fit content */
+}
+
+.spfl-table th {
+	font-size: var(--mtlt-font-size-small);
+	color: $gray-888;
+	text-transform: uppercase;
+	font-weight: bold;
+	padding: 8px 4px;
+	border-bottom: 1px solid $gray-333;
+}
+
+.spfl-table td {
+	padding: 4px 2px;
+	vertical-align: middle;
+	height: 32px;
+	box-sizing: border-box;
+}
+
+/* Fixed position/team column alignment */
+.pos-cell {
+	text-align: center;
+	width: 25px;
+	font-weight: bold;
+	color: $gray-aaa;
+}
+
+.team-cell {
+	text-align: left;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	min-width: 120px;
+}
+
+/* Team logo styling */
+.team-logo {
+	width: 18px;
+	height: 18px;
+	margin-right: 4px;
+	vertical-align: middle;
+	object-fit: contain;
+}
+
+/* Stats columns */
+.played-cell,
+.won-cell,
+.drawn-cell,
+.lost-cell,
+.gf-cell,
+.ga-cell,
+.gd-cell,
+.points-cell {
+	text-align: center;
+	width: 30px;
+}
+
+.gd-cell.positive {
+	color: $success-green-alt;
+}
+.gd-cell.negative {
+	color: $danger-red;
+}
+.gd-cell.neutral {
+	color: $gray-aaa;
+}
+
+.points-cell {
+	font-weight: bold;
+	color: $white;
+}
+
+/* Form tokens */
+.form-cell {
+	text-align: left;
+	width: 100px;
+	padding-left: 10px !important;
+}
+
+.form-tokens {
+	display: flex;
+	gap: 0.25rem;
+	justify-content: center;
+
+	span {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 18px;
+		min-width: 18px;
+		max-width: 18px;
+		height: 18px;
+		min-height: 18px;
+		max-height: 18px;
+		box-sizing: content-box;
+		padding: 0;
+		font-size: var(--mtlt-font-size-xsmall);
+		font-weight: bold;
+		line-height: 1;
+		border-radius: 50%;
+		line-height: 1rem;
+		font-size: 1rem;
+	}
+}
+
+.form-win {
+	color: $success-green-alt;
+}
+.form-draw {
+	color: $gray-aaa;
+}
+.form-loss {
+	color: $danger-red;
+}
+.form-missing {
+	color: $gray-aaa;
+}
+
+/* Tooltip styling for form tokens */
+.form-tokens {
+	.has-tooltip {
+		position: relative;
+		cursor: help;
+
+		&::after {
+			content: attr(data-tooltip);
+			position: absolute;
+			bottom: 125%;
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: $black-90;
+			color: $white;
+			padding: 5px 8px;
+			border-radius: 4px;
+			font-size: 10px;
+			white-space: nowrap;
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity 0ms;
+			z-index: 100;
+			pointer-events: none;
+			border: 1px solid $white-20;
+			box-shadow: 0 2px 5px $black-50;
+		}
+
+		/* Tooltip arrow */
+		&::before {
+			content: "";
+			position: absolute;
+			top: -5px;
+			left: 50%;
+			transform: translateX(-50%);
+			border-width: 5px;
+			border-style: solid;
+			border-color: $black-90 transparent transparent transparent;
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity 0ms;
+			z-index: 100;
+			pointer-events: none;
+		}
+
+		&:hover {
+			&::after,
+			&::before {
+				opacity: 1;
+				visibility: visible;
+			}
+		}
+	}
+}
+
+/* ----------------------------- */
+/* Mode-Specific Refinements (P-02) */
+/* ----------------------------- */
+
+/* National League Mode */
+.league-mode-national .team-cell {
+	font-weight: 500;
+}
+
+/* UEFA Mode */
+.league-mode-uefa .team-row.uefa-zone {
+	background-color: rgba(30, 144, 255, 0.15);
+}
+
+/* World Cup Mode */
+.league-mode-wc .soccer-standings {
+	border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.league-mode-wc .league-title {
+	color: $gold;
+}
+
+/* Row coloring based on league position */
+.team-row.promotion-zone {
+	background-color: rgba(0, 135, 73, 0.15);
+}
+
+.team-row.uefa-zone {
+	background-color: rgba(30, 144, 255, 0.15);
+}
+
+.team-row.relegation-zone {
+	background-color: rgba(220, 20, 60, 0.15);
+}
+
+.team-row.uefa-elimination-zone {
+	background-color: rgba(255, 215, 0, 0.15) !important;
+}
+
+.team-row.highlighted {
+	background-color: rgba(255, 215, 0, 0.15) !important;
+	font-weight: bold;
+}
+
+/* Split-league group separator rows */
+.split-group-separator {
+	background-color: $white-08;
+}
+
+.split-group-label {
+	text-align: center;
+	font-size: 0.72em;
+	font-weight: bold;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: $white-65;
+	padding: 4px 6px 3px;
+	border-top: 1px solid $white-12;
+	border-bottom: 1px solid $white-12;
+}
+
+/* Subtle alternate background for the second (and later) groups */
+.team-row.split-group-alt {
+	background-color: $white-03;
+}
+
+/* Compact mode for small screens - preserve form if possible */
+@media (max-width: 480px) {
+	.team-cell {
+		min-width: 100px;
+	}
+	.played-cell,
+	.won-cell,
+	.drawn-cell,
+	.lost-cell {
+		display: none;
+	}
+	/* .form-cell { display: none; } -- commented out to ensure form displays even on narrow screens */
+}
+
+/* Scroll button styling */
+.scroll-controls {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	padding: 5px;
+	margin-top: 5px;
+}
+
+.scroll-btn {
+	background: $gray-333;
+	border: none;
+	color: $white;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 12px;
+}
+
+/* Footer styling */
+.spfl-footer {
+	padding: 10px 4px;
+	text-align: right;
+	border-top: 1px solid $gray-333;
+}
+
+.footer-source {
+	font-size: var(--mtlt-font-size-xsmall);
+	color: $gray-666;
+	font-style: italic;
+}

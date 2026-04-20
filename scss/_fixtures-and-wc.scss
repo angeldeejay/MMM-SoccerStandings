@@ -1,0 +1,931 @@
+@use "abstracts" as *;
+
+/* World Cup 2026 Specific Styles */
+.wc2026-container {
+	padding: 10px;
+	animation: mtlt-fade-in var(--mtlt-transition-speed) ease-out;
+}
+
+.wc2026-groups-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 20px;
+	margin-top: 10px;
+}
+
+.wc2026-group-block {
+	background: transparent;
+	border-radius: 8px;
+	padding: 12px;
+	border: 1px solid var(--theme-border-light, $white-10);
+}
+
+.wc2026-group-title {
+	font-size: var(--mtlt-font-size-header);
+	font-weight: bold;
+	color: $gold; /* Gold */
+	margin-bottom: 8px;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+/* WC2026 Fixture Layouts */
+.wc2026-fixtures-container {
+	margin-top: 20px;
+	border-top: 2px solid $gray-555;
+	padding-top: 15px;
+}
+
+.wc2026-section-title {
+	font-size: var(--mtlt-font-size-header);
+	font-weight: bold;
+	color: $white;
+	margin: 15px 0 10px 0;
+	text-transform: uppercase;
+	border-left: 4px solid $celtic-green;
+	padding-left: 10px;
+}
+
+.wc2026-fixture-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px;
+	background: transparent;
+	margin-bottom: 5px;
+	border-bottom: 1px solid var(--theme-border-light, $white-05);
+	border-radius: 4px;
+}
+
+.wc2026-fixture-time {
+	font-size: var(--mtlt-font-size-xsmall);
+	color: $gray-aaa;
+	width: 50px;
+}
+
+.wc2026-fixture-teams {
+	flex-grow: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	font-weight: 500;
+}
+
+.wc2026-fixture-score {
+	font-weight: bold;
+	color: $gold;
+	min-width: 40px;
+	text-align: center;
+}
+
+/* Multi-tab View (Sub-tabs for Groups/Knockouts) */
+.wc-subtabs-container {
+	display: flex;
+	gap: 4px; /* Reduced gap */
+	margin-bottom: 12px;
+	flex-wrap: nowrap; /* Ensure they stay on one line */
+	overflow-x: auto; /* Allow horizontal scroll if still too many */
+	scrollbar-width: none; /* Hide scrollbar for cleaner look */
+	justify-content: flex-start; /* Start from left */
+	padding: 2px 0;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+.wc-btn {
+	background: transparent !important; /* P-08: Remove background color */
+	border: 1px solid $white-15; /* Thin default border */
+	color: $gray-888;
+	padding: 2px 5px; /* Further reduced padding for compact fit */
+	font-size: 9px; /* Further reduced font size to ensure single row fit */
+	border-radius: 3px;
+	cursor: pointer;
+	transition: all 0ms ease;
+	font-weight: 500;
+	flex-shrink: 0; /* Prevent buttons from shrinking */
+
+	&:hover {
+		background: $white-05 !important;
+		color: $white;
+		border-color: $white-40;
+	}
+
+	&.active {
+		color: $white;
+		font-weight: bold;
+		border-width: 1.5px !important;
+	}
+}
+
+/* League-specific thin border colors for sub-tabs (P-08) */
+@each $league-codes, $color in $subtab-active-colors {
+	@each $league-code in $league-codes {
+		.soccer-standings[data-league="#{$league-code}"] .wc-btn.active {
+			border-color: $color !important;
+			color: $color;
+		}
+	}
+}
+
+/* Base border colors for inactive sub-tabs based on league mode */
+.league-mode-wc {
+	.wc-btn {
+		border-color: rgba(255, 215, 0, 0.2);
+	}
+}
+
+.league-mode-uefa {
+	.wc-btn {
+		border-color: $white-15;
+	}
+}
+
+/* Stale Data Warning Styling */
+.stale-data-warning {
+	color: #ff9800; /* Orange color for warning */
+	margin-right: 5px;
+	cursor: help;
+	animation: mtlt-pulse 2s infinite;
+}
+
+@keyframes mtlt-pulse {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+/* Fade in for sub-content */
+.sub-content-fade-in {
+	animation: mtlt-fade-in 0.5s ease-out;
+}
+
+/* Fixtures Header Container */
+.fixtures-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 12px;
+	padding: 5px 0;
+	border-bottom: 1px solid $white-10;
+}
+
+.fixtures-title {
+	font-size: var(--mtlt-font-size-header);
+	font-weight: 700;
+	color: $white;
+	text-transform: uppercase;
+}
+
+/* Enhanced 3-Column Centered Fixture Layout (P-05) */
+.fixtures-list {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.fixture-day-block {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.fixture-date-header {
+	font-size: var(--mtlt-font-size-xsmall);
+	color: $gray-888;
+	text-transform: uppercase;
+	font-weight: 600;
+	letter-spacing: 1px;
+	margin-bottom: 4px;
+	padding-left: 4px;
+	border-left: 2px solid $gray-555;
+}
+
+/* The Core Centered Container */
+.fixture-row {
+	display: grid;
+	grid-template-columns: 1fr 60px 1fr; /* Equal space for teams, fixed center for score/time */
+	align-items: center;
+	padding: 8px 4px;
+	background: rgba(255, 255, 255, 0.02);
+	border-radius: 4px;
+	transition: background 0ms ease;
+}
+
+.fixture-row:hover {
+	background: $white-05;
+}
+
+/* Home Team (Right Aligned) */
+.home-team {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 8px;
+	text-align: right;
+	font-size: var(--mtlt-font-size-table);
+}
+
+/* Away Team (Left Aligned) */
+.away-team {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	gap: 8px;
+	text-align: left;
+	font-size: var(--mtlt-font-size-table);
+}
+
+/* Centered Score or Time */
+.fixture-status {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.fixture-score,
+.fixture-time {
+	font-weight: bold;
+	font-size: var(--mtlt-font-size-table);
+	padding: 2px 6px;
+	background: $white-10;
+	border-radius: 3px;
+	min-width: 45px;
+	text-align: center;
+}
+
+.fixture-score {
+	color: $gold; /* Gold for scores */
+}
+
+.fixture-time {
+	color: $gray-aaa;
+	font-weight: 500;
+}
+
+/* Live Indicator */
+.live-badge {
+	font-size: 8px;
+	color: $red-live;
+	font-weight: bold;
+	margin-top: 2px;
+	animation: mtlt-pulse 1.5s infinite;
+}
+
+/* Aggregate Score */
+.agg-score {
+	font-size: var(--mtlt-font-size-xsmall);
+	color: $gray-666;
+	margin-top: 2px;
+}
+
+/* Venue/Stadium Info */
+.fixture-venue {
+	font-size: var(--mtlt-font-size-xsmall);
+	color: $gray-555;
+	font-style: italic;
+	grid-column: 1 / span 3; /* Spans full width */
+	text-align: center;
+	margin-top: 4px;
+}
+
+/* Responsive adjustments for fixtures */
+@media (max-width: 400px) {
+	.fixture-row {
+		grid-template-columns: 1fr 50px 1fr;
+	}
+	.home-team,
+	.away-team {
+		font-size: var(--mtlt-font-size-small);
+	}
+}
+
+/* Scroll Control Buttons (Header/Footer) */
+.scroll-btn-container {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.scroll-nav-btn {
+	background: $white-10;
+	border: none;
+	color: $gray-ccc;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 10px;
+	transition: all 0ms ease;
+}
+
+.scroll-nav-btn:hover:not(:disabled) {
+	background: $white-20;
+	color: $white;
+}
+
+.scroll-nav-btn:disabled {
+	opacity: 0.3;
+	cursor: default;
+}
+
+/* Error and Retry State Styling */
+.error-state,
+.retry-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 30px 20px;
+	gap: 12px;
+	text-align: center;
+	width: 100%;
+}
+
+.error-icon {
+	font-size: 24px;
+	color: #ff4444;
+}
+
+.retry-icon {
+	font-size: 20px;
+	color: $celtic-green;
+}
+
+.retry-btn-error {
+	background: $gray-444;
+	color: $white;
+	border: 1px solid $gray-666;
+	border-radius: 4px;
+	padding: 6px 12px;
+	font-size: 11px;
+	cursor: pointer;
+	margin-top: 8px;
+	transition: all 0ms ease;
+}
+
+.retry-btn-error:hover {
+	background: $celtic-green;
+	border-color: #01a85c;
+}
+
+/* Hide/Show toggle icon - positioned at bottom left of module */
+.LeagueTable-toggle-icon {
+	position: relative; /* Changed from absolute to work within source footer flexbox */
+	width: 4px;
+	height: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #000;
+	color: $white;
+	border: 0px solid $celtic-green;
+	border-radius: 4px;
+	font-size: 10px;
+	cursor: pointer;
+	opacity: 0.5;
+	visibility: hidden;
+	pointer-events: none;
+	transition:
+		opacity 0ms ease,
+		background 0ms ease,
+		transform 0ms ease;
+	z-index: 100;
+}
+
+/* Visible when content is hidden OR when scrolling */
+.LeagueTable-toggle-icon.visible {
+	opacity: 1; /* Increased visibility */
+	visibility: visible;
+	pointer-events: auto;
+}
+
+/* Center at bottom middle when table is hidden */
+.content-hidden {
+	min-height: 40px;
+}
+
+.LeagueTable-toggle-icon:hover {
+	opacity: 1;
+	background: $celtic-green;
+	color: $white;
+}
+
+.LeagueTable-toggle-icon:active {
+	transform: scale(0.95);
+}
+
+/* New 8-Column Tabulated Grid for Fixtures */
+:root {
+	--mtlt-fixture-date-width: 14%;
+	--mtlt-fixture-time-width: 8%;
+	--mtlt-fixture-team-width: 18%;
+	--mtlt-fixture-logo-width: 4%;
+	--mtlt-fixture-score-width: 12%;
+	--mtlt-fixture-location-width: 22%;
+
+	--mtlt-fixture-font-size: 11px; /* Reduced from table size (13-16px) */
+	--mtlt-fixture-header-font-size: 10px; /* Reduced from xsmall size (10-13px) */
+
+	--mtlt-fixture-date-align: left;
+	--mtlt-fixture-time-align: center;
+	--mtlt-fixture-home-team-align: right;
+	--mtlt-fixture-home-logo-align: center;
+	--mtlt-fixture-score-align: center;
+	--mtlt-fixture-away-logo-align: center;
+	--mtlt-fixture-away-team-align: left;
+	--mtlt-fixture-location-align: left;
+}
+
+.fixtures-container {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	margin: 10px 0;
+}
+
+/* Container for the sticky header and scrollable body */
+.fixtures-wrapper-v2 {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	max-height: 490px; /* Increased from 450px to match overall module height increase */
+	border: 1px solid $white-10;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+/* Header container - always visible */
+.fixtures-header-container {
+	flex: 0 0 auto;
+	background: $header-surface;
+	z-index: 10;
+	border-bottom: 2px solid $gray-444;
+}
+
+/* Scrollable body container */
+.fixtures-body-scroll {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: $white-20 transparent;
+}
+
+/* Restricted height for specific tournament rounds (Tasks 3 & 4) */
+.fixtures-body-scroll.restricted-height {
+	max-height: 320px; /* Increased from 280px - Approximately 8-10 fixtures */
+}
+
+.fixtures-body-scroll::-webkit-scrollbar {
+	width: 6px;
+	background: transparent; /* Chrome/Safari: transparent track */
+}
+
+.fixtures-body-scroll::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.fixtures-body-scroll::-webkit-scrollbar-thumb {
+	background: $white-20; /* Visible with 0.2 transparency */
+	border-radius: 3px;
+}
+
+/* UEFA Split-View Layout - Equal height allocation for Results and Future Fixtures */
+/* Container holds both results and upcoming sections with independent scrolling.
+   Height increased from 500px to 560px to accommodate additional dynamic allocation (+60px). */
+.uefa-split-view-container {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	height: auto;
+	min-height: 240px;
+	max-height: 620px; /* Increased from 580px to accommodate taller fixture sections */
+	gap: 15px;
+	margin-bottom: 10px;
+}
+
+/* Each section wrapper contains title + scrollable content.
+   Baseline height increased from 270px to 300px to ensure 6 fixtures fit without scrolling. */
+.uefa-section-wrapper {
+	display: flex;
+	flex-direction: column;
+	height: 300px; /* Increased from 270px */
+	border: 1px solid $white-10;
+	border-radius: 4px;
+	overflow: hidden;
+	background: rgba(34, 34, 34, 0.3);
+}
+
+/* Completion states: Maximized/Minimized heights for UEFA sections
+   When only one section is populated, it takes the full allocation (600px). */
+.uefa-section-wrapper.maximized-section {
+	height: 600px; /* Increased from 540px */
+}
+
+.uefa-section-wrapper.minimized-section {
+	height: 0;
+	border: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* Specific overrides based on container state for precise height control */
+.uefa-split-view-container.dual-sections .uefa-section-wrapper {
+	height: 300px;
+}
+
+.uefa-split-view-container.only-results .results-section,
+.uefa-split-view-container.only-upcoming .future-section {
+	height: 600px;
+}
+
+/* Title for each section - reduced padding and font size to maximize fixture space */
+.uefa-section-wrapper .wc-title {
+	flex: 0 0 auto;
+	padding: 4px 8px; /* Reduced from 8px 10px to save space */
+	font-size: 11px; /* Reduced font size */
+	background: $header-surface;
+	border-bottom: 2px solid $gray-444;
+	text-align: center;
+	font-weight: bold;
+	letter-spacing: 1px;
+}
+
+/* Scrollable content area for each section */
+.uefa-section-scroll {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	overflow-x: hidden;
+	scrollbar-width: thin;
+	scrollbar-color: $white-20 transparent;
+}
+
+.uefa-section-scroll::-webkit-scrollbar {
+	width: 6px;
+	background: transparent;
+}
+
+.uefa-section-scroll::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.uefa-section-scroll::-webkit-scrollbar-thumb {
+	background: $white-20;
+	border-radius: 3px;
+}
+
+.uefa-section-scroll::-webkit-scrollbar-thumb:hover {
+	background: $white-40;
+}
+
+/* Fixed sizing for sections to show up to ~8-9 fixtures with scrolling */
+.uefa-section-wrapper.results-section {
+	height: 300px;
+}
+
+.uefa-section-wrapper.future-section {
+	height: 300px;
+}
+
+/* League Table Sticky Header & Scrollable Body */
+.league-table-wrapper-v2 {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	height: auto;
+	max-height: fit-content; /* Use variable to ensure consistency across versions */
+	border: 1px solid $white-10;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.league-header-sticky {
+	flex: 0 0 auto;
+	background: $header-surface;
+	z-index: 10;
+	border-bottom: 2px solid $gray-555;
+	/* Match body scrollbar gutter */
+	/* overflow-y: scroll;
+	scrollbar-width: thin;
+	scrollbar-color: $white-20 transparent; */
+	overflow: hidden;
+}
+
+.league-header-sticky::-webkit-scrollbar {
+	width: 6px;
+	background: transparent;
+}
+
+.league-header-sticky::-webkit-scrollbar-thumb {
+	background: $white-20;
+}
+
+.league-body-scroll {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	overflow-x: hidden; /* Remove horizontal scrollbar */
+	scrollbar-width: thin;
+	scrollbar-color: $white-20 transparent;
+}
+
+.league-body-scroll::-webkit-scrollbar {
+	width: 6px;
+}
+
+.league-body-scroll::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.league-body-scroll::-webkit-scrollbar-thumb {
+	background: $white-20; /* Visible with 0.2 transparency */
+	border-radius: 3px;
+}
+
+.wc-sticky-top {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	background: var(--theme-bg-primary, #000);
+	padding-bottom: 5px;
+}
+
+.spfl-table {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+.spfl-table th {
+	padding: 8px 2px;
+	text-transform: uppercase;
+	font-size: var(--mtlt-font-size-xsmall);
+	color: $gray-888;
+	text-align: center;
+	vertical-align: middle;
+	height: 30px;
+	box-sizing: border-box;
+}
+
+.team-row {
+	border-bottom: 1px solid var(--theme-border-light, $white-05);
+}
+
+.team-row.highlighted {
+	background: $white-10 !important;
+}
+
+/* Column Widths for alignment */
+.position-header,
+.position-cell {
+	width: 2rem;
+	text-align: right;
+	padding-right: 0.5rem !important;
+}
+.team-header,
+.team-cell {
+	text-align: left !important;
+}
+.played-header,
+.won-header,
+.drawn-header,
+.lost-header,
+.gf-header,
+.ga-header,
+.gd-header,
+.points-header,
+.played-cell,
+.won-cell,
+.drawn-cell,
+.lost-cell,
+.gf-cell,
+.ga-cell,
+.gd-cell,
+.points-cell {
+	width: 2rem;
+	text-align: center;
+}
+
+.played-cell,
+.won-cell,
+.drawn-cell,
+.lost-cell,
+.gf-cell,
+.ga-cell,
+.gd-cell,
+.points-cell {
+	text-align: right;
+	font-size: 15px;
+	padding-right: 0.5rem !important;
+}
+
+.form-header,
+.form-cell {
+	width: 150px; /* 70px base + 40px left gap + 40px right gap */
+	text-align: center;
+}
+
+.wc-fixtures-table-v2 th {
+	font-size: var(--mtlt-fixture-header-font-size);
+	color: $gray-888;
+	text-transform: uppercase;
+	padding: 6px 4px;
+	text-align: center;
+}
+
+/* Reduced header padding for UEFA split-view sections to maximize fixture display space */
+.uefa-section-scroll .wc-fixtures-table-v2 th {
+	padding: 5px 4px; /* Reduced from 10px 4px */
+	font-size: 9px; /* Reduced from 10px */
+}
+
+.fixture-row-v2 {
+	border-bottom: 1px solid $white-05;
+	transition: background 0ms ease;
+}
+
+.fixture-row-v2.current-fixture {
+	background: rgba(255, 215, 0, 0.05); /* Subtle gold highlight for current match */
+}
+
+.fixture-row-v2:hover {
+	background: $white-03;
+}
+
+.fixture-row-v2 td {
+	padding: 6px 4px;
+	vertical-align: middle;
+	font-size: var(--mtlt-fixture-font-size);
+}
+
+/* Reduced row padding for UEFA split-view sections to fit exactly 4 fixtures */
+.uefa-section-scroll .fixture-row-v2 td {
+	padding: 6px 4px; /* Reduced from 8px 4px to fit 4 fixtures per section */
+}
+
+/* Column Widths & Alignment */
+.fixture-date-v2,
+.fixture-header-date {
+	text-align: var(--mtlt-fixture-date-align);
+	width: var(--mtlt-fixture-date-width);
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.fixture-time-v2,
+.fixture-header-time {
+	text-align: var(--mtlt-fixture-time-align);
+	width: var(--mtlt-fixture-time-width);
+}
+
+.fixture-home-team-v2,
+.fixture-header-home-team {
+	text-align: var(--mtlt-fixture-home-team-align);
+	width: var(--mtlt-fixture-team-width);
+	font-weight: 500;
+}
+
+.fixture-home-logo-v2,
+.fixture-header-home-logo {
+	text-align: var(--mtlt-fixture-home-logo-align);
+	width: var(--mtlt-fixture-logo-width);
+}
+
+.fixture-score-v2,
+.fixture-header-score {
+	text-align: var(--mtlt-fixture-score-align);
+	width: var(--mtlt-fixture-score-width);
+	font-weight: bold;
+}
+
+.fixture-away-team-v2,
+.fixture-header-away-team {
+	text-align: var(--mtlt-fixture-away-team-align);
+	width: var(--mtlt-fixture-team-width);
+	font-weight: 500;
+}
+
+.fixture-away-logo-v2,
+.fixture-header-away-logo {
+	text-align: var(--mtlt-fixture-away-logo-align);
+	width: var(--mtlt-fixture-logo-width);
+}
+
+.fixture-location-v2,
+.fixture-header-location,
+.fixture-header-venue {
+	text-align: var(--mtlt-fixture-location-align);
+	width: var(--mtlt-fixture-location-width);
+	font-size: var(--mtlt-fixture-font-size);
+	color: $gray-aaa;
+}
+
+/* Location Column */
+.fixture-location-v2,
+.fixture-header-location {
+	text-align: var(--mtlt-fixture-location-align);
+	width: var(--mtlt-fixture-location-width);
+}
+
+.fixture-logo-v2 {
+	width: 20px;
+	height: 20px;
+	object-fit: contain;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.score-wrapper-v2 {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 2px;
+}
+
+.main-score-v2 {
+	font-weight: bold;
+	color: $gold; /* Gold */
+	white-space: nowrap;
+}
+
+.main-score-v2.bright {
+	color: $white;
+	text-shadow: 0 0 5px $white-50;
+}
+
+.aggregate-score-v2 {
+	font-size: 0.85em;
+	font-style: italic;
+	color: $gray-aaa;
+}
+
+/* Fixture status coloring and indicators (Task: Coloured Indicators) */
+.fixture-row-v2.live .main-score-v2 {
+	color: $white;
+	text-shadow: 0 0 8px rgba(255, 51, 51, 0.8);
+}
+
+.fixture-status-tag-v2 {
+	font-size: 0.8em;
+	padding: 1px 4px;
+	border-radius: 2px;
+	font-weight: bold;
+}
+
+.fixture-status-tag-v2.live-tag {
+	color: $white;
+	background-color: $red-live; /* BBC Red for live minutes */
+	animation: livePulse 2s infinite;
+}
+
+.fixture-row-v2.finished .main-score-v2 {
+	color: $white;
+	font-weight: bold;
+}
+
+.fixture-row-v2.upcoming .main-score-v2 {
+	color: $gray-666;
+	font-weight: normal;
+}
+
+.fixture-row-v2.upcoming .fixture-time-v2 {
+	color: $white;
+	font-weight: bold;
+}
+
+@keyframes livePulse {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.6;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+/* Responsive adjustments for the new grid */
+@media (max-width: 600px) {
+	.fixture-date-v2 {
+		font-size: 0.9em;
+	}
+	.fixture-location-v2 {
+		display: none; /* Hide location on small screens to save space */
+	}
+	.fixture-header-location {
+		display: none;
+	}
+}

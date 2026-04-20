@@ -1,0 +1,203 @@
+@use "abstracts" as *;
+
+/* ==========================================
+   HIGH CONTRAST MODE SUPPORT (A11Y-03)
+   WCAG 2.1 Level AAA: 7:1 contrast ratio
+   ========================================== */
+
+@media (prefers-contrast: high) {
+	:root {
+		/* High contrast color palette - 7:1 minimum contrast */
+		--hc-text-primary: $white-full;
+		--hc-text-secondary: #ffff00; /* Yellow for emphasis */
+		--hc-background: #000000;
+		--hc-border: $white-full;
+		--hc-accent: #00ff00; /* Green for positive indicators */
+		--hc-alert: #ff0000; /* Red for negative indicators */
+		--hc-neutral: #cccccc;
+	}
+
+	.soccer-standings {
+		background-color: var(--hc-background);
+		color: var(--hc-text-primary);
+		border: 2px solid var(--hc-border);
+	}
+
+	/* Headers and titles */
+	.league-title,
+	.league-header-container,
+	.wc-subtabs-container,
+	.league-buttons-container {
+		color: var(--hc-text-primary);
+		border-color: var(--hc-border);
+	}
+
+	/* Tables */
+	.standings-table,
+	.team-row,
+	.table-header-row {
+		border: 2px solid var(--hc-border);
+		background-color: var(--hc-background);
+	}
+
+	.team-row:nth-child(even) {
+		background-color: #111111;
+	}
+
+	.team-row:hover {
+		background-color: #222222;
+		border: 2px solid var(--hc-text-secondary);
+	}
+
+	/* Table cells */
+	.team-row td,
+	.table-header-row th {
+		color: var(--hc-text-primary);
+		border: 1px solid var(--hc-border);
+	}
+
+	/* Form indicators with high contrast */
+	.form-token {
+		border: 2px solid var(--hc-border);
+		font-weight: bold;
+	}
+
+	.form-win,
+	.form-token.W {
+		background-color: var(--hc-accent) !important;
+		color: var(--hc-background) !important;
+	}
+
+	.form-loss,
+	.form-token.L {
+		background-color: var(--hc-alert) !important;
+		color: var(--hc-text-primary) !important;
+	}
+
+	.form-draw,
+	.form-token.D {
+		background-color: var(--hc-text-secondary) !important;
+		color: var(--hc-background) !important;
+	}
+
+	/* Buttons */
+	button,
+	.league-btn,
+	.wc-btn,
+	.refresh-btn,
+	.pin-btn,
+	.clear-cache-btn {
+		background-color: var(--hc-background);
+		color: var(--hc-text-primary);
+		border: 2px solid var(--hc-border);
+	}
+
+	button:hover,
+	.league-btn:hover,
+	.wc-btn:hover {
+		background-color: var(--hc-text-primary);
+		color: var(--hc-background);
+	}
+
+	button.active,
+	.league-btn.active,
+	.wc-btn.active {
+		background-color: var(--hc-text-secondary);
+		color: var(--hc-background);
+		border: 3px solid var(--hc-border);
+	}
+
+	/* Live indicators */
+	.live-indicator,
+	.live-tag,
+	.fixture-status-tag-v2.live-tag {
+		background-color: var(--hc-alert) !important;
+		color: var(--hc-text-primary) !important;
+		border: 2px solid var(--hc-border);
+	}
+
+	/* Position indicators */
+	.position-change-up {
+		color: var(--hc-accent);
+	}
+
+	.position-change-down {
+		color: var(--hc-alert);
+	}
+
+	/* Stale data warning */
+	.stale-badge,
+	.stale-warning {
+		background-color: var(--hc-text-secondary);
+		color: var(--hc-background);
+		border: 2px solid var(--hc-border);
+	}
+
+	/* Loading and error states */
+	.loading-state,
+	.error-state,
+	.retry-state {
+		color: var(--hc-text-primary);
+		background-color: var(--hc-background);
+		border: 2px solid var(--hc-border);
+	}
+
+	.error-icon {
+		color: var(--hc-alert);
+	}
+
+	/* Ensure all text meets contrast requirements */
+	.dimmed {
+		color: var(--hc-neutral) !important;
+	}
+
+	/* Team logos - add border for visibility */
+	.team-logo,
+	.fixture-logo,
+	.fixture-logo-v2 {
+		border: 1px solid var(--hc-border);
+		background-color: var(--hc-text-primary);
+		padding: 2px;
+	}
+
+	/* Highlighted teams */
+	.highlighted-team {
+		background-color: #1a1a1a;
+		border: 3px solid var(--hc-text-secondary);
+	}
+
+	/* Position-based coloring with high contrast */
+	.first-place {
+		background-color: #003300;
+		border-left: 4px solid var(--hc-accent);
+	}
+
+	.uefa-zone {
+		background-color: #000033;
+		border-left: 4px solid #0066ff;
+	}
+
+	.relegation-zone {
+		background-color: #330000;
+		border-left: 4px solid var(--hc-alert);
+	}
+}
+
+/* Optional: Support for Windows High Contrast Mode */
+@media (forced-colors: active) {
+	.soccer-standings {
+		forced-color-adjust: none;
+		border: 2px solid CanvasText;
+	}
+
+	.team-row,
+	button {
+		border: 1px solid CanvasText;
+	}
+
+	.form-token {
+		border: 2px solid CanvasText;
+		font-weight: bold;
+	}
+}
+

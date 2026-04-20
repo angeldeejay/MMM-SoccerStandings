@@ -1,0 +1,125 @@
+@use "abstracts" as *;
+
+/* ==========================================
+   SKELETON LOADING STATES (DES-05)
+   Improves perceived performance
+   ========================================== */
+
+.skeleton-loader {
+	width: 100%;
+	padding: 10px 0;
+}
+
+.skeleton-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.skeleton-row {
+	display: flex;
+	gap: 10px;
+	padding: 8px 5px;
+	align-items: center;
+}
+
+.skeleton-cell {
+	background: linear-gradient(
+		90deg,
+		$white-05 0%,
+		$white-15 50%,
+		$white-05 100%
+	);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite;
+	border-radius: 4px;
+	height: 16px;
+}
+
+/* Different widths for different columns */
+.skeleton-cell.position {
+	width: 30px;
+}
+
+.skeleton-cell.logo {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+}
+
+.skeleton-cell.team {
+	flex: 1;
+	max-width: 150px;
+}
+
+.skeleton-cell.stat {
+	width: 30px;
+}
+
+.skeleton-cell.form {
+	width: 120px;
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: -200% 0;
+	}
+	100% {
+		background-position: 200% 0;
+	}
+}
+
+/* Skeleton header */
+.skeleton-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 15px;
+}
+
+.skeleton-title {
+	background: linear-gradient(
+		90deg,
+		$white-10 0%,
+		$white-20 50%,
+		$white-10 100%
+	);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite;
+	width: 200px;
+	height: 24px;
+	border-radius: 4px;
+}
+
+.skeleton-meta {
+	background: linear-gradient(
+		90deg,
+		$white-05 0%,
+		$white-15 50%,
+		$white-05 100%
+	);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite;
+	width: 120px;
+	height: 14px;
+	border-radius: 4px;
+}
+
+/* Fade transition from skeleton to real content */
+.content-fade-in {
+	animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+/* Ensure no layout shift */
+.skeleton-loader {
+	min-height: 400px;
+}
+

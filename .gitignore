@@ -5,3 +5,5 @@ node_modules/
 *.min.css
 CLAUDE.*
 .claude/
+*.css
+*.map

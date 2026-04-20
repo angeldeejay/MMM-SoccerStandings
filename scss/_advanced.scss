@@ -1,0 +1,319 @@
+@use "abstracts" as *;
+
+/* ==========================================
+   PHASE 4: ADVANCED UX & DESIGN FEATURES
+   ========================================== */
+
+/* ==========================================
+   UX-04: CONFIGURABLE TABLE DENSITY
+   Provides compact, normal, and comfortable spacing options
+   ========================================== */
+
+/* Compact density - minimal padding for maximum information density */
+.soccer-standings {
+	&.density-compact {
+		@include density-row-spacing(3px 2px, 1.1);
+
+		.team-name {
+			font-size: 11px;
+		}
+
+		@include density-logo-size(16px);
+
+		.form-token {
+			width: 14px;
+			height: 14px;
+			font-size: 9px;
+			margin: 0 1px;
+		}
+
+		.fixture-row-v2 td {
+			padding: 4px 3px;
+		}
+	}
+
+	/* Normal density - default balanced spacing (already defined in base styles) */
+	&.density-normal {
+		@include density-row-spacing(6px 4px);
+
+		.team-name {
+			font-size: 15px;
+		}
+	}
+
+	/* Comfortable density - generous padding for better readability */
+	&.density-comfortable {
+		@include density-row-spacing(10px 6px, 1.4);
+
+		.team-name {
+			font-size: 15px;
+		}
+
+		@include density-logo-size(24px);
+
+		.form-token {
+			width: 20px;
+			height: 20px;
+			font-size: 12px;
+			margin: 0 2px;
+		}
+
+		.fixture-row-v2 td {
+			padding: 8px 6px;
+		}
+	}
+}
+
+/* ==========================================
+   DES-02: FULL LIGHT/DARK MODE SUPPORT
+   Comprehensive theme support with CSS variables
+   ========================================== */
+
+/* CSS Variables for Light Theme */
+.soccer-standings {
+	&.theme-light {
+		@include css-vars($theme-light-vars);
+		background-color: var(--theme-bg-primary);
+		color: var(--theme-text-primary);
+
+		.standings-table {
+			background-color: var(--theme-bg-secondary);
+			border-color: var(--theme-border);
+		}
+
+		.team-row {
+			color: var(--theme-text-primary);
+			border-bottom-color: var(--theme-border-light);
+
+			&:hover {
+				background-color: var(--theme-bg-hover);
+			}
+		}
+
+		.table-header-row th {
+			color: var(--theme-text-secondary);
+			border-bottom-color: var(--theme-border);
+		}
+
+		.league-btn {
+			background-color: var(--theme-button-bg);
+			color: var(--theme-button-text);
+			border-color: var(--theme-border);
+
+			&:hover {
+				background-color: var(--theme-button-hover-bg);
+				color: var(--theme-button-hover-text);
+			}
+
+			&.active {
+				background-color: var(--theme-button-active-bg);
+				color: var(--theme-button-hover-text);
+			}
+		}
+	}
+
+	/* CSS Variables for Dark Theme */
+	&.theme-dark,
+	&.theme-auto {
+		@include css-vars($theme-dark-vars);
+		background-color: var(--theme-bg-primary);
+		color: var(--theme-text-primary);
+
+		.standings-table {
+			background-color: var(--theme-bg-secondary);
+			border-color: var(--theme-border);
+		}
+
+		.team-row {
+			color: var(--theme-text-primary);
+			border-bottom-color: var(--theme-border-light);
+
+			&:hover {
+				background-color: var(--theme-bg-hover);
+			}
+		}
+
+		.table-header-row th {
+			color: var(--theme-text-secondary);
+			border-bottom-color: var(--theme-border);
+		}
+
+		.league-btn {
+			background-color: var(--theme-button-bg);
+			color: var(--theme-button-text);
+			border-color: var(--theme-border);
+
+			&:hover {
+				background-color: var(--theme-button-hover-bg);
+				color: var(--theme-button-hover-text);
+			}
+
+			&.active {
+				background-color: var(--theme-button-active-bg);
+				color: var(--theme-button-hover-text);
+			}
+		}
+	}
+}
+
+/* Auto theme - respects system preference */
+@media (prefers-color-scheme: dark) {
+	.soccer-standings.theme-auto {
+		@include css-vars($theme-auto-dark-vars);
+		background-color: var(--theme-bg-primary);
+		color: var(--theme-text-primary);
+	}
+}
+
+/* ==========================================
+   PERF-03: VIRTUAL SCROLLING SUPPORT
+   For large tables with 50+ rows
+   ========================================== */
+
+.soccer-standings.virtual-scrolling-enabled {
+	position: relative;
+}
+
+.virtual-scroll-container {
+	position: relative;
+	overflow-y: auto;
+	height: var(--mtlt-max-table-height);
+	contain: strict;
+}
+
+.virtual-scroll-spacer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 1px;
+	pointer-events: none;
+}
+
+.virtual-scroll-viewport {
+	position: relative;
+	will-change: transform;
+}
+
+/* Optimize virtual scrolling performance */
+.virtual-scrolling-enabled .team-row {
+	contain: layout style paint;
+	will-change: transform;
+}
+
+/* ==========================================
+   UX-07: OFFLINE MODE INDICATOR
+   Display when internet connection is lost
+   ========================================== */
+
+.offline-indicator {
+	background: linear-gradient(135deg, #ffa500 0%, #ff6b00 100%);
+	color: $white;
+	padding: 8px 12px;
+	border-radius: 4px;
+	margin-bottom: 10px;
+	font-size: var(--mtlt-font-size-small);
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	animation: pulse 2s ease-in-out infinite;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.7;
+	}
+}
+
+.offline-indicator i {
+	font-size: 14px;
+}
+
+/* ==========================================
+   A11Y-09: REDUCED MOTION SUPPORT
+   Respect user's motion preferences
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+	* {
+		animation-duration: 0ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0ms !important;
+		scroll-behavior: auto !important;
+	}
+
+	/* Disable animations */
+	.offline-indicator {
+		animation: none;
+	}
+
+	.skeleton-shimmer::before {
+		animation: none;
+	}
+
+	/* Disable transforms */
+	.refresh-btn:hover {
+		transform: none;
+	}
+
+	.league-button:hover {
+		transform: none;
+	}
+
+	/* Disable transitions */
+	.team-row,
+	.fixture-row,
+	.league-button,
+	.refresh-btn,
+	.soccer-standings {
+		transition: none !important;
+	}
+}
+
+/* High contrast mode patterns - enhanced mode only */
+@media (prefers-contrast: high) {
+	.form-tokens--enhanced .form-win {
+		background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, $white-30 2px, $white-30 4px);
+	}
+
+	.form-tokens--enhanced .form-loss {
+		background-image: repeating-linear-gradient(-45deg, transparent, transparent 2px, $white-30 2px, $white-30 4px);
+	}
+
+	.form-tokens--enhanced .form-draw {
+		background-image: repeating-linear-gradient(90deg, transparent, transparent 2px, $white-20 2px, $white-20 4px);
+	}
+}
+
+/* ==========================================
+   FLAT FORM INDICATOR MODE
+   Active when config enhancedIndicatorShapes: false
+   No background; colored text only
+   ========================================== */
+
+.form-tokens--flat span {
+	background-color: transparent;
+	border: none;
+}
+
+.form-tokens--flat span.form-win {
+	background-color: transparent;
+	border: none;
+	color: $celtic-green;
+}
+
+.form-tokens--flat span.form-draw {
+	background-color: transparent;
+	border: none;
+	color: #888888;
+}
+
+.form-tokens--flat span.form-loss {
+	background-color: transparent;
+	border: none;
+	color: $red-live;
+}
