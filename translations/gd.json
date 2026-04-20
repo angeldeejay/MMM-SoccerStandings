@@ -1,6 +1,6 @@
 {
-  "LOADING": "A' luchdachadh clàr SPFL...",
-  "ERROR": "Mearachd a' luchdachadh dàta SPFL",
+  "LOADING": "Loading standings...",
+  "ERROR": "Error loading standings",
   "RETRYING": "A' feuchainn a-rithist...",
   "NO_DATA": "Chan eil dàta lìog rim faighinn",
   "LAST_UPDATED": "Air an ùrachadh mu dheireadh",

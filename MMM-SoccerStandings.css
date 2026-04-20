@@ -21,7 +21,7 @@
 }
 
 /* Main container styling */
-.spfl-league-table {
+.soccer-standings {
     color: #fff;
     line-height: 1.0;
     font-size: var(--mtlt-font-size-table);
@@ -712,7 +712,7 @@
 }
 
 /* World Cup Mode */
-.league-mode-wc .spfl-league-table {
+.league-mode-wc .soccer-standings {
     border: 1px solid rgba(255, 215, 0, 0.2);
 }
 
@@ -964,25 +964,25 @@
 }
 
 /* League-specific thin border colors for sub-tabs (P-08) */
-.spfl-league-table[data-league="WORLD_CUP_2026"] .wc-btn.active {
+.soccer-standings[data-league="WORLD_CUP_2026"] .wc-btn.active {
     border-color: #FFD700 !important; /* Gold */
     color: #FFD700;
 }
 
-.spfl-league-table[data-league="UEFA_CHAMPIONS_LEAGUE"] .wc-btn.active,
-.spfl-league-table[data-league="UCL"] .wc-btn.active {
+.soccer-standings[data-league="UEFA_CHAMPIONS_LEAGUE"] .wc-btn.active,
+.soccer-standings[data-league="UCL"] .wc-btn.active {
     border-color: #1e90ff !important; /* Blue */
     color: #1e90ff;
 }
 
-.spfl-league-table[data-league="UEFA_EUROPA_LEAGUE"] .wc-btn.active,
-.spfl-league-table[data-league="UEL"] .wc-btn.active {
+.soccer-standings[data-league="UEFA_EUROPA_LEAGUE"] .wc-btn.active,
+.soccer-standings[data-league="UEL"] .wc-btn.active {
     border-color: #ff8c00 !important; /* Orange */
     color: #ff8c00;
 }
 
-.spfl-league-table[data-league="UEFA_EUROPA_CONFERENCE_LEAGUE"] .wc-btn.active,
-.spfl-league-table[data-league="ECL"] .wc-btn.active {
+.soccer-standings[data-league="UEFA_EUROPA_CONFERENCE_LEAGUE"] .wc-btn.active,
+.soccer-standings[data-league="ECL"] .wc-btn.active {
     border-color: #32cd32 !important; /* Green */
     color: #32cd32;
 }
@@ -1733,7 +1733,7 @@
         --hc-neutral: #CCCCCC;
     }
 
-    .spfl-league-table {
+    .soccer-standings {
         background-color: var(--hc-background);
         color: var(--hc-text-primary);
         border: 2px solid var(--hc-border);
@@ -1901,7 +1901,7 @@
 
 /* Optional: Support for Windows High Contrast Mode */
 @media (forced-colors: active) {
-    .spfl-league-table {
+    .soccer-standings {
         forced-color-adjust: none;
         border: 2px solid CanvasText;
     }
@@ -2050,66 +2050,66 @@
    ========================================== */
 
 /* Compact density - minimal padding for maximum information density */
-.spfl-league-table.density-compact .team-row td,
-.spfl-league-table.density-compact .table-header-row th {
+.soccer-standings.density-compact .team-row td,
+.soccer-standings.density-compact .table-header-row th {
     padding: 3px 2px;
     line-height: 1.1;
 }
 
-.spfl-league-table.density-compact .team-name {
+.soccer-standings.density-compact .team-name {
     font-size: 11px;
 }
 
-.spfl-league-table.density-compact .team-logo,
-.spfl-league-table.density-compact .fixture-logo,
-.spfl-league-table.density-compact .fixture-logo-v2 {
+.soccer-standings.density-compact .team-logo,
+.soccer-standings.density-compact .fixture-logo,
+.soccer-standings.density-compact .fixture-logo-v2 {
     width: 16px;
     height: 16px;
 }
 
-.spfl-league-table.density-compact .form-token {
+.soccer-standings.density-compact .form-token {
     width: 14px;
     height: 14px;
     font-size: 9px;
     margin: 0 1px;
 }
 
-.spfl-league-table.density-compact .fixture-row-v2 td {
+.soccer-standings.density-compact .fixture-row-v2 td {
     padding: 4px 3px;
 }
 
 /* Normal density - default balanced spacing (already defined in base styles) */
-.spfl-league-table.density-normal .team-row td,
-.spfl-league-table.density-normal .table-header-row th {
+.soccer-standings.density-normal .team-row td,
+.soccer-standings.density-normal .table-header-row th {
     padding: 6px 4px;
 }
 
 /* Comfortable density - generous padding for better readability */
-.spfl-league-table.density-comfortable .team-row td,
-.spfl-league-table.density-comfortable .table-header-row th {
+.soccer-standings.density-comfortable .team-row td,
+.soccer-standings.density-comfortable .table-header-row th {
     padding: 10px 6px;
     line-height: 1.4;
 }
 
-.spfl-league-table.density-comfortable .team-name {
+.soccer-standings.density-comfortable .team-name {
     font-size: 15px;
 }
 
-.spfl-league-table.density-comfortable .team-logo,
-.spfl-league-table.density-comfortable .fixture-logo,
-.spfl-league-table.density-comfortable .fixture-logo-v2 {
+.soccer-standings.density-comfortable .team-logo,
+.soccer-standings.density-comfortable .fixture-logo,
+.soccer-standings.density-comfortable .fixture-logo-v2 {
     width: 24px;
     height: 24px;
 }
 
-.spfl-league-table.density-comfortable .form-token {
+.soccer-standings.density-comfortable .form-token {
     width: 20px;
     height: 20px;
     font-size: 12px;
     margin: 0 2px;
 }
 
-.spfl-league-table.density-comfortable .fixture-row-v2 td {
+.soccer-standings.density-comfortable .fixture-row-v2 td {
     padding: 8px 6px;
 }
 
@@ -2119,7 +2119,7 @@
    ========================================== */
 
 /* CSS Variables for Light Theme */
-.spfl-league-table.theme-light {
+.soccer-standings.theme-light {
     /* Base colors */
     --theme-bg-primary: #f5f5f5;
     --theme-bg-secondary: #ffffff;
@@ -2165,49 +2165,49 @@
 }
 
 /* Apply light theme colors */
-.spfl-league-table.theme-light {
+.soccer-standings.theme-light {
     background-color: var(--theme-bg-primary);
     color: var(--theme-text-primary);
 }
 
-.spfl-league-table.theme-light .standings-table {
+.soccer-standings.theme-light .standings-table {
     background-color: var(--theme-bg-secondary);
     border-color: var(--theme-border);
 }
 
-.spfl-league-table.theme-light .team-row {
+.soccer-standings.theme-light .team-row {
     color: var(--theme-text-primary);
     border-bottom-color: var(--theme-border-light);
 }
 
-.spfl-league-table.theme-light .team-row:hover {
+.soccer-standings.theme-light .team-row:hover {
     background-color: var(--theme-bg-hover);
 }
 
-.spfl-league-table.theme-light .table-header-row th {
+.soccer-standings.theme-light .table-header-row th {
     color: var(--theme-text-secondary);
     border-bottom-color: var(--theme-border);
 }
 
-.spfl-league-table.theme-light .league-btn {
+.soccer-standings.theme-light .league-btn {
     background-color: var(--theme-button-bg);
     color: var(--theme-button-text);
     border-color: var(--theme-border);
 }
 
-.spfl-league-table.theme-light .league-btn:hover {
+.soccer-standings.theme-light .league-btn:hover {
     background-color: var(--theme-button-hover-bg);
     color: var(--theme-button-hover-text);
 }
 
-.spfl-league-table.theme-light .league-btn.active {
+.soccer-standings.theme-light .league-btn.active {
     background-color: var(--theme-button-active-bg);
     color: var(--theme-button-hover-text);
 }
 
 /* CSS Variables for Dark Theme */
-.spfl-league-table.theme-dark,
-.spfl-league-table.theme-auto {
+.soccer-standings.theme-dark,
+.soccer-standings.theme-auto {
     /* Base colors */
     --theme-bg-primary: #000000;
     --theme-bg-secondary: #111111;
@@ -2256,51 +2256,51 @@
 }
 
 /* Apply dark theme colors */
-.spfl-league-table.theme-dark .standings-table,
-.spfl-league-table.theme-auto .standings-table {
+.soccer-standings.theme-dark .standings-table,
+.soccer-standings.theme-auto .standings-table {
     background-color: var(--theme-bg-secondary);
     border-color: var(--theme-border);
 }
 
-.spfl-league-table.theme-dark .team-row,
-.spfl-league-table.theme-auto .team-row {
+.soccer-standings.theme-dark .team-row,
+.soccer-standings.theme-auto .team-row {
     color: var(--theme-text-primary);
     border-bottom-color: var(--theme-border-light);
 }
 
-.spfl-league-table.theme-dark .team-row:hover,
-.spfl-league-table.theme-auto .team-row:hover {
+.soccer-standings.theme-dark .team-row:hover,
+.soccer-standings.theme-auto .team-row:hover {
     background-color: var(--theme-bg-hover);
 }
 
-.spfl-league-table.theme-dark .table-header-row th,
-.spfl-league-table.theme-auto .table-header-row th {
+.soccer-standings.theme-dark .table-header-row th,
+.soccer-standings.theme-auto .table-header-row th {
     color: var(--theme-text-secondary);
     border-bottom-color: var(--theme-border);
 }
 
-.spfl-league-table.theme-dark .league-btn,
-.spfl-league-table.theme-auto .league-btn {
+.soccer-standings.theme-dark .league-btn,
+.soccer-standings.theme-auto .league-btn {
     background-color: var(--theme-button-bg);
     color: var(--theme-button-text);
     border-color: var(--theme-border);
 }
 
-.spfl-league-table.theme-dark .league-btn:hover,
-.spfl-league-table.theme-auto .league-btn:hover {
+.soccer-standings.theme-dark .league-btn:hover,
+.soccer-standings.theme-auto .league-btn:hover {
     background-color: var(--theme-button-hover-bg);
     color: var(--theme-button-hover-text);
 }
 
-.spfl-league-table.theme-dark .league-btn.active,
-.spfl-league-table.theme-auto .league-btn.active {
+.soccer-standings.theme-dark .league-btn.active,
+.soccer-standings.theme-auto .league-btn.active {
     background-color: var(--theme-button-active-bg);
     color: var(--theme-button-hover-text);
 }
 
 /* Auto theme - respects system preference */
 @media (prefers-color-scheme: dark) {
-    .spfl-league-table.theme-auto {
+    .soccer-standings.theme-auto {
         /* Inherit dark theme variables */
         --theme-bg-primary: #1a1a1a;
         --theme-bg-secondary: #2d2d2d;
@@ -2332,7 +2332,7 @@
    For large tables with 50+ rows
    ========================================== */
 
-.spfl-league-table.virtual-scrolling-enabled {
+.soccer-standings.virtual-scrolling-enabled {
     position: relative;
 }
 
@@ -2426,7 +2426,7 @@
     .fixture-row,
     .league-button,
     .refresh-btn,
-    .spfl-league-table {
+    .soccer-standings {
         transition: none !important;
     }
 }

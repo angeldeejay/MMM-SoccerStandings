@@ -1,6 +1,6 @@
 {
-  "LOADING": "Cargando tabla SPFL...",
-  "ERROR": "Error al cargar datos SPFL",
+  "LOADING": "Loading standings...",
+  "ERROR": "Error loading standings",
   "RETRYING": "Reintentando...",
   "NO_DATA": "No hay datos de liga disponibles",
   "LAST_UPDATED": "Última actualización",

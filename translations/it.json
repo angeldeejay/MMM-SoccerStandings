@@ -1,6 +1,6 @@
 {
-  "LOADING": "Caricamento tabella SPFL...",
-  "ERROR": "Errore nel caricamento dei dati SPFL",
+  "LOADING": "Loading standings...",
+  "ERROR": "Error loading standings",
   "RETRYING": "Nuovo tentativo...",
   "NO_DATA": "Nessun dato della lega disponibile",
   "LAST_UPDATED": "Ultimo aggiornamento",

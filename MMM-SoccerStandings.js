@@ -2271,7 +2271,7 @@ Module.register("MMM-SoccerStandings", {
 	getDom() {
 		var self = this; // Preserve 'this' context for nested functions/callbacks
 		var wrapper = document.createElement("div");
-		wrapper.className = "spfl-league-table";
+		wrapper.className = "soccer-standings";
 		wrapper.id = `mtlt-${this.identifier}`;
 		wrapper.setAttribute("data-league", this.currentLeague);
 		
@@ -2299,7 +2299,7 @@ Module.register("MMM-SoccerStandings", {
 		// If content is hidden, return wrapper with toggle icon and source in footer
 		if (this.isContentHidden) {
 			const hiddenWrapper = document.createElement("div");
-			hiddenWrapper.className = "spfl-league-table content-hidden";
+			hiddenWrapper.className = "soccer-standings content-hidden";
 
 			const footer = document.createElement("div");
 			footer.className = "back-to-top-controls visible"; // Always visible when hidden
@@ -4922,7 +4922,7 @@ Module.register("MMM-SoccerStandings", {
 	// Theme Overrides
 	// -----------------------------
 	_applyThemeOverrides() {
-		const styleId = "mmm-myteams-leaguetable-theme-override";
+		const styleId = "mmm-soccer-standings-theme-override";
 		let styleEl = document.getElementById(styleId);
 
 		// Remove existing style element if no overrides are active
@@ -4950,15 +4950,15 @@ Module.register("MMM-SoccerStandings", {
 		// Dark/Light mode override
 		if (this.config.darkMode === true) {
 			css +=
-				".spfl-league-table { background-color: #111 !important; color: #fff !important; }\n";
+				".soccer-standings { background-color: #111 !important; color: #fff !important; }\n";
 		} else if (this.config.darkMode === false) {
 			css +=
-				".spfl-league-table { background-color: #f5f5f5 !important; color: #000 !important; }\n";
+				".soccer-standings { background-color: #f5f5f5 !important; color: #000 !important; }\n";
 		}
 
 		// Font color override
 		if (this.config.fontColorOverride) {
-			css += `.spfl-league-table * { color: ${this.config.fontColorOverride} !important; }\n`;
+			css += `.soccer-standings * { color: ${this.config.fontColorOverride} !important; }\n`;
 		}
 
 		// Opacity override (exclude back-to-top-controls which manages its own visibility)
@@ -4968,22 +4968,22 @@ Module.register("MMM-SoccerStandings", {
 		) {
 			const opacity = parseFloat(this.config.opacityOverride);
 			if (!isNaN(opacity)) {
-				css += `.spfl-league-table * { opacity: ${opacity} !important; }\n`;
+				css += `.soccer-standings * { opacity: ${opacity} !important; }\n`;
 				// Restore back-to-top-controls opacity to allow visibility toggle to work
 				css +=
-					".spfl-league-table .back-to-top-controls { opacity: 0 !important; }\n";
+					".soccer-standings .back-to-top-controls { opacity: 0 !important; }\n";
 				css +=
-					".spfl-league-table .back-to-top-controls.visible { opacity: 1 !important; }\n";
+					".soccer-standings .back-to-top-controls.visible { opacity: 1 !important; }\n";
 			}
 		}
 
 		// Highlight colors
 		if (this.config.firstPlaceColor) {
-			css += `.spfl-league-table .team-row:first-child { background-color: ${this.config.firstPlaceColor} !important; }\n`;
-			css += `.spfl-league-table .team-row:first-child .position-cell { background: ${this.config.firstPlaceColor} !important; }\n`;
+			css += `.soccer-standings .team-row:first-child { background-color: ${this.config.firstPlaceColor} !important; }\n`;
+			css += `.soccer-standings .team-row:first-child .position-cell { background: ${this.config.firstPlaceColor} !important; }\n`;
 		}
 		if (this.config.highlightedColor) {
-			css += `.spfl-league-table .team-row.highlighted { background-color: ${this.config.highlightedColor} !important; }\n`;
+			css += `.soccer-standings .team-row.highlighted { background-color: ${this.config.highlightedColor} !important; }\n`;
 		}
 
 		styleEl.textContent = css;

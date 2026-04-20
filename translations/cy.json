@@ -1,6 +1,6 @@
 {
-  "LOADING": "Wrthi'n llwytho bwrdd SPFL...",
-  "ERROR": "Gwall wrth lwytho data SPFL",
+  "LOADING": "Loading standings...",
+  "ERROR": "Error loading standings",
   "RETRYING": "Wrthi'n ailgeisio...",
   "NO_DATA": "Dim data cynghrair ar gael",
   "LAST_UPDATED": "Diweddarwyd ddiwethaf",
