@@ -71,7 +71,7 @@ class FIFAParser extends BBCParser {
 
 		try {
 			if (fixturesHtml) {
-				const fixturesMap = this._parseBBCFixtureArticles(fixturesHtml, new Map(), true);
+				const fixturesMap = this._parseBBCFixtureArticles(fixturesHtml, new Map());
 				const allFixtures = Array.from(fixturesMap.values());
 				data.fixtures = allFixtures;
 

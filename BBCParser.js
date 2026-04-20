@@ -230,7 +230,7 @@ class BBCParser extends BaseParser {
 	 * @param {Map} fixturesMap - Map to store fixtures (for deduplication)
 	 * @returns {Map} - Map of fixture objects
 	 */
-	_parseBBCFixtureArticles(html, fixturesMap = new Map(), skipStageInference = false) {
+	_parseBBCFixtureArticles(html, fixturesMap = new Map()) {
 		const sections = [];
 		let lastIndex = 0;
 		const headerRegex =
@@ -1659,14 +1659,10 @@ class BBCParser extends BaseParser {
 
 		const today = this.getCurrentDateString();
 
-		// Skip UEFA-specific stage inference for World Cup fixtures — it would
-		// incorrectly convert "Rd32" → "Playoff" and corrupt WC knockout arrays.
-		if (!skipStageInference) {
-			dedupedFixtures.forEach((f) => {
-				const inferred = this._inferUEFAStage(f);
-				if (inferred) f.stage = inferred;
-			});
-		}
+		dedupedFixtures.forEach((f) => {
+			const inferred = this._inferUEFAStage(f);
+			if (inferred) f.stage = inferred;
+		});
 
 		// ── 2nd-Leg Score Back-Calculation ──────────────────────────────────────────
 		// BBC Sport displays only the aggregate score in completed 2nd-leg fixture

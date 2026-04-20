@@ -14,7 +14,7 @@ export default [
 				Module: "readonly",
 				config: "readonly",
 				moment: "readonly",
-				TEAM_LOGO_MAPPINGS: "readonly",
+				TEAM_ALIASES: "readonly",
 				EUROPEAN_LEAGUES: "readonly"
 			}
 		},

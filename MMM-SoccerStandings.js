@@ -196,8 +196,6 @@ Module.register("MMM-SoccerStandings", {
 		return [
 			`modules/${this.name}/european-leagues.js`,
 			`modules/${this.name}/team-aliases.js`
-			// team-logo-mappings.js (102KB) is loaded dynamically via loadLogoMappings()
-			// to reduce initial bundle size (PERF-09)
 		];
 	},
 
@@ -365,18 +363,8 @@ Module.register("MMM-SoccerStandings", {
 	start() {
 		Log.info(`Starting module: ${this.name}`);
 
-		// ===== INITIALIZE TEAM LOGO MAPPINGS =====
-		// Initialize with config overrides only (empty map until dynamic load completes).
-		// team-logo-mappings.js (102KB) is loaded asynchronously via loadLogoMappings()
-		// so that the module renders standings immediately without blocking on that file.
-		this.mergedTeamLogoMap = Object.assign({}, this.config.teamLogoMap || {});
-
 		// Country name synonyms and variations (handles FIFA vs BBC vs other source differences)
 		this.teamAliases = typeof TEAM_ALIASES !== "undefined" ? TEAM_ALIASES : {};
-
-		// Build normalized team lookup map for case-insensitive matching
-		this.normalizedTeamLogoMap = {};
-		this.buildNormalizedTeamMap();
 
 		// ===== INITIALIZE LEAGUE SYSTEM =====
 		// Determine which leagues are enabled based on config
@@ -415,10 +403,6 @@ Module.register("MMM-SoccerStandings", {
 		// Initialize offline mode detection (UX-07)
 		this.isOnline = navigator.onLine;
 		this.setupOfflineDetection();
-
-		// Asynchronously load team logo mappings to reduce initial bundle size (PERF-09).
-		// Standings display immediately; logos appear once the 102KB mapping file loads.
-		this.loadLogoMappings();
 
 		// Set current league to first enabled league
 		this.currentLeague =
@@ -567,229 +551,13 @@ Module.register("MMM-SoccerStandings", {
 			.replace(/[.,]/g, "");
 	},
 
-	fuzzyNormalizeTeamName(str) {
-		const norm = this.normalizeTeamName(str);
-		return norm.replace(/[^a-z0-9]/g, "");
-	},
-
-	// ===== NEW: Build normalized team lookup map =====
-	// Creates a case-insensitive, whitespace-normalized lookup for team logo mappings
-	// Handles common naming variations (e.g., "St Mirren" vs "st mirren", "ST. MIRREN", etc.)
-	// Also handles suffix/prefix variations like FC, SC, AC in any case combination
-	// Also handles diacritics (accents, umlauts) - "Atlético" matches "Atletico"
-	buildNormalizedTeamMap() {
-		this.normalizedTeamLogoMap = {};
-		this.fuzzyTeamLogoMap = {}; // New: map for stripping all non-alphanumeric chars
-
-		// Common football club suffixes/prefixes to handle
-		var commonSuffixes = [
-			"fc", "sc", "ac", "cf", "sk", "if", "bk", "fk", "ik", "aik", "afc", "vfb", "unt", "fn"
-		];
-
-		const self = this;
-
-		// Function to generate alternative diacritics spellings
-		var getAlternativeDiacriticsSpellings = function (str) {
-			if (!str) return [];
-			var variants = [];
-			if (str.match(/[öüä]/i)) {
-				var withOe = str
-					.replace(/ö/gi, (m) => (m === "ö" ? "oe" : "OE"))
-					.replace(/ü/gi, (m) => (m === "ü" ? "ue" : "UE"))
-					.replace(/ä/gi, (m) => (m === "ä" ? "ae" : "AE"));
-				variants.push(self.normalizeTeamName(withOe));
-			}
-			return variants;
-		};
-
-		// Normalize function for logo mappings
-		var normalize = function (str) {
-			return self.normalizeTeamName(str);
-		};
-
-		// Fuzzy normalize: remove everything except alphanumeric characters
-		var fuzzyNormalize = function (str) {
-			return self.fuzzyNormalizeTeamName(str);
-		};
-
-		// Function to strip common suffixes/prefixes
-		var stripSuffixes = function (str) {
-			var normalized = normalize(str);
-			var parts = normalized.split(" ");
-			var stripped = normalized;
-
-			if (parts.length > 1) {
-				var lastWord = parts[parts.length - 1];
-				if (commonSuffixes.indexOf(lastWord) !== -1) {
-					stripped = parts.slice(0, -1).join(" ");
-				}
-				var firstWord = parts[0];
-				if (commonSuffixes.indexOf(firstWord) !== -1) {
-					stripped = parts.slice(1).join(" ");
-				}
-			}
-			return stripped.trim();
-		};
-
-		// Build map with normalized keys and suffix variations
-		Object.keys(this.mergedTeamLogoMap).forEach((teamName) => {
-			var normalized = normalize(teamName);
-			var fuzzy = fuzzyNormalize(teamName);
-			var stripped = stripSuffixes(teamName);
-
-			if (normalized && normalized.length > 0) {
-				// Add normalized version
-				this.normalizedTeamLogoMap[normalized] =
-					this.mergedTeamLogoMap[teamName];
-
-				// Add fuzzy version
-				if (fuzzy && fuzzy.length > 0) {
-					this.fuzzyTeamLogoMap[fuzzy] = this.mergedTeamLogoMap[teamName];
-				}
-
-				// Add stripped version (without common suffixes/prefixes)
-				if (stripped !== normalized && stripped.length > 0) {
-					this.normalizedTeamLogoMap[stripped] =
-						this.mergedTeamLogoMap[teamName];
-				}
-
-				// Also add common suffix variants if they don't already exist
-				// This helps find "Arsenal" even if mapped as "Arsenal FC"
-				commonSuffixes.forEach((suffix) => {
-					var withSuffix = `${normalized} ${suffix}`;
-					if (!this.normalizedTeamLogoMap[withSuffix]) {
-						this.normalizedTeamLogoMap[withSuffix] =
-							this.mergedTeamLogoMap[teamName];
-					}
-				});
-
-				// Add alternative Anglicization variants (ö→oe, ü→ue, ä→ae)
-				// This helps find "Koeln" when mapped as "Köln"
-				getAlternativeDiacriticsSpellings(teamName).forEach((variant) => {
-					if (variant && !this.normalizedTeamLogoMap[variant]) {
-						this.normalizedTeamLogoMap[variant] =
-							this.mergedTeamLogoMap[teamName];
-					}
-					// Also add stripped version of variant
-					var strippedVariant = stripSuffixes(variant);
-					if (
-						strippedVariant &&
-						strippedVariant !== variant &&
-						!this.normalizedTeamLogoMap[strippedVariant]
-					) {
-						this.normalizedTeamLogoMap[strippedVariant] =
-							this.mergedTeamLogoMap[teamName];
-					}
-				});
-			}
-		});
-
-		// Add country name synonyms and variations to the normalized map
-		Object.keys(this.teamAliases).forEach((alias) => {
-			var targetName = this.teamAliases[alias];
-			var normalizedAlias = normalize(alias);
-
-			// Find the logo path for the target name (it should already be in the map)
-			var logoPath =
-				this.mergedTeamLogoMap[targetName] ||
-				this.normalizedTeamLogoMap[normalize(targetName)];
-
-			if (logoPath && !this.normalizedTeamLogoMap[normalizedAlias]) {
-				this.normalizedTeamLogoMap[normalizedAlias] = logoPath;
-
-				// Also add stripped version of the alias
-				var strippedAlias = stripSuffixes(normalizedAlias);
-				if (
-					strippedAlias &&
-					strippedAlias !== normalizedAlias &&
-					!this.normalizedTeamLogoMap[strippedAlias]
-				) {
-					this.normalizedTeamLogoMap[strippedAlias] = logoPath;
-				}
-			}
-		});
-
-		if (this.config.debug) {
-			Log.info(
-				` MMM-SoccerStandings: Built normalized team map with ${Object.keys(this.normalizedTeamLogoMap).length} entries (diacritics removed, Anglicization variants added, case/whitespace normalized, suffix/prefix variants, common abbreviations)`
-			);
-		}
-	},
-
-	// ===== NEW: Get team logo mapping with intelligent lookup =====
-	// Tries multiple matching strategies:
-	// 1. Exact match (fastest)
-	// 2. Normalized match (case-insensitive, whitespace-normalized, diacritics removed)
-	// 3. Suffix/prefix variants (handles AFC, VFB, FC, SC, AC in any case, no length restrictions)
-	// 4. Diacritic variants (handles accents/umlauts AND Anglicization: Atlético→Atletico, Köln→Koln or Koeln)
+	// Logo lookup: backend resolves all logos via logo-resolver.js before sending data.
+	// This is a frontend-only last-resort fallback for config.teamLogoMap custom entries
+	// in case a code path receives unresolved data.
 	getTeamLogoMapping(teamName) {
 		if (!teamName) return null;
-
-		// If we already have a mapping for this name in our local maps (initialized at startup),
-		// we can still return it as a backup.
-		if (this.mergedTeamLogoMap && this.mergedTeamLogoMap[teamName]) {
-			return this.mergedTeamLogoMap[teamName];
-		}
-
-		var normalized = this.normalizeTeamName(teamName);
-
-		// Try normalized match (handles case/whitespace/punctuation/diacritics variations and Anglicization variants)
-		if (this.normalizedTeamLogoMap[normalized]) {
-			if (this.config.debug) {
-				Log.info(
-					` MMM-SoccerStandings: Found normalized mapping for '${teamName}' as '${normalized}' (diacritics/case/whitespace normalized, Anglicization variants like Köln→koeln supported)`
-				);
-			}
-			return this.normalizedTeamLogoMap[normalized];
-		}
-
-		// Try stripping common suffixes/prefixes
-		var commonSuffixes = [
-			"fc", "sc", "ac", "cf", "sk", "if", "bk", "fk", "ik", "aik", "afc", "vfb", "unt", "fn"
-		];
-		var parts = normalized.split(" ");
-		var stripped = normalized;
-
-		// Check if last word is a common suffix
-		if (parts.length > 1) {
-			var lastWord = parts[parts.length - 1];
-			if (commonSuffixes.indexOf(lastWord) !== -1) {
-				stripped = parts.slice(0, -1).join(" ");
-			}
-			var firstWord = parts[0];
-			if (commonSuffixes.indexOf(firstWord) !== -1) {
-				stripped = parts.slice(1).join(" ");
-			}
-		}
-
-		if (stripped !== normalized && this.normalizedTeamLogoMap[stripped]) {
-			if (this.config.debug) {
-				Log.info(
-					` MMM-SoccerStandings: Found suffix/prefix variant mapping for '${teamName}' -> '${stripped}'`
-				);
-			}
-			return this.normalizedTeamLogoMap[stripped];
-		}
-
-		// STRATEGY 4: Fuzzy match (strip all non-alphanumeric chars)
-		var fuzzy = this.fuzzyNormalizeTeamName(teamName);
-		if (this.fuzzyTeamLogoMap[fuzzy]) {
-			if (this.config.debug) {
-				Log.info(
-					` MMM-SoccerStandings: Found fuzzy mapping for '${teamName}' -> '${fuzzy}'`
-				);
-			}
-			return this.fuzzyTeamLogoMap[fuzzy];
-		}
-
-		// Log unmapped teams for debugging
-		if (this.config.debug) {
-			Log.warn(
-				` MMM-SoccerStandings: NO MAPPING FOUND for team '${teamName}'. Tried: exact, normalized ('${normalized}'), stripped ('${stripped}'), fuzzy ('${fuzzy}')`
-			);
-		}
-
-		return null;
+		const custom = this.config.teamLogoMap;
+		return (custom && custom[teamName]) || null;
 	},
 
 	// ===== NEW: Determine which leagues are enabled =====
@@ -1444,61 +1212,6 @@ Module.register("MMM-SoccerStandings", {
 		if (this.config.debug) {
 			Log.info(`[UX-07] Offline detection initialized. Current status: ${this.isOnline ? 'Online' : 'Offline'}`);
 		}
-	},
-
-	/**
-	 * PERF-09: Dynamically inject a script tag and return a Promise that resolves on load.
-	 * Skips injection if the script URL is already present in the document to prevent
-	 * double-loading on module re-init.
-	 * @param {string} url - Relative or absolute script URL
-	 * @returns {Promise<void>}
-	 */
-	loadScript(url) {
-		return new Promise((resolve, reject) => {
-			if (document.querySelector(`script[src="${url}"]`)) {
-				resolve();
-				return;
-			}
-			const script = document.createElement("script");
-			script.src = url;
-			script.onload = resolve;
-			script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
-			document.head.appendChild(script);
-		});
-	},
-
-	/**
-	 * PERF-09: Asynchronously load team-logo-mappings.js (102KB) on demand.
-	 * Defers this large file until after the initial render so that the module
-	 * displays standings immediately while logos load in the background.
-	 * After loading, rebuilds the normalized team map and triggers a DOM refresh
-	 * so logos appear without requiring a full page reload.
-	 * @returns {Promise<void>}
-	 */
-	loadLogoMappings() {
-		const url = `modules/${this.name}/team-logo-mappings.js`;
-
-		if (this.config.debug) {
-			Log.info("[PERF-09] Loading team-logo-mappings.js dynamically...");
-		}
-
-		return this.loadScript(url).then(() => {
-			this.mergedTeamLogoMap = Object.assign(
-				{},
-				window.TEAM_LOGO_MAPPINGS || {},
-				this.config.teamLogoMap || {}
-			);
-			this.buildNormalizedTeamMap();
-
-			if (this.config.debug) {
-				const count = Object.keys(this.mergedTeamLogoMap).length;
-				Log.info(`[PERF-09] Logo mappings ready: ${count} country groups loaded`);
-			}
-
-			this.updateDom(this.config.animationSpeed);
-		}).catch((err) => {
-			Log.error(`[PERF-09] Could not load team-logo-mappings.js: ${err.message}`);
-		});
 	},
 
 	/**
