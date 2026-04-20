@@ -384,8 +384,8 @@
 	--mtlt-fixture-score-width: 12%;
 	--mtlt-fixture-location-width: 22%;
 
-	--mtlt-fixture-font-size: 11px; /* Reduced from table size (13-16px) */
-	--mtlt-fixture-header-font-size: 10px; /* Reduced from xsmall size (10-13px) */
+	--mtlt-fixture-font-size: 15px; /* Reduced from table size (13-16px) */
+	--mtlt-fixture-header-font-size: 12px; /* Reduced from xsmall size (10-13px) */
 
 	--mtlt-fixture-date-align: left;
 	--mtlt-fixture-time-align: center;
@@ -555,13 +555,14 @@
 /* Column Widths for alignment */
 .position-header,
 .position-cell {
-	width: 2rem;
-	text-align: right;
-	padding-right: 0.5rem !important;
+	width: 1.8rem;
+	text-align: center;
+	font-size: 15px;
 }
 .team-header,
 .team-cell {
 	text-align: left !important;
+	width: 100%;
 }
 .played-header,
 .won-header,
@@ -579,7 +580,7 @@
 .ga-cell,
 .gd-cell,
 .points-cell {
-	width: 2rem;
+	width: 1.5rem;
 	text-align: center;
 }
 
@@ -591,14 +592,12 @@
 .ga-cell,
 .gd-cell,
 .points-cell {
-	text-align: right;
+	text-align: center;
 	font-size: 15px;
-	padding-right: 0.5rem !important;
 }
 
 .form-header,
 .form-cell {
-	width: fit-content; /* 70px base + 40px left gap + 40px right gap */
 	text-align: center;
 }
 
@@ -789,5 +788,26 @@
 	}
 	.fixture-header-location {
 		display: none;
+	}
+}
+
+.league-table-wrapper-v2[class*="WORLD_CUP"] {
+	.form-header,
+	.form-cell {
+		width: 4rem !important;
+	}
+
+	.team-row .form-tokens {
+		span:nth-child(3) {
+			margin-right: 0px !important;
+		}
+
+		span:nth-child(4),
+		span:nth-child(5) {
+			width: 0px !important;
+			min-width: 0px !important;
+			max-width: 0px !important;
+			margin-right: 0px !important;
+		}
 	}
 }

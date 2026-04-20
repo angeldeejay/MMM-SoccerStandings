@@ -9,7 +9,7 @@
 	width: 100%;
 	max-width: 100%; /* Added max-width to prevent table from expanding too much */
 	min-width: fit-content; /* Set a minimum width for all tables */
-	margin: 0 auto 120px auto; /* Moved up 30px from the bottom */
+	margin: 0 auto; /* Moved up 30px from the bottom */
 	contain: content; /* P-06: Improve browser reflow performance */
 	overflow: hidden; /* Prevent horizontal scrollbars at module level */
 }
@@ -426,34 +426,44 @@
 
 /* Form tokens */
 .form-cell {
-	text-align: left;
-	width: 100px;
+	text-align: center;
 	padding-left: 10px !important;
+	padding-right: 10px !important;
+	width: 6.5rem;
 }
 
 .form-tokens {
 	display: flex;
-	gap: 0.25rem;
+	gap: 0px;
 	justify-content: center;
+	position: relative;
+	width: 100%;
+	min-width: fit-content;
+	max-width: 100%;
+	align-items: center;
 
 	span {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 18px;
-		min-width: 18px;
-		max-width: 18px;
-		height: 18px;
-		min-height: 18px;
-		max-height: 18px;
+		width: 0.9rem;
+		min-width: 0.9rem;
+		max-width: 0.9rem;
+		height: 0.9rem;
+		min-height: 0.9rem;
+		max-height: 0.9rem;
 		box-sizing: content-box;
 		padding: 0;
-		font-size: var(--mtlt-font-size-xsmall);
-		font-weight: bold;
+		font-weight: bolder;
 		line-height: 1;
 		border-radius: 50%;
 		line-height: 1rem;
-		font-size: 1rem;
+		font-size: 0.9rem;
+		margin-right: 0.2rem;
+		overflow: hidden;
+		&:last-child {
+			margin-right: 0px !important;
+		}
 	}
 }
 

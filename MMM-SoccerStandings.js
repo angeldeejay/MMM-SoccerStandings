@@ -103,7 +103,7 @@ Module.register("MMM-SoccerStandings", {
 		showGoalDifference: true, // Show goal difference
 		showPoints: true, // Show points
 		showForm: true, // Show recent form tokens (W/D/L)
-		formMaxGames: 6, // Max number of form games to display
+		formMaxGames: 5, // Max number of form games to display
 		enhancedIndicatorShapes: true, // true = shape differentiation on form tokens (circle/square/triangle); false = no background, colored text only (W=green, D=grey, L=red)
 		highlightedColor: "rgba(255, 255, 255, 0.1)", // Color for highlighted teams
 
@@ -2003,7 +2003,8 @@ Module.register("MMM-SoccerStandings", {
 					TP: this.translate("THIRD_PLACE"),
 					Final: this.translate("FINAL")
 				};
-				if (/^[A-L]$/.test(sub)) baseTitle += ` • ${this.translate("GROUP")} ${sub}`;
+				if (/^[A-L]$/.test(sub))
+					baseTitle += ` • ${this.translate("GROUP")} ${sub}`;
 				else if (stageMap[sub]) baseTitle += ` • ${stageMap[sub]}`;
 			}
 			leagueTitle.textContent = baseTitle;
@@ -2108,7 +2109,9 @@ Module.register("MMM-SoccerStandings", {
 			awaitingBadge.title =
 				"Phase 1 complete — awaiting the league split announcement for Phase 2 groups.";
 			awaitingBadge.appendChild(this.createIcon("fas fa-hourglass-half"));
-			awaitingBadge.appendChild(document.createTextNode(` ${this.translate("AWAITING_SPLIT")}`));
+			awaitingBadge.appendChild(
+				document.createTextNode(` ${this.translate("AWAITING_SPLIT")}`)
+			);
 			metaInfo.appendChild(awaitingBadge);
 		}
 
@@ -2630,7 +2633,9 @@ Module.register("MMM-SoccerStandings", {
 				? `[${this.error.category}] `
 				: "";
 			const errorMessage =
-				this.error.userMessage || this.error.message || this.translate("SOURCE_UNAVAILABLE");
+				this.error.userMessage ||
+				this.error.message ||
+				this.translate("SOURCE_UNAVAILABLE");
 			errorText.textContent = ` ${errorCategory}${errorMessage}`;
 			errorState.appendChild(errorText);
 
@@ -2816,37 +2821,65 @@ Module.register("MMM-SoccerStandings", {
 		headerRow.setAttribute("role", "row");
 
 		if (this.config.showPosition) {
-			headerRow.appendChild(this.createTableHeader(this.translate("COL_POSITION"), "position-header"));
+			headerRow.appendChild(
+				this.createTableHeader(
+					this.translate("COL_POSITION"),
+					"position-header"
+				)
+			);
 		}
 
-		headerRow.appendChild(this.createTableHeader(this.translate("COL_TEAM"), "team-header"));
+		headerRow.appendChild(
+			this.createTableHeader(this.translate("COL_TEAM"), "team-header")
+		);
 
 		if (this.config.showPlayedGames) {
-			headerRow.appendChild(this.createTableHeader(this.translate("COL_PLAYED"), "played-header"));
+			headerRow.appendChild(
+				this.createTableHeader(this.translate("COL_PLAYED"), "played-header")
+			);
 		}
 		if (this.config.showWon) {
-			headerRow.appendChild(this.createTableHeader(this.translate("COL_WON"), "won-header"));
+			headerRow.appendChild(
+				this.createTableHeader(this.translate("COL_WON"), "won-header")
+			);
 		}
 		if (this.config.showDrawn) {
-			headerRow.appendChild(this.createTableHeader(this.translate("COL_DRAWN"), "drawn-header"));
+			headerRow.appendChild(
+				this.createTableHeader(this.translate("COL_DRAWN"), "drawn-header")
+			);
 		}
 		if (this.config.showLost) {
-			headerRow.appendChild(this.createTableHeader(this.translate("COL_LOST"), "lost-header"));
+			headerRow.appendChild(
+				this.createTableHeader(this.translate("COL_LOST"), "lost-header")
+			);
 		}
 		if (this.config.showGoalsFor) {
-			headerRow.appendChild(this.createTableHeader(this.translate("COL_GOALS_FOR"), "gf-header"));
+			headerRow.appendChild(
+				this.createTableHeader(this.translate("COL_GOALS_FOR"), "gf-header")
+			);
 		}
 		if (this.config.showGoalsAgainst) {
-			headerRow.appendChild(this.createTableHeader(this.translate("COL_GOALS_AGAINST"), "ga-header"));
+			headerRow.appendChild(
+				this.createTableHeader(this.translate("COL_GOALS_AGAINST"), "ga-header")
+			);
 		}
 		if (this.config.showGoalDifference) {
-			headerRow.appendChild(this.createTableHeader(this.translate("COL_GOAL_DIFFERENCE"), "gd-header"));
+			headerRow.appendChild(
+				this.createTableHeader(
+					this.translate("COL_GOAL_DIFFERENCE"),
+					"gd-header"
+				)
+			);
 		}
 		if (this.config.showPoints) {
-			headerRow.appendChild(this.createTableHeader(this.translate("COL_POINTS"), "points-header"));
+			headerRow.appendChild(
+				this.createTableHeader(this.translate("COL_POINTS"), "points-header")
+			);
 		}
 		if (this.config.showForm) {
-			headerRow.appendChild(this.createTableHeader(this.translate("COL_FORM"), "form-header"));
+			headerRow.appendChild(
+				this.createTableHeader(this.translate("COL_FORM"), "form-header")
+			);
 		}
 
 		thead.appendChild(headerRow);
@@ -3643,7 +3676,9 @@ Module.register("MMM-SoccerStandings", {
 					var msg = document.createElement("div");
 					msg.className = "dimmed small";
 					msg.style.textAlign = "center";
-					msg.textContent = this.translate("FIXTURES_NOT_AVAILABLE", { subTab });
+					msg.textContent = this.translate("FIXTURES_NOT_AVAILABLE", {
+						subTab
+					});
 					fragment.appendChild(msg);
 				}
 			} else {
@@ -3664,7 +3699,9 @@ Module.register("MMM-SoccerStandings", {
 						msg.textContent = this.translate("AWAITING_DRAW");
 						msg.className = "bright small";
 					} else {
-						msg.textContent = this.translate("FIXTURES_NOT_AVAILABLE", { subTab });
+						msg.textContent = this.translate("FIXTURES_NOT_AVAILABLE", {
+							subTab
+						});
 					}
 					fragment.appendChild(msg);
 				}
@@ -3722,7 +3759,9 @@ Module.register("MMM-SoccerStandings", {
 			}
 		} else {
 			const noDataMsg = document.createElement("div");
-			noDataMsg.textContent = this.translate("NO_GROUP_DATA", { group: subTab });
+			noDataMsg.textContent = this.translate("NO_GROUP_DATA", {
+				group: subTab
+			});
 			noDataMsg.className = "dimmed light small";
 			fragment.appendChild(noDataMsg);
 		}
