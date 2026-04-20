@@ -478,11 +478,7 @@ class BBCParser extends BaseParser {
 				homeTeam = homeTeam.replace(/[,.\s]+$/, "").trim();
 				awayTeam = awayTeam.replace(/[,.\s]+$/, "").trim();
 
-				// ALWAYS log when team names are cleaned (not just in debug mode) to verify execution
 				if (homeTeam !== originalHomeTeam || awayTeam !== originalAwayTeam) {
-					console.log(
-						`[BBCParser] Team name cleaning: "${originalHomeTeam}" vs "${originalAwayTeam}" -> "${homeTeam}" vs "${awayTeam}"`
-					);
 					this.logDebug(
 						`Team name cleaning: "${originalHomeTeam}" vs "${originalAwayTeam}" -> "${homeTeam}" vs "${awayTeam}"`
 					);
@@ -776,7 +772,7 @@ class BBCParser extends BaseParser {
 								const diffDays = Math.abs(d1 - d2) / (1000 * 60 * 60 * 24);
 								// FIX: Changed from 3 days to 1 day
 								if (diffDays < 1) {
-									console.log(
+									this.logDebug(
 										`[BBCParser-PROXIMITY] Found close match: "${homeTeam}" vs "${awayTeam}" | dates: ${fixtureDate} vs ${v.date} (${diffDays.toFixed(2)} days apart)`
 									);
 									existingKey = k;
@@ -925,7 +921,7 @@ class BBCParser extends BaseParser {
 	}
 
 	parseUEFACompetitionData(tablesHtml, fixturesHtml, leagueType) {
-		console.log(
+		this.logDebug(
 			`[BBCParser] *** parseUEFACompetitionData START for ${leagueType} ***`
 		);
 		this.logDebug(
@@ -955,7 +951,7 @@ class BBCParser extends BaseParser {
 		}
 
 		const allFixtures = Array.from(fixturesMap.values());
-		console.log(
+		this.logDebug(
 			`[BBCParser] Total fixtures parsed for ${leagueType}: ${allFixtures.length}`
 		);
 		this.logDebug(
@@ -963,15 +959,15 @@ class BBCParser extends BaseParser {
 		);
 
 		// Log ALL fixtures BEFORE deduplication for diagnosis
-		console.log(
+		this.logDebug(
 			`[BBCParser-DETAILED] ===== ALL FIXTURES BEFORE DEDUP (${leagueType}) =====`
 		);
 		allFixtures.forEach((fix, idx) => {
-			console.log(
+			this.logDebug(
 				`[BBCParser-DETAILED] #${idx + 1}: "${fix.homeTeam}" vs "${fix.awayTeam}" | date=${fix.date} | time=${fix.time || "N/A"} | score=${fix.score || "N/A"}`
 			);
 		});
-		console.log(`[BBCParser-DETAILED] ===== END FIXTURES BEFORE DEDUP =====`);
+		this.logDebug(`[BBCParser-DETAILED] ===== END FIXTURES BEFORE DEDUP =====`);
 
 		// Additional deduplication pass to ensure no duplicates slip through
 		// Create a final deduplication based on normalized team names, date, and time
@@ -1019,7 +1015,7 @@ class BBCParser extends BaseParser {
 
 					// Check if longer name starts with or ends with the shorter name
 					if (longer.startsWith(shorter) || longer.endsWith(shorter)) {
-						console.log(
+						this.logDebug(
 							`[BBCParser-SIMILARITY] Matched truncated name: "${shorter}" in "${longer}" (ratio: ${lengthRatio.toFixed(2)})`
 						);
 						return true;
@@ -1082,16 +1078,16 @@ class BBCParser extends BaseParser {
 					isDuplicate = true;
 					existingKey = key;
 
-					console.log(
+					this.logDebug(
 						`[BBCParser-DEDUP] Found duplicate: "${fixture.homeTeam}" vs "${fixture.awayTeam}" (${fixture.date})`
 					);
-					console.log(
+					this.logDebug(
 						`[BBCParser-DEDUP]   Existing: "${existing.homeTeam}" vs "${existing.awayTeam}"`
 					);
-					console.log(
+					this.logDebug(
 						`[BBCParser-DEDUP]   Normalized new: "${teamA}" vs "${teamB}"`
 					);
-					console.log(
+					this.logDebug(
 						`[BBCParser-DEDUP]   Normalized existing: "${existingTeamA}" vs "${existingTeamB}"`
 					);
 
@@ -1115,13 +1111,13 @@ class BBCParser extends BaseParser {
 							(!existing.time || existing.time === "vs"));
 
 					if (shouldReplace) {
-						console.log(
+						this.logDebug(
 							`[BBCParser-DEDUP]   -> Replacing old version with new (better data)`
 						);
 						finalFixturesMap.delete(existingKey);
 						isDuplicate = false; // Will add the new one
 					} else {
-						console.log(
+						this.logDebug(
 							`[BBCParser-DEDUP]   -> Keeping old version (already has better data)`
 						);
 					}
@@ -1147,7 +1143,7 @@ class BBCParser extends BaseParser {
 
 		const dedupedFixtures = Array.from(finalFixturesMap.values());
 		const duplicatesRemoved = allFixtures.length - dedupedFixtures.length;
-		console.log(
+		this.logDebug(
 			`[BBCParser] *** DEDUPLICATION RESULT for ${leagueType}: ${allFixtures.length} -> ${dedupedFixtures.length} (removed ${duplicatesRemoved}) ***`
 		);
 		this.logDebug(
@@ -1156,41 +1152,41 @@ class BBCParser extends BaseParser {
 
 		// Log details if duplicates were found
 		if (duplicatesRemoved > 0) {
-			console.log(
+			this.logDebug(
 				`[${leagueType}] *** WARNING: Found and removed ${duplicatesRemoved} duplicate fixtures ***`
 			);
 			duplicateLog.forEach((dup) => {
-				console.log(
+				this.logDebug(
 					`[${leagueType}]   - ${dup.fixture} (${dup.date}) [${dup.action}]`
 				);
 			});
 
 			// Log which fixtures were kept after deduplication
-			console.log(`[${leagueType}] *** Fixtures KEPT after deduplication: ***`);
+			this.logDebug(`[${leagueType}] *** Fixtures KEPT after deduplication: ***`);
 			dedupedFixtures.forEach((fix, idx) => {
-				console.log(
+				this.logDebug(
 					`[${leagueType}]   ${idx + 1}. "${fix.homeTeam}" vs "${fix.awayTeam}" | ${fix.date}`
 				);
 			});
 		} else {
-			console.log(
+			this.logDebug(
 				`[${leagueType}] No duplicates found - deduplication working correctly`
 			);
 		}
 
 		// Log ALL fixtures AFTER deduplication for diagnosis
-		console.log(
+		this.logDebug(
 			`[BBCParser-DETAILED] ===== ALL FIXTURES AFTER DEDUP (${leagueType}) =====`
 		);
 		dedupedFixtures.forEach((fix, idx) => {
-			console.log(
+			this.logDebug(
 				`[BBCParser-DETAILED] #${idx + 1}: "${fix.homeTeam}" vs "${fix.awayTeam}" | date=${fix.date} | time=${fix.time || "N/A"} | score=${fix.score || "N/A"} | status=${fix.status || "none"} | agg=${fix.aggregateScore || "none"}`
 			);
 		});
-		console.log(`[BBCParser-DETAILED] ===== END FIXTURES AFTER DEDUP =====`);
+		this.logDebug(`[BBCParser-DETAILED] ===== END FIXTURES AFTER DEDUP =====`);
 
 		// FIX: FIRST - Remove fixtures with truncated/corrupted team names by finding better versions
-		console.log(`[BBCParser-TRUNCATION] Checking for truncated team names...`);
+		this.logDebug(`[BBCParser-TRUNCATION] Checking for truncated team names...`);
 		const truncatedFixtures = [];
 
 		dedupedFixtures.forEach((fixture, idx) => {
@@ -1203,7 +1199,7 @@ class BBCParser extends BaseParser {
 			const awayIsTruncated = awayLength < 4;
 
 			if (homeIsTruncated || awayIsTruncated) {
-				console.log(
+				this.logDebug(
 					`[BBCParser-TRUNCATION] Found fixture with truncated name: "${fixture.homeTeam}" (${homeLength} chars) vs "${fixture.awayTeam}" (${awayLength} chars) | date=${fixture.date}`
 				);
 
@@ -1258,10 +1254,10 @@ class BBCParser extends BaseParser {
 							(homeMatch || homeOtherMatch) &&
 							(awayMatch || awayOtherMatch)
 						) {
-							console.log(
+							this.logDebug(
 								`[BBCParser-TRUNCATION]   Found better version: "${other.homeTeam}" vs "${other.awayTeam}" | date=${other.date}`
 							);
-							console.log(
+							this.logDebug(
 								`[BBCParser-TRUNCATION]   Marking truncated version for removal`
 							);
 							truncatedFixtures.push(idx);
@@ -1274,7 +1270,7 @@ class BBCParser extends BaseParser {
 
 		// Remove truncated fixtures
 		if (truncatedFixtures.length > 0) {
-			console.log(
+			this.logDebug(
 				`[BBCParser-TRUNCATION] Removing ${truncatedFixtures.length} truncated fixtures`
 			);
 			// Remove in reverse order to maintain indices
@@ -1282,27 +1278,27 @@ class BBCParser extends BaseParser {
 				.sort((a, b) => b - a)
 				.forEach((idx) => {
 					const removed = dedupedFixtures.splice(idx, 1)[0];
-					console.log(
+					this.logDebug(
 						`[BBCParser-TRUNCATION]   Removed: "${removed.homeTeam}" vs "${removed.awayTeam}" (${removed.date})`
 					);
 				});
 
 			// Log clean fixtures after truncation removal
-			console.log(
+			this.logDebug(
 				`[BBCParser-TRUNCATION] ===== FIXTURES AFTER TRUNCATION REMOVAL (${leagueType}) =====`
 			);
 			dedupedFixtures.forEach((fix, idx) => {
-				console.log(
+				this.logDebug(
 					`[BBCParser-TRUNCATION] #${idx + 1}: "${fix.homeTeam}" (${fix.homeTeam.length}) vs "${fix.awayTeam}" (${fix.awayTeam.length}) | ${fix.date}`
 				);
 			});
-			console.log(`[BBCParser-TRUNCATION] ===== END =====`);
+			this.logDebug(`[BBCParser-TRUNCATION] ===== END =====`);
 		}
 
 		// FIX: Enhanced detection for partial/incomplete team names
 		// Handles cases like "Newcastle" vs "Newcastle United", "Atletico" vs "Atletico Madrid"
 		// Works even when only ONE team name is partial (the other can be identical)
-		console.log(
+		this.logDebug(
 			`[BBCParser-PARTIAL-NAMES] Checking for partial/incomplete team names...`
 		);
 
@@ -1363,10 +1359,10 @@ class BBCParser extends BaseParser {
 							fixture.homeTeam.length + fixture.awayTeam.length;
 
 						if (otherHasLongerNames) {
-							console.log(
+							this.logDebug(
 								`[BBCParser-PARTIAL-NAMES] Found fixture with partial names: "${fixture.homeTeam}" vs "${fixture.awayTeam}" (${fixture.date})`
 							);
-							console.log(
+							this.logDebug(
 								`[BBCParser-PARTIAL-NAMES]   Better version found: "${other.homeTeam}" vs "${other.awayTeam}" (${other.date})`
 							);
 
@@ -1374,7 +1370,7 @@ class BBCParser extends BaseParser {
 							fixture.homeTeam = other.awayTeam;
 							fixture.awayTeam = other.homeTeam;
 
-							console.log(
+							this.logDebug(
 								`[BBCParser-PARTIAL-NAMES]   Fixed to: "${fixture.homeTeam}" vs "${fixture.awayTeam}"`
 							);
 							break;
@@ -1385,7 +1381,7 @@ class BBCParser extends BaseParser {
 		});
 
 		// Fix corrupted fixtures where BBC shows same team twice (e.g., "Dortmund vs Borussia Dortmund")
-		console.log(
+		this.logDebug(
 			`[BBCParser-CORRUPTION] Checking for corrupted fixtures with duplicate teams...`
 		);
 		dedupedFixtures.forEach((fixture, idx) => {
@@ -1400,7 +1396,7 @@ class BBCParser extends BaseParser {
 					(teamA.includes(teamB) || teamB.includes(teamA)));
 
 			if (isSameTeam) {
-				console.log(
+				this.logDebug(
 					`[BBCParser-CORRUPTION] Found corrupted fixture: "${fixture.homeTeam}" vs "${fixture.awayTeam}" (${fixture.date})`
 				);
 
@@ -1437,7 +1433,7 @@ class BBCParser extends BaseParser {
 							);
 
 						if (otherHasSameTeam && otherIsValid) {
-							console.log(
+							this.logDebug(
 								`[BBCParser-CORRUPTION]   Found valid counterpart: "${other.homeTeam}" vs "${other.awayTeam}" (${other.date})`
 							);
 
@@ -1473,7 +1469,7 @@ class BBCParser extends BaseParser {
 									// So first leg should be: other.awayTeam vs other.homeTeam (reversed)
 									fixture.homeTeam = other.awayTeam;
 									fixture.awayTeam = other.homeTeam;
-									console.log(
+									this.logDebug(
 										`[BBCParser-CORRUPTION]   Fixed first leg: "${fixture.homeTeam}" vs "${fixture.awayTeam}"`
 									);
 								} else {
@@ -1482,7 +1478,7 @@ class BBCParser extends BaseParser {
 									// So second leg should be: other.awayTeam vs other.homeTeam (reversed)
 									fixture.homeTeam = other.awayTeam;
 									fixture.awayTeam = other.homeTeam;
-									console.log(
+									this.logDebug(
 										`[BBCParser-CORRUPTION]   Fixed second leg: "${fixture.homeTeam}" vs "${fixture.awayTeam}"`
 									);
 								}
@@ -1496,7 +1492,7 @@ class BBCParser extends BaseParser {
 
 		// FIX: Final cleanup - Apply known team name completions that weren't caught by automated detection
 		// This handles cases where BBC consistently uses partial names across ALL fixtures
-		console.log(`[BBCParser-CLEANUP] Applying known team name completions...`);
+		this.logDebug(`[BBCParser-CLEANUP] Applying known team name completions...`);
 		const knownPartialNames = {
 			// UEFA European competitions common partial names
 			atletico: "Atletico Madrid",
@@ -1522,7 +1518,7 @@ class BBCParser extends BaseParser {
 				fixture.homeTeam.toLowerCase() !==
 					knownPartialNames[homeNorm].toLowerCase()
 			) {
-				console.log(
+				this.logDebug(
 					`[BBCParser-CLEANUP] Completing home team: "${fixture.homeTeam}" → "${knownPartialNames[homeNorm]}"`
 				);
 				fixture.homeTeam = knownPartialNames[homeNorm];
@@ -1534,7 +1530,7 @@ class BBCParser extends BaseParser {
 				fixture.awayTeam.toLowerCase() !==
 					knownPartialNames[awayNorm].toLowerCase()
 			) {
-				console.log(
+				this.logDebug(
 					`[BBCParser-CLEANUP] Completing away team: "${fixture.awayTeam}" → "${knownPartialNames[awayNorm]}"`
 				);
 				fixture.awayTeam = knownPartialNames[awayNorm];

@@ -213,7 +213,7 @@ module.exports = NodeHelper.create({
 
 	// Node helper started
 	start() {
-		console.log("Starting node helper for: MMM-SoccerStandings");
+		console.info("Starting node helper for: MMM-SoccerStandings");
 		this.config = null;
 
 		// Initialize cache manager
@@ -270,13 +270,13 @@ module.exports = NodeHelper.create({
 			this.resolvedLogoCache.clear();
 
 			this.sendSocketNotification("CACHE_CLEARED", { cleared: cleared });
-			console.log(
+			console.info(
 				` MMM-SoccerStandings: All caches cleared (${cleared} disk files removed, fixture cache reset, logo cache reset)`
 			);
 		} else if (notification === "CACHE_CLEANUP") {
 			const deleted = await this.cache.cleanupExpired();
 			this.sendSocketNotification("CACHE_CLEANUP_DONE", { deleted: deleted });
-			console.log(
+			console.info(
 				` MMM-SoccerStandings: Cache cleanup complete (${deleted} expired files removed)`
 			);
 		}
