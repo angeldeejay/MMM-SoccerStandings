@@ -4746,49 +4746,8 @@ Module.register("MMM-SoccerStandings", {
 			}
 		}
 
-		// 3. Fallback: If no live matches, check for upcoming matches in knockout stages
-		// We look for matches with "vs" or a time in the score/time field that aren't finished
-		if (data.knockouts) {
-			const stagesOrder = [
-				"playoff",
-				"rd32",
-				"rd16",
-				"qf",
-				"sf",
-				"tp",
-				"final"
-			];
-			for (const stage of stagesOrder) {
-				const fixtures = data.knockouts[stage];
-				if (fixtures && fixtures.length > 0) {
-					const hasUpcoming = fixtures.some((f) => {
-						const isFinished = /\b(FT|PEN|PENS|AET)\b/i.test(f.score || "") || /\b(FT|PEN|PENS|AET)\b/i.test(f.status || "");
-						return !isFinished;
-					});
-					if (hasUpcoming) {
-						const stageIdMap = {
-							rd32: "Rd32",
-							rd16: "Rd16",
-							qf: "QF",
-							sf: "SF",
-							tp: "TP",
-							final: "Final",
-							playoff: "Playoff"
-						};
-						const targetTab = stageIdMap[stage] || stage;
-						if (this.currentSubTab !== targetTab) {
-							if (this.config.debug) {
-								Log.info(
-									` MMM-SoccerStandings: Auto-focusing upcoming knockout stage: ${targetTab}`
-								);
-							}
-							this.currentSubTab = targetTab;
-							return;
-						}
-					}
-				}
-			}
-		}
+		// Step 3 (upcoming fallback) intentionally removed: it overrides config.defaultWCSubTab
+		// without a good reason. Only LIVE matches should trigger auto-focus.
 	},
 
 	// Adds horizontal scroll indicators (arrows) to a container
