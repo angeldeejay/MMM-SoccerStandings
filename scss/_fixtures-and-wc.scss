@@ -598,7 +598,7 @@
 
 .form-header,
 .form-cell {
-	width: 150px; /* 70px base + 40px left gap + 40px right gap */
+	width: fit-content; /* 70px base + 40px left gap + 40px right gap */
 	text-align: center;
 }
 
@@ -620,7 +620,6 @@
 	border-bottom: 1px solid $white-05;
 	transition: background 0ms ease;
 }
-
 
 .fixture-row-v2:hover {
 	background: $white-03;
