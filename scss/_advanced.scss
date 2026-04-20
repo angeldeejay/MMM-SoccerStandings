@@ -108,6 +108,7 @@
 			&.active {
 				background-color: var(--theme-button-active-bg);
 				color: var(--theme-button-hover-text);
+				border-color: rgba(255, 255, 255, 0.4);
 			}
 		}
 	}
@@ -151,6 +152,7 @@
 			&.active {
 				background-color: var(--theme-button-active-bg);
 				color: var(--theme-button-hover-text);
+				border-color: rgba(255, 255, 255, 0.4);
 			}
 		}
 	}
@@ -163,41 +165,6 @@
 		background-color: var(--theme-bg-primary);
 		color: var(--theme-text-primary);
 	}
-}
-
-/* ==========================================
-   PERF-03: VIRTUAL SCROLLING SUPPORT
-   For large tables with 50+ rows
-   ========================================== */
-
-.soccer-standings.virtual-scrolling-enabled {
-	position: relative;
-}
-
-.virtual-scroll-container {
-	position: relative;
-	overflow-y: auto;
-	height: var(--mtlt-max-table-height);
-	contain: strict;
-}
-
-.virtual-scroll-spacer {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 1px;
-	pointer-events: none;
-}
-
-.virtual-scroll-viewport {
-	position: relative;
-	will-change: transform;
-}
-
-/* Optimize virtual scrolling performance */
-.virtual-scrolling-enabled .team-row {
-	contain: layout style paint;
-	will-change: transform;
 }
 
 /* ==========================================

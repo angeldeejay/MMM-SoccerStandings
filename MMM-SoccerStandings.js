@@ -18,6 +18,8 @@ Module.register("MMM-SoccerStandings", {
 	// Load external scripts
 	getScripts() {
 		return [
+			"moment.js",
+			"moment-timezone.js",
 			`modules/${this.name}/constants/european-leagues.js`,
 			`modules/${this.name}/constants/team-aliases.js`,
 			`modules/${this.name}/constants/league-splits.js`,
@@ -52,8 +54,6 @@ Module.register("MMM-SoccerStandings", {
 		colored: true, // Color rows by standing (top/UEFA/relegation)
 		maxTeams: 36, // 0 = show all teams
 		highlightTeams: ["Celtic", "Hearts"], // Emphasize teams by exact name
-		scrollable: true, // Enable vertical scrolling if max height exceeded
-
 		// ===== League Selection =====
 		// Use selectedLeagues to choose leagues by code.
 		// Example: selectedLeagues: ["SCOTLAND_PREMIERSHIP", "ENGLAND_PREMIER_LEAGUE"]
@@ -110,9 +110,6 @@ Module.register("MMM-SoccerStandings", {
 		// ===== UX Options (Phase 4) =====
 		tableDensity: "normal", // Table row density: "compact", "normal", "comfortable"
 		fixtureDateFilter: null, // Filter fixtures by date range: null (show all), "today", "week", "month", or {start: "YYYY-MM-DD", end: "YYYY-MM-DD"}
-		enableVirtualScrolling: false, // Enable virtual scrolling for large tables (>50 rows)
-		virtualScrollThreshold: 30, // Number of rows before virtual scrolling activates
-
 		// ===== Theme Options (Phase 4) =====
 		theme: "auto", // Color theme: "auto" (follows system), "light", "dark"
 		customTeamColors: {}, // Custom colors for specific teams: {"Team Name": "#HEXCOLOR"}
@@ -175,8 +172,7 @@ Module.register("MMM-SoccerStandings", {
 
 		// Cache controls
 		clearCacheButton: true,
-		clearCacheOnStart: false, // Set to true to force-clear ALL caches (disk, fixture, logo) on every module start - useful for development and troubleshooting
-		maxTableHeight: 600 // Height in px to show 12 teams + extra room for fixtures (increased by 100px from baseline)
+		clearCacheOnStart: false // Set to true to force-clear ALL caches (disk, fixture, logo) on every module start - useful for development and troubleshooting
 	},
 
 	// Required version of MagicMirror
@@ -385,6 +381,17 @@ Module.register("MMM-SoccerStandings", {
 			.replace(/[.,]/g, "");
 	},
 
+	// Returns true if the given team name matches any entry in config.highlightTeams.
+	// Uses normalized substring matching so "Arsenal" matches "Arsenal FC" and vice versa.
+	_isHighlightedTeam(name) {
+		if (!name || !this.config.highlightTeams || !this.config.highlightTeams.length) return false;
+		const norm = this.normalizeTeamName(name);
+		return this.config.highlightTeams.some((ht) => {
+			const htNorm = this.normalizeTeamName(ht);
+			return norm.includes(htNorm) || htNorm.includes(norm);
+		});
+	},
+
 	// Logo lookup: backend resolves all logos via logo-resolver.js before sending data.
 	// This is a frontend-only last-resort fallback for config.teamLogoMap custom entries
 	// in case a code path receives unresolved data.
@@ -547,6 +554,30 @@ Module.register("MMM-SoccerStandings", {
 				.map((p) => (urls[p] ? { url: urls[p], provider: p } : null))
 				.filter(Boolean);
 
+		// Guard: UEFA competitions require BBC's {table, fixtures} object so that
+		// fetchUEFACompetitionData can retrieve phase fixture articles.
+		// WC2026 requires BBC's array of month URLs so fetchFIFAWorldCup2026 works.
+		// If any other provider was requested, warn and force BBC-first chain.
+		const bbcUrl = urls.bbc;
+		const requiresBBCSpecialFetcher =
+			(typeof bbcUrl === "object" && bbcUrl !== null && !Array.isArray(bbcUrl) && bbcUrl.table && bbcUrl.fixtures) ||
+			(Array.isArray(bbcUrl) && leagueCode === "WORLD_CUP_2026");
+
+		if (requiresBBCSpecialFetcher) {
+			if (provider !== "auto" && provider !== "bbc") {
+				Log.warn(
+					` MMM-SoccerStandings: provider="${provider}" cannot be used for ${leagueCode} — this league requires BBC's special fetcher. Falling back to BBC.`
+				);
+			}
+			const chain = buildChain("bbc", "wikipedia", "espn", "soccerway", "google");
+			if (chain.length === 0) return { primary: null, fallback: null, providerChain: [] };
+			return {
+				primary: chain[0].url,
+				fallback: chain[1]?.url,
+				providerChain: chain
+			};
+		}
+
 		// Explicit provider selection: put the requested provider first, then
 		// fall back through the remaining ordered chain.
 		if (provider === "wikipedia" && urls.wikipedia) {
@@ -604,6 +635,13 @@ Module.register("MMM-SoccerStandings", {
 				fallback: chain[1]?.url,
 				providerChain: chain
 			};
+		}
+
+		// Requested provider has no URL for this league — warn and fall through to auto.
+		if (provider !== "auto" && !urls[provider]) {
+			Log.warn(
+				` MMM-SoccerStandings: provider="${provider}" has no URL for ${leagueCode}. Using auto fallback.`
+			);
 		}
 
 		// "auto" mode: BBC first, then Wikipedia (most reliable static HTML for split leagues),
@@ -1859,12 +1897,9 @@ Module.register("MMM-SoccerStandings", {
 				const src = currentData.source || "BBC Sport";
 				const tsDate =
 					currentData.meta && currentData.meta.lastUpdated
-						? new Date(currentData.meta.lastUpdated)
-						: new Date();
-				const ts = tsDate.toLocaleTimeString([], {
-					hour: "2-digit",
-					minute: "2-digit"
-				});
+						? currentData.meta.lastUpdated
+						: Date.now();
+				const ts = moment(tsDate).format("HH:mm");
 
 				const sourceSpan = document.createElement("span");
 				sourceSpan.className = "dimmed xsmall";
@@ -1951,11 +1986,7 @@ Module.register("MMM-SoccerStandings", {
 			lastUpdated.className = "last-updated xsmall dimmed";
 
 			// Format timestamp (e.g., "18:35")
-			const date = new Date(currentData.meta.lastUpdated);
-			const timeStr = date.toLocaleTimeString([], {
-				hour: "2-digit",
-				minute: "2-digit"
-			});
+			const timeStr = moment(currentData.meta.lastUpdated).format("HH:mm");
 			lastUpdated.textContent = `${this.translate("LAST_UPDATED")}: ${timeStr}`;
 			metaInfo.appendChild(lastUpdated);
 		}
@@ -2421,12 +2452,6 @@ Module.register("MMM-SoccerStandings", {
 		// Create content container for the table
 		var contentContainer = document.createElement("div");
 		contentContainer.className = "league-content-container";
-		if (
-			typeof this.config.maxTableHeight === "number" &&
-			this.config.maxTableHeight > 0
-		) {
-			// contentContainer.style.maxHeight = `${this.config.maxTableHeight}px`;
-		}
 
 		// Show loading message if data not loaded yet
 		if (!this.loaded[this.currentLeague] && !this.error) {
@@ -2673,12 +2698,9 @@ Module.register("MMM-SoccerStandings", {
 			const src = currentData.source || "BBC Sport";
 			const tsDate =
 				currentData.meta && currentData.meta.lastUpdated
-					? new Date(currentData.meta.lastUpdated)
-					: new Date();
-			const ts = tsDate.toLocaleTimeString([], {
-				hour: "2-digit",
-				minute: "2-digit"
-			});
+					? currentData.meta.lastUpdated
+					: Date.now();
+			const ts = moment(tsDate).format("HH:mm");
 
 			const sourceSpan = document.createElement("span");
 			sourceSpan.className = "dimmed xsmall";
@@ -2840,9 +2862,6 @@ Module.register("MMM-SoccerStandings", {
 			_groupsToRender.push({ label: null, teams: leagueData.teams || [] });
 		}
 
-		// Track total teams across all groups for virtual scrolling threshold check
-		let _totalTeamsRendered = 0;
-
 		_groupsToRender.forEach((group, groupIndex) => {
 			// Insert a labelled separator row before each group (only for 2nd+ groups).
 			// Skipping groupIndex 0 ensures the first tbody row is always a data row,
@@ -2865,7 +2884,6 @@ Module.register("MMM-SoccerStandings", {
 			if (groupIndex === 0 && this.config.maxTeams > 0) {
 				teamsToShow = teamsToShow.slice(0, this.config.maxTeams);
 			}
-			_totalTeamsRendered += teamsToShow.length;
 
 			teamsToShow.forEach((team, index) => {
 				var row = document.createElement("tr");
@@ -2917,7 +2935,7 @@ Module.register("MMM-SoccerStandings", {
 					}
 				}
 
-				if (this.config.highlightTeams.includes(team.name)) {
+				if (this._isHighlightedTeam(team.name)) {
 					row.classList.add("highlighted");
 				}
 
@@ -3103,20 +3121,6 @@ Module.register("MMM-SoccerStandings", {
 		bodyTable.appendChild(tbody);
 
 		scrollContainer.appendChild(bodyTable);
-
-		// Apply virtual scrolling optimizations if enabled and threshold exceeded (PERF-03)
-		if (
-			this.config.enableVirtualScrolling &&
-			_totalTeamsRendered >= this.config.virtualScrollThreshold
-		) {
-			scrollContainer.classList.add("virtual-scroll-container");
-			bodyTable.classList.add("virtual-scrolling-enabled");
-			if (this.config.debug) {
-				Log.info(
-					`[VIRTUAL-SCROLL] Enabled for ${_totalTeamsRendered} rows (threshold: ${this.config.virtualScrollThreshold})`
-				);
-			}
-		}
 
 		outerWrapper.appendChild(scrollContainer);
 
@@ -3549,9 +3553,7 @@ Module.register("MMM-SoccerStandings", {
 				// Section 1: Results (Finished and Live matches)
 				if (hasResults) {
 					const resultsWrapper = document.createElement("div");
-					resultsWrapper.className = `uefa-section-wrapper results-section${
-						isRoundCompleted ? " maximized-section" : ""
-					}`;
+					resultsWrapper.className = "uefa-section-wrapper results-section";
 
 					const resultsTitle = document.createElement("div");
 					resultsTitle.className = "wc-title";
@@ -3750,23 +3752,9 @@ Module.register("MMM-SoccerStandings", {
 				wrapperV2.appendChild(headerContainer);
 			}
 
-			// 2. Body Scroll Container
+			// 2. Body Container
 			const scrollContainer = document.createElement("div");
 			scrollContainer.className = "fixtures-body-scroll";
-
-			// Apply restricted-height to all UEFA knockout stages and World Cup knockout rounds
-			const restrictedStages = [
-				"Playoff",
-				"Rd32",
-				"Rd16",
-				"QF",
-				"SF",
-				"TP",
-				"Final"
-			];
-			if (restrictedStages.includes(this.currentSubTab)) {
-				scrollContainer.classList.add("restricted-height");
-			}
 
 			const bodyTable = document.createElement("table");
 			bodyTable.className = "wc-fixtures-table-v2 body-only";
@@ -3828,6 +3816,10 @@ Module.register("MMM-SoccerStandings", {
 						row.classList.add("current-fixture");
 						foundCurrent = true;
 					}
+				}
+
+				if (this._isHighlightedTeam(fix.homeTeam) || this._isHighlightedTeam(fix.awayTeam)) {
+					row.classList.add("highlighted");
 				}
 
 				this._buildFixtureRowContent(row, fix, columnNames);
@@ -3894,6 +3886,10 @@ Module.register("MMM-SoccerStandings", {
 				row.classList.add("upcoming");
 			}
 
+			if (this._isHighlightedTeam(fix.homeTeam) || this._isHighlightedTeam(fix.awayTeam)) {
+				row.classList.add("highlighted");
+			}
+
 			this._buildFixtureRowContent(row, fix, columnNames);
 			tbody.appendChild(row);
 		});
@@ -3910,18 +3906,11 @@ Module.register("MMM-SoccerStandings", {
 			if (col === "Date") {
 				cell.className = "fixture-date-v2";
 				if (fix.timestamp) {
-					const d = new Date(fix.timestamp);
-					const dayShort = d.toLocaleDateString(this.config.language || "en", {
-						weekday: "short"
-					});
-					const dayNum = String(d.getDate()).padStart(2, "0");
-					const monthShort = d.toLocaleDateString(
-						this.config.language || "en",
-						{ month: "short" }
-					);
-					cell.textContent = `${dayShort} ${dayNum} ${monthShort}`;
+					cell.textContent = moment(fix.timestamp).format("ddd DD MMM");
+				} else if (fix.date) {
+					cell.textContent = moment(fix.date, "YYYY-MM-DD").format("ddd DD MMM");
 				} else {
-					cell.textContent = fix.date || "";
+					cell.textContent = "";
 				}
 			} else if (col === "Time") {
 				cell.className = "fixture-time-v2";
@@ -4437,6 +4426,7 @@ Module.register("MMM-SoccerStandings", {
 		}
 		if (this.config.highlightedColor) {
 			css += `.soccer-standings .team-row.highlighted { background-color: ${this.config.highlightedColor} !important; }\n`;
+			css += `.soccer-standings .fixture-row-v2.highlighted { background-color: ${this.config.highlightedColor} !important; }\n`;
 		}
 
 		styleEl.textContent = css;

@@ -112,7 +112,11 @@ const LEAGUE_URL_MAPS = {
 		BELGIUM_PRO_LEAGUE:
 			"https://www.google.com/search?q=Belgian+Pro+League+table+standings",
 		CYMRU_PREMIER_LEAGUE:
-			"https://www.google.com/search?q=Cymru+Premier+League+table+standings"
+			"https://www.google.com/search?q=Cymru+Premier+League+table+standings",
+		UEFA_CHAMPIONS_LEAGUE:
+			"https://www.google.com/search?q=UEFA+Champions+League+table+standings",
+		WORLD_CUP_2026:
+			"https://www.google.com/search?q=FIFA+World+Cup+2026+table+standings"
 	},
 
 	espn: {
@@ -124,28 +128,21 @@ const LEAGUE_URL_MAPS = {
 			"https://www.espn.com/soccer/standings/_/league/eng.1",
 		ENGLAND_CHAMPIONSHIP:
 			"https://www.espn.com/soccer/standings/_/league/eng.2",
-		GERMANY_BUNDESLIGA:
-			"https://www.espn.com/soccer/standings/_/league/ger.1",
+		GERMANY_BUNDESLIGA: "https://www.espn.com/soccer/standings/_/league/ger.1",
 		FRANCE_LIGUE1: "https://www.espn.com/soccer/standings/_/league/fra.1",
 		SPAIN_LA_LIGA: "https://www.espn.com/soccer/standings/_/league/esp.1",
 		ITALY_SERIE_A: "https://www.espn.com/soccer/standings/_/league/ita.1",
 		NETHERLANDS_EREDIVISIE:
 			"https://www.espn.com/soccer/standings/_/league/ned.1",
-		BELGIUM_PRO_LEAGUE:
-			"https://www.espn.com/soccer/standings/_/league/bel.1",
+		BELGIUM_PRO_LEAGUE: "https://www.espn.com/soccer/standings/_/league/bel.1",
 		PORTUGAL_PRIMEIRA_LIGA:
 			"https://www.espn.com/soccer/standings/_/league/por.1",
 		TURKEY_SUPER_LIG: "https://www.espn.com/soccer/standings/_/league/tur.1",
-		GREECE_SUPER_LEAGUE:
-			"https://www.espn.com/soccer/standings/_/league/gre.1",
-		AUSTRIA_BUNDESLIGA:
-			"https://www.espn.com/soccer/standings/_/league/aut.1",
-		DENMARK_SUPERLIGAEN:
-			"https://www.espn.com/soccer/standings/_/league/den.1",
-		NORWAY_ELITESERIEN:
-			"https://www.espn.com/soccer/standings/_/league/nor.1",
-		SWEDEN_ALLSVENSKAN:
-			"https://www.espn.com/soccer/standings/_/league/swe.1",
+		GREECE_SUPER_LEAGUE: "https://www.espn.com/soccer/standings/_/league/gre.1",
+		AUSTRIA_BUNDESLIGA: "https://www.espn.com/soccer/standings/_/league/aut.1",
+		DENMARK_SUPERLIGAEN: "https://www.espn.com/soccer/standings/_/league/den.1",
+		NORWAY_ELITESERIEN: "https://www.espn.com/soccer/standings/_/league/nor.1",
+		SWEDEN_ALLSVENSKAN: "https://www.espn.com/soccer/standings/_/league/swe.1",
 		SWITZERLAND_SUPER_LEAGUE:
 			"https://www.espn.com/soccer/standings/_/league/sui.1",
 		ROMANIA_LIGA_I: "https://www.espn.com/soccer/standings/_/league/rou.1",
@@ -154,15 +151,17 @@ const LEAGUE_URL_MAPS = {
 		UKRAINE_PREMIER_LEAGUE:
 			"https://www.espn.com/soccer/standings/_/league/ukr.1",
 		HUNGARY_NBI: "https://www.espn.com/soccer/standings/_/league/hun.1",
-		POLAND_EKSTRAKLASA:
-			"https://www.espn.com/soccer/standings/_/league/pol.1",
+		POLAND_EKSTRAKLASA: "https://www.espn.com/soccer/standings/_/league/pol.1",
 		CZECH_LIGA: "https://www.espn.com/soccer/standings/_/league/cze.1",
 		CYMRU_PREMIER_LEAGUE:
 			"https://www.espn.com/soccer/standings/_/league/wal.1",
 		CYPRUS_FIRST_DIVISION:
 			"https://www.espn.com/soccer/standings/_/league/cyp.1",
 		ISRAEL_PREMIER_LEAGUE:
-			"https://www.espn.com/soccer/standings/_/league/isr.1"
+			"https://www.espn.com/soccer/standings/_/league/isr.1",
+		UEFA_CHAMPIONS_LEAGUE:
+			"https://www.espn.com/soccer/standings/_/league/uefa.champions",
+		WORLD_CUP_2026: "https://www.espn.com/soccer/table/_/league/fifa.world"
 	},
 
 	bbc: {
@@ -179,10 +178,8 @@ const LEAGUE_URL_MAPS = {
 			"https://www.bbc.co.uk/sport/football/german-bundesliga/table",
 		FRANCE_LIGUE1:
 			"https://www.bbc.co.uk/sport/football/french-ligue-one/table",
-		SPAIN_LA_LIGA:
-			"https://www.bbc.co.uk/sport/football/spanish-la-liga/table",
-		ITALY_SERIE_A:
-			"https://www.bbc.co.uk/sport/football/italian-serie-a/table",
+		SPAIN_LA_LIGA: "https://www.bbc.co.uk/sport/football/spanish-la-liga/table",
+		ITALY_SERIE_A: "https://www.bbc.co.uk/sport/football/italian-serie-a/table",
 		NETHERLANDS_EREDIVISIE:
 			"https://www.bbc.co.uk/sport/football/dutch-eredivisie/table",
 		BELGIUM_PRO_LEAGUE:

@@ -17,8 +17,6 @@ The **MMM-SoccerStandings** module is highly configurable. This guide covers all
 | `selectedLeagues`         | `["SCOTLAND_PREMIERSHIP"]` | Array of league codes to display.                                                       |
 | `highlightTeams`          | `["Celtic", "Hearts"]`     | Team names to visually emphasize.                                                       |
 | `maxTeams`                | `36`                       | Maximum teams per table (0 = all).                                                      |
-| `scrollable`              | `true`                     | Enable vertical scrolling when max height is exceeded.                                  |
-| `maxTableHeight`          | `460`                      | Pixel height before vertical scrolling activates.                                       |
 | `autoGenerateButtons`     | `true`                     | Auto-create league switcher buttons from `selectedLeagues`.                             |
 | `showLeagueButtons`       | `true`                     | Show or hide league switcher tabs in the header.                                        |
 | `autoFocusRelevantSubTab` | `true`                     | Automatically focus the tab showing live or upcoming matches.                           |
@@ -113,8 +111,6 @@ The module's header has been enhanced for better usability on both large display
 | `theme`                  | `"auto"`   | Color theme: `"auto"` (system preference), `"light"`, or `"dark"`.                                                    |
 | `fixtureDateFilter`      | `null`     | Filter fixtures: `null` (all), `"today"`, `"week"`, `"month"`, or `{start: "YYYY-MM-DD", end: "YYYY-MM-DD"}`.         |
 | `customTeamColors`       | `{}`       | Custom row background colors per team. Example: `{"Celtic": "#00A650", "Hearts": "#A50044"}`.                          |
-| `enableVirtualScrolling` | `false`    | Performance optimisation for large tables (50+ rows).                                                                  |
-| `virtualScrollThreshold` | `30`       | Row count before virtual scrolling activates.                                                                          |
 
 #### ⚽ Available Leagues
 
@@ -253,13 +249,8 @@ Enables all leagues, auto-cycling, high contrast, and manual overrides.
     colored: true, // Color rows by standing (top/UEFA/relegation)
     maxTeams: 36, // 0 = show all teams
     highlightTeams: ["Celtic", "Hearts"], // Emphasize teams by exact name e.g. ["Celtic", "Hearts"],
-    scrollable: true, // Enable vertical scrolling if max height exceeded
 
-    // ===== NEW: League Selection System (replaces old individual toggles) =====
-    // Method 1: Use selectedLeagues array to choose specific leagues by code
-    // Leave empty to use legacy showXXX options, or populate with league codes
-    // Example: Scottish Premiership enabled by default
-    // Add more league codes here, e.g., "ENGLAND_PREMIER_LEAGUE", "GERMANY_BUNDESLIGA", etc.
+    // ===== League Selection =====
     selectedLeagues: [
     "SCOTLAND_PREMIERSHIP",
     "ENGLAND_PREMIER_LEAGUE",
@@ -316,10 +307,7 @@ Enables all leagues, auto-cycling, high contrast, and manual overrides.
     // ===== UX Options (Phase 4) =====
     tableDensity: "normal", // Table row density: "compact", "normal", "comfortable"
     fixtureDateFilter: null, // Filter fixtures by date range: null (show all), "today", "week", "month", or {start: "YYYY-MM-DD", end: "YYYY-MM-DD"}
-    enableVirtualScrolling: true, // Enable virtual scrolling for large tables (>50 rows)
-    virtualScrollThreshold: 10, // Number of rows before virtual scrolling activates
 
-    
     // ===== Auto-cycling options =====
     autoCycle: true, // Enable auto-cycling between leagues
     cycleInterval: 15 * 1000, // Time to display each league (15 seconds)
@@ -342,8 +330,7 @@ Enables all leagues, auto-cycling, high contrast, and manual overrides.
 
     // Cache controls
     clearCacheButton: true,    // Allows user to clear cache from the display
-    clearCacheOnStart: false, // Set to true to force-clear ALL caches (disk, fixture, logo) on every module start - useful for development and troubleshooting
-    maxTableHeight: 460 // Height in px to show 12 teams
+    clearCacheOnStart: false // Set to true to force-clear ALL caches (disk, fixture, logo) on every module start - useful for development and troubleshooting
    }
   }
 ```

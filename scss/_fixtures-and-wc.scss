@@ -82,64 +82,44 @@
 /* Multi-tab View (Sub-tabs for Groups/Knockouts) */
 .wc-subtabs-container {
 	display: flex;
-	gap: 4px; /* Reduced gap */
+	gap: 0.25rem;
 	margin-bottom: 12px;
-	flex-wrap: nowrap; /* Ensure they stay on one line */
-	overflow-x: auto; /* Allow horizontal scroll if still too many */
-	scrollbar-width: none; /* Hide scrollbar for cleaner look */
-	justify-content: flex-start; /* Start from left */
 	padding: 2px 0;
-
-	&::-webkit-scrollbar {
-		display: none;
-	}
+	width: 100%;
 }
 
 .wc-btn {
-	background: transparent !important; /* P-08: Remove background color */
-	border: 1px solid $white-15; /* Thin default border */
-	color: $gray-888;
-	padding: 2px 5px; /* Further reduced padding for compact fit */
-	font-size: 9px; /* Further reduced font size to ensure single row fit */
+	flex: 1 1 0;
+	min-width: 0;
+	background: transparent;
+	border: 1px solid $white-20;
+	color: $gray-ccc;
+	padding: 2px 5px;
+	font-size: 9px;
 	border-radius: 3px;
 	cursor: pointer;
 	transition: all 0ms ease;
 	font-weight: 500;
-	flex-shrink: 0; /* Prevent buttons from shrinking */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	opacity: 0.7;
 
 	&:hover {
-		background: $white-05 !important;
-		color: $white;
-		border-color: $white-40;
+		background: $white-10;
+		border-color: $white-35;
+		opacity: 0.9;
 	}
 
 	&.active {
 		color: $white;
 		font-weight: bold;
-		border-width: 1.5px !important;
-	}
-}
-
-/* League-specific thin border colors for sub-tabs (P-08) */
-@each $league-codes, $color in $subtab-active-colors {
-	@each $league-code in $league-codes {
-		.soccer-standings[data-league="#{$league-code}"] .wc-btn.active {
-			border-color: $color !important;
-			color: $color;
-		}
-	}
-}
-
-/* Base border colors for inactive sub-tabs based on league mode */
-.league-mode-wc {
-	.wc-btn {
-		border-color: rgba(255, 215, 0, 0.2);
-	}
-}
-
-.league-mode-uefa {
-	.wc-btn {
-		border-color: $white-15;
+		background: $white-15;
+		border-color: $white-40;
+		opacity: 1;
 	}
 }
 
@@ -309,38 +289,6 @@
 	}
 }
 
-/* Scroll Control Buttons (Header/Footer) */
-.scroll-btn-container {
-	display: flex;
-	flex-direction: column;
-	gap: 5px;
-}
-
-.scroll-nav-btn {
-	background: $white-10;
-	border: none;
-	color: $gray-ccc;
-	width: 20px;
-	height: 20px;
-	border-radius: 50%;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 10px;
-	transition: all 0ms ease;
-}
-
-.scroll-nav-btn:hover:not(:disabled) {
-	background: $white-20;
-	color: $white;
-}
-
-.scroll-nav-btn:disabled {
-	opacity: 0.3;
-	cursor: default;
-}
-
 /* Error and Retry State Styling */
 .error-state,
 .retry-state {
@@ -461,7 +409,6 @@
 	width: 100%;
 	display: flex;
 	flex-direction: column;
-	max-height: 490px; /* Increased from 450px to match overall module height increase */
 	border: 1px solid $white-10;
 	border-radius: 4px;
 	overflow: hidden;
@@ -470,68 +417,36 @@
 /* Header container - always visible */
 .fixtures-header-container {
 	flex: 0 0 auto;
-	background: $header-surface;
+	// background: $header-surface;
 	z-index: 10;
 	border-bottom: 2px solid $gray-444;
 }
 
-/* Scrollable body container */
+/* Fixtures body container */
 .fixtures-body-scroll {
 	flex: 1 1 auto;
-	overflow-y: auto;
-	scrollbar-width: thin;
-	scrollbar-color: $white-20 transparent;
+	overflow-y: hidden;
 }
 
-/* Restricted height for specific tournament rounds (Tasks 3 & 4) */
-.fixtures-body-scroll.restricted-height {
-	max-height: 320px; /* Increased from 280px - Approximately 8-10 fixtures */
-}
-
-.fixtures-body-scroll::-webkit-scrollbar {
-	width: 6px;
-	background: transparent; /* Chrome/Safari: transparent track */
-}
-
-.fixtures-body-scroll::-webkit-scrollbar-track {
-	background: transparent;
-}
-
-.fixtures-body-scroll::-webkit-scrollbar-thumb {
-	background: $white-20; /* Visible with 0.2 transparency */
-	border-radius: 3px;
-}
-
-/* UEFA Split-View Layout - Equal height allocation for Results and Future Fixtures */
-/* Container holds both results and upcoming sections with independent scrolling.
-   Height increased from 500px to 560px to accommodate additional dynamic allocation (+60px). */
+/* UEFA Split-View Layout */
 .uefa-split-view-container {
 	width: 100%;
 	display: flex;
 	flex-direction: column;
 	height: auto;
-	min-height: 240px;
-	max-height: 620px; /* Increased from 580px to accommodate taller fixture sections */
 	gap: 15px;
 	margin-bottom: 10px;
 }
 
-/* Each section wrapper contains title + scrollable content.
-   Baseline height increased from 270px to 300px to ensure 6 fixtures fit without scrolling. */
+/* Each section wrapper contains title + scrollable content */
 .uefa-section-wrapper {
 	display: flex;
 	flex-direction: column;
-	height: 300px; /* Increased from 270px */
+	height: auto;
 	border: 1px solid $white-10;
 	border-radius: 4px;
 	overflow: hidden;
 	background: rgba(34, 34, 34, 0.3);
-}
-
-/* Completion states: Maximized/Minimized heights for UEFA sections
-   When only one section is populated, it takes the full allocation (600px). */
-.uefa-section-wrapper.maximized-section {
-	height: 600px; /* Increased from 540px */
 }
 
 .uefa-section-wrapper.minimized-section {
@@ -541,62 +456,23 @@
 	padding: 0;
 }
 
-/* Specific overrides based on container state for precise height control */
-.uefa-split-view-container.dual-sections .uefa-section-wrapper {
-	height: 300px;
-}
-
-.uefa-split-view-container.only-results .results-section,
-.uefa-split-view-container.only-upcoming .future-section {
-	height: 600px;
-}
-
 /* Title for each section - reduced padding and font size to maximize fixture space */
 .uefa-section-wrapper .wc-title {
 	flex: 0 0 auto;
 	padding: 4px 8px; /* Reduced from 8px 10px to save space */
 	font-size: 11px; /* Reduced font size */
-	background: $header-surface;
+	// background: $header-surface;
 	border-bottom: 2px solid $gray-444;
 	text-align: center;
 	font-weight: bold;
 	letter-spacing: 1px;
 }
 
-/* Scrollable content area for each section */
+/* Content area for each section */
 .uefa-section-scroll {
 	flex: 1 1 auto;
-	overflow-y: auto;
+	overflow-y: hidden;
 	overflow-x: hidden;
-	scrollbar-width: thin;
-	scrollbar-color: $white-20 transparent;
-}
-
-.uefa-section-scroll::-webkit-scrollbar {
-	width: 6px;
-	background: transparent;
-}
-
-.uefa-section-scroll::-webkit-scrollbar-track {
-	background: transparent;
-}
-
-.uefa-section-scroll::-webkit-scrollbar-thumb {
-	background: $white-20;
-	border-radius: 3px;
-}
-
-.uefa-section-scroll::-webkit-scrollbar-thumb:hover {
-	background: $white-40;
-}
-
-/* Fixed sizing for sections to show up to ~8-9 fixtures with scrolling */
-.uefa-section-wrapper.results-section {
-	height: 300px;
-}
-
-.uefa-section-wrapper.future-section {
-	height: 300px;
 }
 
 /* League Table Sticky Header & Scrollable Body */
@@ -634,23 +510,8 @@
 
 .league-body-scroll {
 	flex: 1 1 auto;
-	overflow-y: auto;
-	overflow-x: hidden; /* Remove horizontal scrollbar */
-	scrollbar-width: thin;
-	scrollbar-color: $white-20 transparent;
-}
-
-.league-body-scroll::-webkit-scrollbar {
-	width: 6px;
-}
-
-.league-body-scroll::-webkit-scrollbar-track {
-	background: transparent;
-}
-
-.league-body-scroll::-webkit-scrollbar-thumb {
-	background: $white-20; /* Visible with 0.2 transparency */
-	border-radius: 3px;
+	overflow-y: hidden;
+	overflow-x: hidden;
 }
 
 .wc-sticky-top {
@@ -684,6 +545,11 @@
 
 .team-row.highlighted {
 	background: $white-10 !important;
+}
+
+.fixture-row-v2.highlighted {
+	background-color: rgba(255, 215, 0, 0.15) !important;
+	font-weight: bold;
 }
 
 /* Column Widths for alignment */
@@ -755,9 +621,6 @@
 	transition: background 0ms ease;
 }
 
-.fixture-row-v2.current-fixture {
-	background: rgba(255, 215, 0, 0.05); /* Subtle gold highlight for current match */
-}
 
 .fixture-row-v2:hover {
 	background: $white-03;

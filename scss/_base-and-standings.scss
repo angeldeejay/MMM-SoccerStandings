@@ -122,29 +122,13 @@
 	margin-bottom: 5px;
 }
 
-/* League buttons container.
-   When more leagues are configured than fit on screen the container
-   scrolls horizontally. A thin styled scrollbar is always shown so
-   the user knows more content is available without needing to hover. */
+/* League buttons container — buttons fill width equally, justified. */
 .league-buttons-container {
 	display: flex;
-	gap: 5px;
-	overflow-x: auto;
-	overflow-y: hidden;
-	padding: 5px 0 7px 0; /* extra bottom padding gives the scrollbar room */
-	-webkit-overflow-scrolling: touch;
+	gap: 0.25rem;
+	overflow: hidden;
+	padding: 5px 0;
 	width: 100%;
-	scroll-behavior: smooth;
-
-	@include thin-scrollbar-x(3px, $white-35, $white-07);
-
-	&::-webkit-scrollbar-thumb {
-		transition: background 0ms ease;
-
-		&:hover {
-			background: $white-65;
-		}
-	}
 }
 
 /* Scroll indicator arrow buttons (previous / next).
@@ -199,8 +183,10 @@
 
 /* League button styling */
 .league-btn {
-	background: $white-10;
-	border: none;
+	flex: 1 1 0;
+	min-width: 0;
+	background: transparent;
+	border: 1px solid $white-20;
 	color: $gray-ccc;
 	padding: 4px 8px;
 	font-size: var(--mtlt-font-size-small);
@@ -209,28 +195,23 @@
 	transition: all 0ms ease;
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	gap: 4px;
 	font-weight: 500;
-	opacity: 0.7; /* Inactive buttons have reduced opacity */
+	opacity: 0.7;
 
 	&:hover {
-		background: $white-20;
-		transform: scale(1.05);
+		background: $white-10;
+		border-color: $white-35;
+		opacity: 0.9;
 	}
 
 	&.active {
 		color: $white;
 		font-weight: bold;
-		box-shadow: 0 0 8px $white-30;
-		opacity: 1; /* Active buttons fully opaque */
-		/* background-color: #999999 !important; /* Active buttons use light green background - !important overrides league-specific colors */
-	}
-
-	/* Gold border for World Cup tab */
-	&.gold-border {
-		border: 2px solid $gold !important;
-		box-shadow: 0 0 10px rgba(255, 215, 0, 0.5) !important;
-		opacity: 1 !important;
+		background: $white-15;
+		border-color: $white-40;
+		opacity: 1;
 	}
 
 	/* Flag image styling - replaces emoji flags with actual PNG images */
@@ -278,15 +259,6 @@
 		text-transform: uppercase;
 		display: inline-block;
 		pointer-events: none; /* Ensure clicks pass through to the button */
-	}
-}
-
-/* Different colors for each league button when active */
-@each $league-codes, $color in $league-active-colors {
-	@each $league-code in $league-codes {
-		.league-btn[data-league="#{$league-code}"].active {
-			background: $color;
-		}
 	}
 }
 
@@ -564,15 +536,6 @@
 /* UEFA Mode */
 .league-mode-uefa .team-row.uefa-zone {
 	background-color: rgba(30, 144, 255, 0.15);
-}
-
-/* World Cup Mode */
-.league-mode-wc .soccer-standings {
-	border: 1px solid rgba(255, 215, 0, 0.2);
-}
-
-.league-mode-wc .league-title {
-	color: $gold;
 }
 
 /* Row coloring based on league position */

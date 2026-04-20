@@ -349,11 +349,9 @@ module.exports = NodeHelper.create({
 		const tryNextProvider = async (reason) => {
 			const nextIdx = chainIndex + 1;
 			if (nextIdx < providerChain.length) {
-				if (debug) {
-					console.log(
-						` MMM-SoccerStandings: [${leagueType}] ${reason}. Trying next provider: ${providerChain[nextIdx].provider}`
-					);
-				}
+				console.warn(
+					` MMM-SoccerStandings: [${leagueType}] ${reason}. Falling back to ${providerChain[nextIdx].provider}.`
+				);
 				return this.fetchLeagueData(
 					providerChain[nextIdx].url,
 					leagueType,
@@ -395,13 +393,29 @@ module.exports = NodeHelper.create({
 			}
 		}
 
-		// Handle UEFA competitions with separate table and fixture URLs
+		// Handle UEFA competitions with separate table and fixture URLs.
+		// NOTE: provider config is intentionally bypassed here — UEFA competitions
+		// require both a standings table AND phase fixture articles, which only BBC
+		// provides in the required format. ESPN/Wikipedia cannot supply phase fixtures.
 		if (typeof url === "object" && url !== null && url.table && url.fixtures) {
+			const explicitProvider = config && config.provider && config.provider !== "auto";
+			if (explicitProvider && chainIndex === 0) {
+				console.warn(
+					` MMM-SoccerStandings: [${leagueType}] provider="${config.provider}" ignored — UEFA competitions require BBC for phase fixture articles.`
+				);
+			}
 			return this.fetchUEFACompetitionData(url, leagueType, config);
 		}
 
-		// Handle FIFA World Cup 2026 specifically if needed
+		// Handle FIFA World Cup 2026 specifically if needed.
+		// NOTE: provider config is bypassed — WC2026 uses a dedicated FIFA scraper.
 		if (leagueType === "WORLD_CUP_2026") {
+			const explicitProvider = config && config.provider && config.provider !== "auto";
+			if (explicitProvider && chainIndex === 0) {
+				console.warn(
+					` MMM-SoccerStandings: [WORLD_CUP_2026] provider="${config.provider}" ignored — WC2026 uses a dedicated FIFA scraper.`
+				);
+			}
 			return this.fetchFIFAWorldCup2026(url, config);
 		}
 
