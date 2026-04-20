@@ -69,7 +69,8 @@ const LEAGUE_URL_MAPS = {
 		CYPRUS_FIRST_DIVISION:
 			"https://en.wikipedia.org/wiki/2025%E2%80%9326_Cypriot_First_Division",
 		ISRAEL_PREMIER_LEAGUE:
-			"https://en.wikipedia.org/wiki/2025%E2%80%9326_Israeli_Premier_League"
+			"https://en.wikipedia.org/wiki/2025%E2%80%9326_Israeli_Premier_League",
+		WORLD_CUP_2026: "https://en.wikipedia.org/wiki/2026_FIFA_World_Cup"
 	},
 
 	soccerway: {

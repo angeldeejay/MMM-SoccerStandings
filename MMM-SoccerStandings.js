@@ -30,7 +30,7 @@ Module.register("MMM-SoccerStandings", {
 	// Override getHeader to dynamically update the title
 	getHeader() {
 		if (
-			typeof this.config.header === 'undefined' ||
+			typeof this.config.header === "undefined" ||
 			this.config.header === null ||
 			this.config.header === false
 		) {
@@ -384,7 +384,12 @@ Module.register("MMM-SoccerStandings", {
 	// Returns true if the given team name matches any entry in config.highlightTeams.
 	// Uses normalized substring matching so "Arsenal" matches "Arsenal FC" and vice versa.
 	_isHighlightedTeam(name) {
-		if (!name || !this.config.highlightTeams || !this.config.highlightTeams.length) return false;
+		if (
+			!name ||
+			!this.config.highlightTeams ||
+			!this.config.highlightTeams.length
+		)
+			return false;
 		const norm = this.normalizeTeamName(name);
 		return this.config.highlightTeams.some((ht) => {
 			const htNorm = this.normalizeTeamName(ht);
@@ -529,7 +534,13 @@ Module.register("MMM-SoccerStandings", {
 		const provider = (this.config.provider || "auto").toLowerCase();
 
 		// URL maps loaded from league-urls.js (via getScripts)
-		const { bbc: bbcUrlMap, wikipedia: wikipediaUrlMap, soccerway: soccerwayUrlMap, google: googleUrlMap, espn: espnUrlMap } = LEAGUE_URL_MAPS;
+		const {
+			bbc: bbcUrlMap,
+			wikipedia: wikipediaUrlMap,
+			soccerway: soccerwayUrlMap,
+			google: googleUrlMap,
+			espn: espnUrlMap
+		} = LEAGUE_URL_MAPS;
 
 		// Fall back to european-leagues.js for BBC URL if not in the explicit map
 		const europeanLeagueUrl =
@@ -560,7 +571,11 @@ Module.register("MMM-SoccerStandings", {
 		// If any other provider was requested, warn and force BBC-first chain.
 		const bbcUrl = urls.bbc;
 		const requiresBBCSpecialFetcher =
-			(typeof bbcUrl === "object" && bbcUrl !== null && !Array.isArray(bbcUrl) && bbcUrl.table && bbcUrl.fixtures) ||
+			(typeof bbcUrl === "object" &&
+				bbcUrl !== null &&
+				!Array.isArray(bbcUrl) &&
+				bbcUrl.table &&
+				bbcUrl.fixtures) ||
 			(Array.isArray(bbcUrl) && leagueCode === "WORLD_CUP_2026");
 
 		if (requiresBBCSpecialFetcher) {
@@ -569,8 +584,15 @@ Module.register("MMM-SoccerStandings", {
 					` MMM-SoccerStandings: provider="${provider}" cannot be used for ${leagueCode} — this league requires BBC's special fetcher. Falling back to BBC.`
 				);
 			}
-			const chain = buildChain("bbc", "wikipedia", "espn", "soccerway", "google");
-			if (chain.length === 0) return { primary: null, fallback: null, providerChain: [] };
+			const chain = buildChain(
+				"bbc",
+				"wikipedia",
+				"espn",
+				"soccerway",
+				"google"
+			);
+			if (chain.length === 0)
+				return { primary: null, fallback: null, providerChain: [] };
 			return {
 				primary: chain[0].url,
 				fallback: chain[1]?.url,
@@ -581,7 +603,13 @@ Module.register("MMM-SoccerStandings", {
 		// Explicit provider selection: put the requested provider first, then
 		// fall back through the remaining ordered chain.
 		if (provider === "wikipedia" && urls.wikipedia) {
-			const chain = buildChain("wikipedia", "espn", "bbc", "google");
+			const chain = buildChain(
+				"wikipedia",
+				"google",
+				"espn",
+				"bbc",
+				"soccerway"
+			);
 			return {
 				primary: chain[0].url,
 				fallback: chain[1]?.url,
@@ -590,7 +618,13 @@ Module.register("MMM-SoccerStandings", {
 		}
 
 		if (provider === "espn" && urls.espn) {
-			const chain = buildChain("espn", "wikipedia", "bbc", "google");
+			const chain = buildChain(
+				"espn",
+				"google",
+				"wikipedia",
+				"bbc",
+				"soccerway"
+			);
 			return {
 				primary: chain[0].url,
 				fallback: chain[1]?.url,
@@ -601,10 +635,10 @@ Module.register("MMM-SoccerStandings", {
 		if (provider === "soccerway" && urls.soccerway) {
 			const chain = buildChain(
 				"soccerway",
+				"google",
 				"wikipedia",
 				"espn",
-				"bbc",
-				"google"
+				"bbc"
 			);
 			return {
 				primary: chain[0].url,
@@ -625,10 +659,10 @@ Module.register("MMM-SoccerStandings", {
 		if (provider === "bbc" && urls.bbc) {
 			const chain = buildChain(
 				"bbc",
+				"google",
 				"wikipedia",
 				"espn",
-				"soccerway",
-				"google"
+				"soccerway"
 			);
 			return {
 				primary: chain[0].url,
@@ -646,7 +680,7 @@ Module.register("MMM-SoccerStandings", {
 
 		// "auto" mode: BBC first, then Wikipedia (most reliable static HTML for split leagues),
 		// then ESPN, then Soccerway, then Google as last resort.
-		const chain = buildChain("bbc", "wikipedia", "espn", "soccerway", "google");
+		const chain = buildChain("bbc", "google", "wikipedia", "espn", "soccerway");
 		if (chain.length === 0)
 			return { primary: null, fallback: null, providerChain: [] };
 		return {
@@ -1903,7 +1937,7 @@ Module.register("MMM-SoccerStandings", {
 
 				const sourceSpan = document.createElement("span");
 				sourceSpan.className = "dimmed xsmall";
-				sourceSpan.textContent = `Source: ${src}`;
+				sourceSpan.textContent = `${this.translate("SOURCE")}: ${src}`;
 				sourceContainer.appendChild(sourceSpan);
 
 				sourceContainer.appendChild(document.createTextNode(" • "));
@@ -1962,14 +1996,14 @@ Module.register("MMM-SoccerStandings", {
 			if (this.currentLeague === "WORLD_CUP_2026" && this.currentSubTab) {
 				const sub = this.currentSubTab;
 				const stageMap = {
-					Rd32: "Round of 32",
-					Rd16: "Round of 16",
-					QF: "Quarter-finals",
-					SF: "Semi-finals",
-					TP: "Third Place",
-					Final: "Final"
+					Rd32: this.translate("ROUND_OF_32"),
+					Rd16: this.translate("ROUND_OF_16"),
+					QF: this.translate("QUARTER_FINAL"),
+					SF: this.translate("SEMI_FINAL"),
+					TP: this.translate("THIRD_PLACE"),
+					Final: this.translate("FINAL")
 				};
-				if (/^[A-L]$/.test(sub)) baseTitle += ` • Group ${sub}`;
+				if (/^[A-L]$/.test(sub)) baseTitle += ` • ${this.translate("GROUP")} ${sub}`;
 				else if (stageMap[sub]) baseTitle += ` • ${stageMap[sub]}`;
 			}
 			leagueTitle.textContent = baseTitle;
@@ -2074,7 +2108,7 @@ Module.register("MMM-SoccerStandings", {
 			awaitingBadge.title =
 				"Phase 1 complete — awaiting the league split announcement for Phase 2 groups.";
 			awaitingBadge.appendChild(this.createIcon("fas fa-hourglass-half"));
-			awaitingBadge.appendChild(document.createTextNode(" AWAITING SPLIT"));
+			awaitingBadge.appendChild(document.createTextNode(` ${this.translate("AWAITING_SPLIT")}`));
 			metaInfo.appendChild(awaitingBadge);
 		}
 
@@ -2357,12 +2391,12 @@ Module.register("MMM-SoccerStandings", {
 
 				// Generate World Cup Knockout Tabs
 				const knockouts = [
-					{ id: "Rd32", label: "Rd32" },
-					{ id: "Rd16", label: "Rd16" },
-					{ id: "QF", label: "QF" },
-					{ id: "SF", label: "SF" },
-					{ id: "TP", label: "TP" },
-					{ id: "Final", label: "Final" }
+					{ id: "Rd32", label: this.translate("ROUND_OF_32") },
+					{ id: "Rd16", label: this.translate("ROUND_OF_16") },
+					{ id: "QF", label: this.translate("QUARTER_FINAL") },
+					{ id: "SF", label: this.translate("SEMI_FINAL") },
+					{ id: "TP", label: this.translate("THIRD_PLACE") },
+					{ id: "Final", label: this.translate("FINAL") }
 				];
 				knockouts.forEach((ko) => {
 					if (this.config.showWC2026Knockouts.includes(ko.id)) {
@@ -2398,7 +2432,7 @@ Module.register("MMM-SoccerStandings", {
 				// Generate UEFA League/Table Tab
 				const tableBtn = document.createElement("button");
 				tableBtn.className = `wc-btn${!this.currentSubTab || this.currentSubTab === "Table" ? " active" : ""}`;
-				tableBtn.textContent = "Table";
+				tableBtn.textContent = this.translate("TABLE");
 				tableBtn.addEventListener("click", () => {
 					this.currentSubTab = "Table";
 					this.updateDom();
@@ -2407,11 +2441,11 @@ Module.register("MMM-SoccerStandings", {
 
 				// Generate UEFA Knockout Tabs
 				const uefaKnockouts = [
-					{ id: "Playoff", label: this.translate("PLAYOFF") || "Playoff" },
-					{ id: "Rd16", label: this.translate("ROUND_OF_16") || "Rd16" },
-					{ id: "QF", label: this.translate("QUARTER_FINAL") || "QF" },
-					{ id: "SF", label: this.translate("SEMI_FINAL") || "SF" },
-					{ id: "Final", label: this.translate("FINAL") || "Final" }
+					{ id: "Playoff", label: this.translate("PLAYOFF") },
+					{ id: "Rd16", label: this.translate("ROUND_OF_16") },
+					{ id: "QF", label: this.translate("QUARTER_FINAL") },
+					{ id: "SF", label: this.translate("SEMI_FINAL") },
+					{ id: "Final", label: this.translate("FINAL") }
 				];
 				uefaKnockouts.forEach((ko) => {
 					if (this.config.showUEFAnockouts.includes(ko.id)) {
@@ -2564,8 +2598,7 @@ Module.register("MMM-SoccerStandings", {
 						slowWarning.style.textAlign = "center";
 						slowWarning.style.marginTop = "10px";
 						slowWarning.style.color = "#FFC107";
-						slowWarning.textContent =
-							"Still loading... This is taking longer than expected";
+						slowWarning.textContent = this.translate("LOADING_SLOW");
 						slowWarning.setAttribute("role", "alert");
 						skeletonLoader.appendChild(slowWarning);
 					}
@@ -2597,7 +2630,7 @@ Module.register("MMM-SoccerStandings", {
 				? `[${this.error.category}] `
 				: "";
 			const errorMessage =
-				this.error.userMessage || this.error.message || "Source Unavailable";
+				this.error.userMessage || this.error.message || this.translate("SOURCE_UNAVAILABLE");
 			errorText.textContent = ` ${errorCategory}${errorMessage}`;
 			errorState.appendChild(errorText);
 
@@ -2611,7 +2644,7 @@ Module.register("MMM-SoccerStandings", {
 
 			const retryBtn = document.createElement("button");
 			retryBtn.className = "retry-btn-error";
-			retryBtn.textContent = "Retry Now";
+			retryBtn.textContent = this.translate("RETRY");
 			retryBtn.setAttribute("aria-label", "Retry fetching data");
 			retryBtn.addEventListener("click", () => {
 				this.retryCount = 0;
@@ -2665,7 +2698,7 @@ Module.register("MMM-SoccerStandings", {
 					this.createTable(currentData, this.currentLeague)
 				);
 			} else {
-				contentContainer.textContent = `No league data available for ${this.currentLeague}`;
+				contentContainer.textContent = this.translate("NO_DATA");
 				contentContainer.className += " dimmed light small";
 			}
 		} else {
@@ -2674,7 +2707,7 @@ Module.register("MMM-SoccerStandings", {
 					` MMM-SoccerStandings: No league data available for ${this.currentLeague}`
 				);
 			}
-			contentContainer.textContent = `No league data available for ${this.currentLeague}`;
+			contentContainer.textContent = this.translate("NO_DATA");
 			contentContainer.className += " dimmed light small";
 		}
 
@@ -2783,37 +2816,37 @@ Module.register("MMM-SoccerStandings", {
 		headerRow.setAttribute("role", "row");
 
 		if (this.config.showPosition) {
-			headerRow.appendChild(this.createTableHeader("#", "position-header"));
+			headerRow.appendChild(this.createTableHeader(this.translate("COL_POSITION"), "position-header"));
 		}
 
-		headerRow.appendChild(this.createTableHeader("Team", "team-header"));
+		headerRow.appendChild(this.createTableHeader(this.translate("COL_TEAM"), "team-header"));
 
 		if (this.config.showPlayedGames) {
-			headerRow.appendChild(this.createTableHeader("P", "played-header"));
+			headerRow.appendChild(this.createTableHeader(this.translate("COL_PLAYED"), "played-header"));
 		}
 		if (this.config.showWon) {
-			headerRow.appendChild(this.createTableHeader("W", "won-header"));
+			headerRow.appendChild(this.createTableHeader(this.translate("COL_WON"), "won-header"));
 		}
 		if (this.config.showDrawn) {
-			headerRow.appendChild(this.createTableHeader("D", "drawn-header"));
+			headerRow.appendChild(this.createTableHeader(this.translate("COL_DRAWN"), "drawn-header"));
 		}
 		if (this.config.showLost) {
-			headerRow.appendChild(this.createTableHeader("L", "lost-header"));
+			headerRow.appendChild(this.createTableHeader(this.translate("COL_LOST"), "lost-header"));
 		}
 		if (this.config.showGoalsFor) {
-			headerRow.appendChild(this.createTableHeader("F", "gf-header"));
+			headerRow.appendChild(this.createTableHeader(this.translate("COL_GOALS_FOR"), "gf-header"));
 		}
 		if (this.config.showGoalsAgainst) {
-			headerRow.appendChild(this.createTableHeader("A", "ga-header"));
+			headerRow.appendChild(this.createTableHeader(this.translate("COL_GOALS_AGAINST"), "ga-header"));
 		}
 		if (this.config.showGoalDifference) {
-			headerRow.appendChild(this.createTableHeader("GD", "gd-header"));
+			headerRow.appendChild(this.createTableHeader(this.translate("COL_GOAL_DIFFERENCE"), "gd-header"));
 		}
 		if (this.config.showPoints) {
-			headerRow.appendChild(this.createTableHeader("Pts", "points-header"));
+			headerRow.appendChild(this.createTableHeader(this.translate("COL_POINTS"), "points-header"));
 		}
 		if (this.config.showForm) {
-			headerRow.appendChild(this.createTableHeader("Form", "form-header"));
+			headerRow.appendChild(this.createTableHeader(this.translate("COL_FORM"), "form-header"));
 		}
 
 		thead.appendChild(headerRow);
@@ -3104,9 +3137,12 @@ Module.register("MMM-SoccerStandings", {
 					formArr.forEach((match) => {
 						var span = document.createElement("span");
 						// span.textContent = match.result;
-						if (match.result === "W") span.className = "form-win fas fa-check-circle";
-						else if (match.result === "D") span.className = "form-draw fas fa-minus-circle";
-						else if (match.result === "L") span.className = "form-loss fas fa-xmark-circle";
+						if (match.result === "W")
+							span.className = "form-win fas fa-check-circle";
+						else if (match.result === "D")
+							span.className = "form-draw fas fa-minus-circle";
+						else if (match.result === "L")
+							span.className = "form-loss fas fa-xmark-circle";
 						else span.className = "form-missing fas fa-question-circle";
 						formWrapper.appendChild(span);
 					});
@@ -3282,7 +3318,7 @@ Module.register("MMM-SoccerStandings", {
 		this._stopHeaderCountdown();
 		if (!this._countdownEl) return;
 		if (this._pinned || this.isScrolling) {
-			this._countdownEl.textContent = "(Paused)";
+			this._countdownEl.textContent = this.translate("CYCLE_PAUSED");
 			return;
 		}
 		const base =
@@ -3295,10 +3331,13 @@ Module.register("MMM-SoccerStandings", {
 		}
 		let remaining = Math.ceil(base / 1000);
 		const label =
-			this.currentLeague === "WORLD_CUP_2026" ? "sub-tab" : "league";
+			this.currentLeague === "WORLD_CUP_2026" ? "SUB_TAB" : "LEAGUE";
 		const tick = () => {
 			if (!this._countdownEl) return;
-			this._countdownEl.textContent = `Next ${label} in ${remaining}s`;
+			this._countdownEl.textContent = this.translate("NEXT_CYCLE_IN", {
+				label: this.translate(label),
+				remaining
+			});
 			remaining -= 1;
 			if (remaining < 0) remaining = Math.ceil(base / 1000);
 		};
@@ -3312,7 +3351,7 @@ Module.register("MMM-SoccerStandings", {
 		}
 		if (this._countdownEl) {
 			this._countdownEl.textContent =
-				this._pinned || this.isScrolling ? "(Paused)" : "";
+				this._pinned || this.isScrolling ? this.translate("CYCLE_PAUSED") : "";
 		}
 	},
 
@@ -3342,7 +3381,7 @@ Module.register("MMM-SoccerStandings", {
 				offMsg.className = "bright small";
 				offMsg.style.textAlign = "center";
 				offMsg.style.marginTop = "20px";
-				offMsg.textContent = "awaiting competition draw";
+				offMsg.textContent = this.translate("AWAITING_DRAW");
 				fragment.appendChild(offMsg);
 				container.appendChild(fragment);
 				return container;
@@ -3557,7 +3596,7 @@ Module.register("MMM-SoccerStandings", {
 
 					const resultsTitle = document.createElement("div");
 					resultsTitle.className = "wc-title";
-					resultsTitle.textContent = "RESULTS";
+					resultsTitle.textContent = this.translate("RESULTS");
 					resultsWrapper.appendChild(resultsTitle);
 
 					const resultsScroll = document.createElement("div");
@@ -3584,7 +3623,7 @@ Module.register("MMM-SoccerStandings", {
 
 					const futureTitle = document.createElement("div");
 					futureTitle.className = "wc-title";
-					futureTitle.textContent = "UPCOMING FIXTURES";
+					futureTitle.textContent = this.translate("UPCOMING_FIXTURES");
 					futureWrapper.appendChild(futureTitle);
 
 					const futureScroll = document.createElement("div");
@@ -3604,14 +3643,14 @@ Module.register("MMM-SoccerStandings", {
 					var msg = document.createElement("div");
 					msg.className = "dimmed small";
 					msg.style.textAlign = "center";
-					msg.textContent = `Fixtures not yet available for ${subTab}`;
+					msg.textContent = this.translate("FIXTURES_NOT_AVAILABLE", { subTab });
 					fragment.appendChild(msg);
 				}
 			} else {
 				// Standard view for other stages/leagues
 				var title = document.createElement("div");
 				title.className = "wc-title";
-				title.textContent = `${subTab} Fixtures`;
+				title.textContent = this.translate("SUBTAB_FIXTURES", { subTab });
 				fragment.appendChild(title);
 
 				if (knockoutFixtures.length > 0) {
@@ -3622,10 +3661,10 @@ Module.register("MMM-SoccerStandings", {
 					msg.style.textAlign = "center";
 					msg.style.marginTop = "10px";
 					if (this.isUEFAOffSeason()) {
-						msg.textContent = "awaiting competition draw";
+						msg.textContent = this.translate("AWAITING_DRAW");
 						msg.className = "bright small";
 					} else {
-						msg.textContent = `Fixtures not yet available for ${subTab}`;
+						msg.textContent = this.translate("FIXTURES_NOT_AVAILABLE", { subTab });
 					}
 					fragment.appendChild(msg);
 				}
@@ -3642,7 +3681,7 @@ Module.register("MMM-SoccerStandings", {
 
 			var groupTitle = document.createElement("div");
 			groupTitle.className = "wc-title";
-			groupTitle.textContent = `Group ${subTab}`;
+			groupTitle.textContent = `${this.translate("GROUP")} ${subTab}`;
 			stickyWrapper.appendChild(groupTitle);
 
 			// Re-use createTable but filter for this group
@@ -3659,7 +3698,9 @@ Module.register("MMM-SoccerStandings", {
 			// Add subtitles to the sticky wrapper too
 			var fixTitle = document.createElement("div");
 			fixTitle.className = "wc-subtitle";
-			fixTitle.textContent = `FIXTURES _ GROUP ${subTab}`;
+			fixTitle.textContent = this.translate("GROUP_FIXTURES", {
+				group: subTab
+			});
 			stickyWrapper.appendChild(fixTitle);
 
 			fragment.appendChild(stickyWrapper);
@@ -3681,7 +3722,7 @@ Module.register("MMM-SoccerStandings", {
 			}
 		} else {
 			const noDataMsg = document.createElement("div");
-			noDataMsg.textContent = `No data available for Group ${subTab}`;
+			noDataMsg.textContent = this.translate("NO_GROUP_DATA", { group: subTab });
 			noDataMsg.className = "dimmed light small";
 			fragment.appendChild(noDataMsg);
 		}
@@ -3818,7 +3859,10 @@ Module.register("MMM-SoccerStandings", {
 					}
 				}
 
-				if (this._isHighlightedTeam(fix.homeTeam) || this._isHighlightedTeam(fix.awayTeam)) {
+				if (
+					this._isHighlightedTeam(fix.homeTeam) ||
+					this._isHighlightedTeam(fix.awayTeam)
+				) {
 					row.classList.add("highlighted");
 				}
 
@@ -3886,7 +3930,10 @@ Module.register("MMM-SoccerStandings", {
 				row.classList.add("upcoming");
 			}
 
-			if (this._isHighlightedTeam(fix.homeTeam) || this._isHighlightedTeam(fix.awayTeam)) {
+			if (
+				this._isHighlightedTeam(fix.homeTeam) ||
+				this._isHighlightedTeam(fix.awayTeam)
+			) {
 				row.classList.add("highlighted");
 			}
 
@@ -3908,7 +3955,9 @@ Module.register("MMM-SoccerStandings", {
 				if (fix.timestamp) {
 					cell.textContent = moment(fix.timestamp).format("ddd DD MMM");
 				} else if (fix.date) {
-					cell.textContent = moment(fix.date, "YYYY-MM-DD").format("ddd DD MMM");
+					cell.textContent = moment(fix.date, "YYYY-MM-DD").format(
+						"ddd DD MMM"
+					);
 				} else {
 					cell.textContent = "";
 				}
@@ -4122,13 +4171,13 @@ Module.register("MMM-SoccerStandings", {
 
 	translateStage(stage) {
 		const map = {
-			Playoff: "Knockout Round Play-offs",
-			Rd32: "Round of 32",
-			Rd16: "Round of 16",
-			QF: "Quarter-finals",
-			SF: "Semi-finals",
-			TP: "Third Place",
-			Final: "Final"
+			Playoff: this.translate("PLAYOFF"),
+			Rd32: this.translate("ROUND_OF_32"),
+			Rd16: this.translate("ROUND_OF_16"),
+			QF: this.translate("QUARTER_FINAL"),
+			SF: this.translate("SEMI_FINAL"),
+			TP: this.translate("THIRD_PLACE"),
+			Final: this.translate("FINAL")
 		};
 		return map[stage] || stage;
 	},

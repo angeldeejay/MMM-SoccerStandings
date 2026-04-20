@@ -943,10 +943,7 @@ module.exports = NodeHelper.create({
 					);
 				});
 
-				// Legacy /fixtures/ fallback
-				const legacyUrl =
-					urls.fixtures.replace("scores-fixtures", "fixtures") + "/" + month;
-				fixtureFetchPromises.push(this.fetchWebPage(legacyUrl).catch(() => ""));
+
 			});
 
 			const results = await Promise.all([
