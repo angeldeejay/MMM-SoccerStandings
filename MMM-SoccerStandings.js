@@ -581,9 +581,18 @@ Module.register("MMM-SoccerStandings", {
 
 	// Override getHeader to dynamically update the title
 	getHeader() {
+		if (
+			typeof this.config.header === 'undefined' ||
+			this.config.header === null ||
+			this.config.header === false
+		) {
+			return false;
+		}
+
 		if (this.config.onlyShowWorldCup2026 === true) {
 			return "FIFA World Cup 2026";
 		}
+
 		return this.data.header || "League Standings";
 	},
 
@@ -2032,7 +2041,7 @@ Module.register("MMM-SoccerStandings", {
 	// ===== NEW: Debounced DOM Update =====
 	// Batches multiple updates occurring within a short window (e.g., 200ms)
 	// to prevent redundant re-renders when multiple leagues update at once
-	debouncedUpdateDom(speed) {
+	debouncedUpdateDom() {
 		if (this.updateDomTimer) {
 			clearTimeout(this.updateDomTimer);
 		}

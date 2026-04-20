@@ -1,6 +1,6 @@
 {
 	"name": "MMM-SoccerStandings",
-	"version": "1.0.0",
+	"version": "3.0.0",
 	"description": "A MagicMirror² module to display football league standings from multiple European competitions",
 	"main": "MMM-SoccerStandings.js",
 	"keywords": [
@@ -47,9 +47,9 @@
 		"format": "prettier --write *.js *.json *.md",
 		"audit": "npm audit --audit-level=moderate",
 		"audit:fix": "npm audit fix",
-		"scss:build": "sass scss/MMM-SoccerStandings.scss MMM-SoccerStandings.css",
-		"scss:watch": "sass --watch scss/MMM-SoccerStandings.scss:MMM-SoccerStandings.css",
-		"postinstall": "sass scss/MMM-SoccerStandings.scss MMM-SoccerStandings.css"
+		"postinstall": "sass --style=compressed scss/entrypoint.scss MMM-SoccerStandings.css",
+		"scss:build": "sass --style=compressed scss/entrypoint.scss MMM-SoccerStandings.css",
+		"scss:watch": "sass --watch scss/entrypoint.scss:MMM-SoccerStandings.css"
 	},
 	"magicmirror": {
 		"moduleName": "MMM-SoccerStandings",

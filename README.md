@@ -4,70 +4,12 @@ A comprehensive **MagicMirror²** module that displays football league standings
 
 Inspired from [MMM-MMM-MyTeams-LeagueTable](https://github.com/gitgitaway/MMM-MMM-MyTeams-LeagueTable)
 
-- **Author**: [
-    <img src="//avatars.githubusercontent.com/u/142350" width="16" height="16" />
-  ](#) [Andrés Vanegas <angeldeejay>](https://github.com/angeldeejay)
+- **Author**: ![Profile Image](https://avatars.githubusercontent.com/u/142350?s=16&v=4) [Andrés Vanegas <angeldeejay>](https://github.com/angeldeejay)
 
 [![MagicMirror²](https://img.shields.io/badge/MagicMirror%C2%B2-v2.1.0+-blue.svg)](https://magicmirror.builders)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 🎬 Screenshots
-
-|                                                  |                                                  |                                                  |
-| :----------------------------------------------: | :----------------------------------------------: | :----------------------------------------------: |
-| ![Screenshot 1](./screenshots/screenshot1.png) | ![Screenshot 2](./screenshots/screenshot2.png) | ![Screenshot 3](./screenshots/screenshot3.png) |
-| ![Screenshot 4](./screenshots/screenshot4.png) | ![Screenshot 5](./screenshots/screenshot5.png) | ![Screenshot 6](./screenshots/screenshot6.png) |
-| ![Screenshot 7](./screenshots/screenshot7.png) | ![Screenshot 8](./screenshots/screenshot8.png) | ![Screenshot 9](./screenshots/screenshot9.png) |
-| ![Screenshot 10](./screenshots/screenshot10.png) | ![Screenshot 11](./screenshots/screenshot11.png) | ![Screenshot 12](./screenshots/screenshot12.png) |
-
-## 🆕 Recent Updates (v2.5.1 - 2026-04-11)
-
-**Enhanced Split-Season Resilience & UI Polish:**
-- **Global Split-Season Support**: Expanded support for tiered split-league formats to include **Greece Super League**, **Cyprus First Division**, and **Israel Premier League**.
-- **Awaiting Split Indicator**: Added a visual **⏳ AWAITING SPLIT** badge in the module header to gracefully handle the transition period between league phases.
-- **Horizontal Navigation Overhaul**: Implemented a styled horizontal scrollbar for league tabs with SVG arrow indicators for high-density league configurations.
-- **Improved Header Controls**: Redesigned **Refresh**, **Clear Cache**, and **Pin** buttons with unified high-visibility styling and custom "tilted thumbtack" pin animation.
-- **Automated Maintenance**: Added Python-based fix scripts in `tools/` for easy registration of new leagues and split-season logic.
-- **Documentation Audit**: Comprehensive update of all 11+ documentation files to reflect latest features and provider-specific details.
-
-## 🆕 Recent Updates (v2.5.0 - 2026-04-09)
-
-**Multi-Group Split-League Support & Enhanced Resilience:**
-- **Simultaneous Group Display**: Support for European leagues that split into Championship and Relegation groups (Romania, Scotland, Austria, etc.). The module now renders all groups together with labeled separators.
-- **Wikipedia Multi-Group Parser**: Upgraded Wikipedia extraction to robustly find and parse multiple group tables from a single page using heading keyword detection.
-- **Smart Provider Escalation**: Automatically detects when a provider (like BBC) returns incomplete single-group data and escalates to a full multi-group source.
-- **Improved UI Separation**: Added labeled separator rows and alternating group shading to clearly distinguish between league phases.
-- **Split-Aware Caching**: Prevent stale single-group data from being served after a league split has occurred.
-
-## 🆕 Recent Updates (v2.4.0 - 2026-04-07)
-
-**Google Search Parser & Expanded Tier 2 Coverage:**
-- **Google Search Parser**: Added a powerful new parser that extracts league tables directly from Google Search result snippets.
-- **Massive Coverage Expansion**: Added Tier 2 leagues for ALL supported countries across all providers.
-- **Specific League Additions**: Integrated Romanian Super Liga, Cymru Premier, Irish Premier Division, and Irish Premiership.
-- **Improved Documentation**: All league mapping files are now alphabetically sorted by country for easier navigation.
-
-## 🆕 Recent Updates (v2.3.0 - 2026-04-04)
-
-**Multi-Source Provider Factory & Expanded Coverage:**
-- **Multiple Data Sources**: Added support for **ESPN**, **Soccerway**, and **Wikipedia** alongside default **BBC Sport**.
-- **Provider Factory Pattern**: Automatically selects the best parser based on URL domain or user config.
-- **Resilient Fallback**: Implemented primary/fallback URL logic to ensure data is displayed even if the primary source fails.
-- **League Expansion**: Added support for Romania Liga I, Bolivia Liga 2, Irish Premiership, Irish Premier Division, Cymru Premier, USA MLS, Brazilian Brasileirão, Argentine Primera, Liga MX, J1 League, A-League, and Chinese Super League.
-- **Source Attribution**: The module footer now explicitly shows the data source (e.g., "Source: Soccerway").
-- **34 Languages Supported**: Expanded translation system to include Albanian, Finnish, Romanian, Slovak, and many more.
-- **Fully Annotated Code**: `BBCParser.js`, `ESPNParser.js`, and `SoccerwayParser.js` are now fully annotated in plain English for easier maintenance.
-
-## 🆕 Recent Updates (v2.2.8 - 2026-04-02)
-
-**Tournament Data Resilience & Normalization Refactor:**
-- Fixed missing fixture visibility for "Bosnia and Herzegovina" and "United States" in World Cup groups.
-- Unified team name normalization across client and server.
-- Improved hyphen and alias handling to resolve naming inconsistencies between sources.
-
-**🚀 Advanced Power-User Features:**
-
-
+## Updates
 
 See [CHANGELOG.md](./CHANGELOG.md) for complete details.
 
@@ -90,8 +32,36 @@ See [CHANGELOG.md](./CHANGELOG.md) for complete details.
 - ⚡ **Virtual scrolling** - Performance optimizations for tables with 30+ rows
 - 🔧 **Team name normalization** - Fixes BBC Sport truncations ("Atletico" → "Atletico Madrid")
 
+## ⚽ Available Leagues
 
-## Requirements & Dependencies
+Use these codes in your `selectedLeagues` array:
+
+- **UK**: `SCOTLAND_PREMIERSHIP`, `SCOTLAND_CHAMPIONSHIP`, `ENGLAND_PREMIER_LEAGUE`
+- **Major Europe**: `GERMANY_BUNDESLIGA`, `SPAIN_LA_LIGA`, `ITALY_SERIE_A`, `FRANCE_LIGUE1`, `NETHERLANDS_EREDIVISIE`
+- **Other Europe**: `PORTUGAL_PRIMEIRA_LIGA`, `BELGIUM_PRO_LEAGUE`, `TURKEY_SUPER_LIG`, `GREECE_SUPER_LEAGUE`, `AUSTRIA_BUNDESLIGA`, `CZECH_LIGA`, `DENMARK_SUPERLIGAEN`, `NORWAY_ELITESERIEN`, `SWEDEN_ALLSVENSKAN`, `SWITZERLAND_SUPER_LEAGUE`, `UKRAINE_PREMIER_LEAGUE`, `ROMANIA_LIGA_I`, `CROATIA_HNL`, `SERBIA_SUPER_LIGA`, `HUNGARY_NBI`, `POLAND_EKSTRAKLASA`
+- **International/UEFA**: `UEFA_CHAMPIONS_LEAGUE`, `UEFA_EUROPA_LEAGUE`, `UEFA_EUROPA_CONFERENCE_LEAGUE`, `WORLD_CUP_2026`
+
+## 🛡️ Security: Content Security Policy (CSP)
+
+For MagicMirror deployments running in security-restricted environments (enterprise kiosks, embedded displays), add these CSP directives:
+
+| Directive | Value |
+| :-------- | :---- |
+| `script-src` | `'self'` |
+| `img-src` | `'self' data:` |
+| `connect-src` | `'self' https://www.bbc.co.uk https://www.fifa.com` |
+| `style-src` | `'self' 'unsafe-inline'` |
+
+```
+Content-Security-Policy: default-src 'self'; script-src 'self'; img-src 'self' data:; connect-src 'self' https://www.bbc.co.uk https://www.fifa.com; style-src 'self' 'unsafe-inline';
+```
+
+> **Note**: All network requests are made server-side by `node_helper.js`. No external scripts or fonts are loaded by this module. See [Advanced Customization](./documentation/Advanced_Customization.md) for full CSP details.
+
+
+## Documentation
+
+### Requirements & Dependencies
 
 - **MagicMirror²**: v2.1.0 or newer (tested on 2.32.0)
 - **Node.js**: v14+ (tested on v22.14.0)
@@ -101,7 +71,7 @@ See [CHANGELOG.md](./CHANGELOG.md) for complete details.
   - `eslint` ^8
   - `prettier` ^2
 
-## Installation
+### Installation
 
 1. Navigate to your MagicMirror's modules folder:
 
@@ -121,21 +91,18 @@ cd modules/MMM-SoccerStandings
 npm install
 ```
 
-## Update
+### Update
 
 ```bash
 cd ~/MagicMirror/modules/MMM-SoccerStandings
 git pull
 ```
-## Documentation
 
-
-
-## Configuration
+### Configuration
 
 To use this module, add it to the modules array in the `~/MagicMirror/config/config.js` file:
 
-### Minimum Configuration
+#### Minimum Configuration
 
 ```javascript
 {
@@ -147,7 +114,7 @@ To use this module, add it to the modules array in the `~/MagicMirror/config/con
 },
 ```
 
-### Full Configuration
+#### Full Configuration
 
 ```javascript
 {
@@ -254,9 +221,9 @@ To use this module, add it to the modules array in the `~/MagicMirror/config/con
 
 See - **[Configuration User Guide](./documentation/Configuration_User_Guide.md)**: for further detailed configuration options.
 
-### Configuration Options
+#### Configuration Options
 
-#### Core Options
+##### Core Options
 
 | Option                    | Default                    | Description                                                                                    |
 | :------------------------ | :------------------------- | :--------------------------------------------------------------------------------------------- |
@@ -280,7 +247,7 @@ See - **[Configuration User Guide](./documentation/Configuration_User_Guide.md)*
 | `debug`                   | `false`                    | Enable verbose console logging. Disable in production on Raspberry Pi.                         |
 | `dateTimeOverride`        | `null`                     | Override system date/time for testing. ISO format e.g. `"2026-06-15T14:00:00Z"`.              |
 
-#### Display Toggles & Display Options
+##### Display Toggles & Display Options
 
 | Option               | Default                     | Description                                                         |
 | :------------------- | :-------------------------- | :------------------------------------------------------------------ |
@@ -302,7 +269,7 @@ See - **[Configuration User Guide](./documentation/Configuration_User_Guide.md)*
 | `darkMode`           | `null`                      | `null` = auto, `true` = force dark, `false` = force light.          |
 | `opacityOverride`    | `null`                      | Override table opacity. Set to `1.0` for full opacity.              |
 
-#### Cycling Options
+##### Cycling Options
 
 | Option                  | Default       | Description                                                     |
 | :---------------------- | :------------ | :-------------------------------------------------------------- |
@@ -311,14 +278,14 @@ See - **[Configuration User Guide](./documentation/Configuration_User_Guide.md)*
 | `autoCycleWcSubtabs`    | `true`        | Auto-cycle through World Cup sub-tabs (groups / knockouts).     |
 | `wcSubtabCycleInterval` | `15000`       | Time (ms) to display each World Cup sub-tab.                    |
 
-#### Tournament Specific (UEFA European League Competitions)
+##### Tournament Specific (UEFA European League Competitions)
 
 | Option            | Default                                   | Description                                         |
 | :---------------- | :---------------------------------------- | :-------------------------------------------------- |
 | `showUEFAleagues` | `false`                                   | Show UEFA competition tabs in the league switcher.  |
 | `showUEFAnockouts`| `["Playoff","Rd16","QF","SF","Final"]`    | UEFA knockout stages to display.                    |
 
-#### Tournament Specific (World Cup 2026)
+##### Tournament Specific (World Cup 2026)
 
 | Option                 | Default                                      | Description                                                     |
 | :--------------------- | :------------------------------------------- | :-------------------------------------------------------------- |
@@ -330,13 +297,13 @@ See - **[Configuration User Guide](./documentation/Configuration_User_Guide.md)*
 | `displayAllTabs`       | `false`                                      | Show all tabs regardless of stage completion.                   |
 | `useMockData`          | `false`                                      | Use built-in mock data for testing (World Cup 2026 only).       |
 
-#### Accessibility Options
+##### Accessibility Options
 
 | Option                    | Default | Description                                                                                                                                   |
 | :------------------------ | :------ | :-------------------------------------------------------------------------------------------------------------------------------------------- |
 | `enhancedIndicatorShapes` | `true`  | `true` = shape-coded form tokens (circle = W, square = D, triangle = L). `false` = no background; colored text only (W = green, D = grey, L = red). |
 
-#### Advanced Customization Options
+##### Advanced Customization Options
 
 | Option                   | Default    | Description                                                                                                         |
 | :----------------------- | :--------- | :------------------------------------------------------------------------------------------------------------------ |
@@ -346,32 +313,6 @@ See - **[Configuration User Guide](./documentation/Configuration_User_Guide.md)*
 | `customTeamColors`       | `{}`       | Custom row background colors per team: `{"Celtic": "#00A650"}`.                                                     |
 | `enableVirtualScrolling` | `false`    | Performance optimisation for large tables (30+ rows).                                                               |
 | `virtualScrollThreshold` | `30`       | Row count before virtual scrolling activates.                                                                       |
-
-## ⚽ Available Leagues
-
-Use these codes in your `selectedLeagues` array:
-
-- **UK**: `SCOTLAND_PREMIERSHIP`, `SCOTLAND_CHAMPIONSHIP`, `ENGLAND_PREMIER_LEAGUE`
-- **Major Europe**: `GERMANY_BUNDESLIGA`, `SPAIN_LA_LIGA`, `ITALY_SERIE_A`, `FRANCE_LIGUE1`, `NETHERLANDS_EREDIVISIE`
-- **Other Europe**: `PORTUGAL_PRIMEIRA_LIGA`, `BELGIUM_PRO_LEAGUE`, `TURKEY_SUPER_LIG`, `GREECE_SUPER_LEAGUE`, `AUSTRIA_BUNDESLIGA`, `CZECH_LIGA`, `DENMARK_SUPERLIGAEN`, `NORWAY_ELITESERIEN`, `SWEDEN_ALLSVENSKAN`, `SWITZERLAND_SUPER_LEAGUE`, `UKRAINE_PREMIER_LEAGUE`, `ROMANIA_LIGA_I`, `CROATIA_HNL`, `SERBIA_SUPER_LIGA`, `HUNGARY_NBI`, `POLAND_EKSTRAKLASA`
-- **International/UEFA**: `UEFA_CHAMPIONS_LEAGUE`, `UEFA_EUROPA_LEAGUE`, `UEFA_EUROPA_CONFERENCE_LEAGUE`, `WORLD_CUP_2026`
-
-## 🛡️ Security: Content Security Policy (CSP)
-
-For MagicMirror deployments running in security-restricted environments (enterprise kiosks, embedded displays), add these CSP directives:
-
-| Directive | Value |
-| :-------- | :---- |
-| `script-src` | `'self'` |
-| `img-src` | `'self' data:` |
-| `connect-src` | `'self' https://www.bbc.co.uk https://www.fifa.com` |
-| `style-src` | `'self' 'unsafe-inline'` |
-
-```
-Content-Security-Policy: default-src 'self'; script-src 'self'; img-src 'self' data:; connect-src 'self' https://www.bbc.co.uk https://www.fifa.com; style-src 'self' 'unsafe-inline';
-```
-
-> **Note**: All network requests are made server-side by `node_helper.js`. No external scripts or fonts are loaded by this module. See [Advanced Customization](./documentation/Advanced_Customization.md) for full CSP details.
 
 ## 📚 Detailed Documentation
 

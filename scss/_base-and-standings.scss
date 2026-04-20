@@ -112,9 +112,6 @@
 		transform 0.2s ease,
 		border-color 0.25s ease;
 }
-.pin-btn.active {
-	transform: rotate(-45deg); /* Tilted thumbtack = pinned */
-}
 
 /* League tabs wrapper for horizontal scroll indicators */
 .league-tabs-wrapper {

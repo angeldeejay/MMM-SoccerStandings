@@ -7,3 +7,4 @@ CLAUDE.*
 .claude/
 *.css
 *.map
+package-lock.json
