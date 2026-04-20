@@ -12,11 +12,190 @@
  * Enhanced with multi-provider parsing and configurable league selection for 30+ nations.
  */
 
+// Split-league configurations: describes mid-season splits where the table divides
+// into Championship and Relegation groups. Each parser uses this to select the
+// correct post-split group table rather than the pre-split full table.
+// Sources: leagueSplits_Guide.md
+// championshipKeywords: lowercase heading strings used on Wikipedia to label the top group.
+// relegationKeywords: lowercase heading strings for the bottom group.
+// preferGroup: "championship" means we display the top post-split group table.
+const LEAGUE_SPLITS = {
+	ROMANIA_LIGA_I: {
+		regularSeasonGames: 30,
+		championshipSize: 6,
+		relegationSize: 10,
+		pointsCarryover: "halved",
+		showAllGroups: true,
+		groups: [
+			{ label: "Play-off Group", size: 6, keywords: ["play-off table", "play-off round", "playoff table", "playoff round", "championship round", "championship group", "championship table"] },
+			{ label: "Play-out Group", size: 10, keywords: ["play-out table", "play-out round", "relegation round", "relegation group", "relegation table"] }
+		],
+		championshipKeywords: ["championship round", "championship group", "playoff round", "play-off round", "play-off table", "playoff table"],
+		relegationKeywords: ["relegation round", "relegation group", "play-out round", "play-out table"],
+		preferGroup: "championship"
+	},
+	SCOTLAND_PREMIERSHIP: {
+		regularSeasonGames: 33,
+		championshipSize: 6,
+		relegationSize: 6,
+		pointsCarryover: "all",
+		showAllGroups: true,
+		groups: [
+			{ label: "Top Six", size: 6, keywords: ["top six", "top 6", "championship group", "championship round", "championship table", "upper tier"] },
+			{ label: "Bottom Six", size: 6, keywords: ["bottom six", "bottom 6", "relegation group", "relegation round", "relegation table", "lower tier"] }
+		],
+		championshipKeywords: ["championship group", "top six", "top 6", "upper tier", "championship table"],
+		relegationKeywords: ["relegation group", "bottom six", "bottom 6", "lower tier", "relegation table"],
+		preferGroup: "championship"
+	},
+	AUSTRIA_BUNDESLIGA: {
+		regularSeasonGames: 22,
+		championshipSize: 6,
+		relegationSize: 6,
+		pointsCarryover: "halved",
+		showAllGroups: true,
+		groups: [
+			{ label: "Championship Round", size: 6, keywords: ["championship round", "meistergruppe", "meister-gruppe", "championship group", "top group", "championship table"] },
+			{ label: "Relegation Round", size: 6, keywords: ["relegation round", "qualifikationsgruppe", "relegation group", "bottom group", "relegation table"] }
+		],
+		championshipKeywords: ["championship round", "championship group", "meister-gruppe", "meistergruppe", "top group", "meistergruppe table"],
+		relegationKeywords: ["relegation round", "relegation group", "qualifikationsgruppe", "bottom group", "qualifikationsgruppe table"],
+		preferGroup: "championship"
+	},
+	BELGIUM_PRO_LEAGUE: {
+		regularSeasonGames: 30,
+		championshipSize: 6,
+		relegationSize: 10,
+		pointsCarryover: "halved",
+		showAllGroups: true,
+		groups: [
+			{ label: "Champions' Play-offs", size: 6, keywords: ["champions' play-offs", "champions play-offs", "championship play-offs", "championship playoff", "championship group", "championship round", "top 6", "po1", "play-offs i", "playoffs i"] },
+			{ label: "Europa Play-offs", size: 6, keywords: ["europa play-offs", "europe play-offs", "europa playoffs", "po2", "play-offs ii", "playoffs ii", "europa league play-offs", "conference league play-offs"] },
+			{ label: "Relegation Play-offs", size: 4, keywords: ["relegation play-offs", "relegation playoff", "relegation group", "bottom 4", "relegation table"] }
+		],
+		championshipKeywords: ["champions' play-offs", "champions play-offs", "championship play-offs", "championship playoff", "championship round", "top 6", "championship table"],
+		relegationKeywords: ["relegation play-offs", "relegation group", "bottom group", "relegation table"],
+		preferGroup: "championship"
+	},
+	SWITZERLAND_SUPER_LEAGUE: {
+		regularSeasonGames: 33,
+		championshipSize: 6,
+		relegationSize: 6,
+		pointsCarryover: "all",
+		showAllGroups: true,
+		groups: [
+			{ label: "Championship Group", size: 6, keywords: ["meisterrunde", "championship group", "championship round", "top 6", "championship table"] },
+			{ label: "Relegation Group", size: 6, keywords: ["abstiegsrunde", "relegation group", "relegation round", "bottom 6", "relegation table"] }
+		],
+		championshipKeywords: ["championship group", "meisterrunde", "top 6", "meisterrunde table"],
+		relegationKeywords: ["relegation group", "abstiegsrunde", "bottom 6", "abstiegsrunde table"],
+		preferGroup: "championship"
+	},
+	DENMARK_SUPERLIGAEN: {
+		regularSeasonGames: 22,
+		championshipSize: 6,
+		relegationSize: 6,
+		pointsCarryover: "all",
+		showAllGroups: true,
+		groups: [
+			{ label: "Championship Group", size: 6, keywords: ["championship group", "championship round", "top 6", "upper half", "championship table"] },
+			{ label: "Relegation Group", size: 6, keywords: ["relegation group", "relegation round", "bottom 6", "lower half", "relegation table"] }
+		],
+		championshipKeywords: ["championship group", "top 6", "upper half", "championship table"],
+		relegationKeywords: ["relegation group", "bottom 6", "lower half", "relegation table"],
+		preferGroup: "championship"
+	},
+	SERBIA_SUPER_LIGA: {
+		regularSeasonGames: 30,
+		championshipSize: 8,
+		relegationSize: 8,
+		pointsCarryover: "all",
+		showAllGroups: true,
+		groups: [
+			{ label: "Championship Group", size: 8, keywords: ["championship group", "championship round", "top 8", "first group", "championship table"] },
+			{ label: "Relegation Group", size: 8, keywords: ["relegation group", "relegation round", "bottom 8", "second group", "relegation table"] }
+		],
+		championshipKeywords: ["championship group", "top 8", "first group", "championship table"],
+		relegationKeywords: ["relegation group", "bottom 8", "second group", "relegation table"],
+		preferGroup: "championship"
+	},
+	CYMRU_PREMIER_LEAGUE: {
+		regularSeasonGames: 22,
+		championshipSize: 6,
+		relegationSize: 6,
+		pointsCarryover: "all",
+		showAllGroups: true,
+		groups: [
+			{ label: "Championship Group", size: 6, keywords: ["championship group", "championship round", "top 6", "upper half", "championship table"] },
+			{ label: "Relegation Group", size: 6, keywords: ["relegation group", "relegation round", "bottom 6", "lower half", "relegation table"] }
+		],
+		championshipKeywords: ["championship group", "top 6", "upper half", "championship table"],
+		relegationKeywords: ["relegation group", "bottom 6", "lower half", "relegation table"],
+		preferGroup: "championship"
+	},
+	// Greece Super League: 14 teams, 26-game double RR regular season (Phase 1), then THREE groups:
+	//   Championship play-offs (top 4): 6 more games (double RR), points carry over fully.
+	//   Europe play-offs (5th-8th, 4 teams): 6 more games (double RR), points HALVED (rounded up).
+	//   Relegation play-outs (9th-14th, 6 teams): 10 more games (double RR), points carry over fully.
+	// pointsCarryover="mixed": Championship/Relegation keep all points; Europe group halves them.
+	GREECE_SUPER_LEAGUE: {
+		regularSeasonGames: 26,
+		championshipSize: 4,
+		relegationSize: 6,
+		pointsCarryover: "mixed",
+		showAllGroups: true,
+		groups: [
+			{ label: "Championship Play-offs", size: 4, keywords: ["championship play-offs", "championship play-off", "championship playoff", "championship round", "championship group", "championship table"] },
+			{ label: "Europe Play-offs", size: 4, keywords: ["europe play-offs", "europe play-off", "europa play-offs", "conference league play-offs", "european play-offs", "europe playoff"] },
+			{ label: "Relegation Play-outs", size: 6, keywords: ["relegation play-outs", "relegation play-out", "relegation playoff", "relegation round", "relegation group", "relegation table"] }
+		],
+		championshipKeywords: ["championship play-offs", "championship play-off", "championship playoff", "championship table"],
+		relegationKeywords: ["relegation play-outs", "relegation play-out", "relegation playoff", "relegation table"],
+		preferGroup: "championship"
+	},
+	// Cyprus First Division: 14 teams, 26-game double RR regular season (Phase 1), then TWO groups:
+	//   Championship round (top 6): 10 more games (double RR within 6 teams), all points carry over.
+	//   Relegation round (7th-14th, 8 teams): 7 more games (single RR), all points carry over.
+	// Bottom three teams in the relegation round are relegated.
+	CYPRUS_FIRST_DIVISION: {
+		regularSeasonGames: 26,
+		championshipSize: 6,
+		relegationSize: 8,
+		pointsCarryover: "all",
+		showAllGroups: true,
+		groups: [
+			{ label: "Championship Round", size: 6, keywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"] },
+			{ label: "Relegation Round", size: 8, keywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"] }
+		],
+		championshipKeywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"],
+		relegationKeywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"],
+		preferGroup: "championship"
+	},
+	// Israel Premier League: 14 teams, 26-game double RR regular season (Phase 1), then TWO groups:
+	//   Championship round (top 6): 10 more games (double RR within 6 teams), all points carry over.
+	//   Relegation round (7th-14th, 8 teams): 7 more games (single RR), all points carry over.
+	ISRAEL_PREMIER_LEAGUE: {
+		regularSeasonGames: 26,
+		championshipSize: 6,
+		relegationSize: 8,
+		pointsCarryover: "all",
+		showAllGroups: true,
+		groups: [
+			{ label: "Championship Round", size: 6, keywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"] },
+			{ label: "Relegation Round", size: 8, keywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"] }
+		],
+		championshipKeywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"],
+		relegationKeywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"],
+		preferGroup: "championship"
+	}
+};
+
 Module.register("MMM-SoccerStandings", {
 	// Load external scripts
 	getScripts() {
 		return [
-			`modules/${this.name}/european-leagues.js`
+			`modules/${this.name}/european-leagues.js`,
+			`modules/${this.name}/team-aliases.js`
 			// team-logo-mappings.js (102KB) is loaded dynamically via loadLogoMappings()
 			// to reduce initial bundle size (PERF-09)
 		];
@@ -193,36 +372,7 @@ Module.register("MMM-SoccerStandings", {
 		this.mergedTeamLogoMap = Object.assign({}, this.config.teamLogoMap || {});
 
 		// Country name synonyms and variations (handles FIFA vs BBC vs other source differences)
-		this.teamAliases = {
-			"cabo verde": "Cape Verde",
-			"cape verde islands": "Cape Verde",
-			"ir iran": "Iran",
-			"iran, islamic republic of": "Iran",
-			"south korea": "Rep. of Korea",
-			"korea republic": "Rep. of Korea",
-			"korea, republic of": "Rep. of Korea",
-			"côte d'ivoire": "Ivory Coast",
-			"cote d'ivoire": "Ivory Coast",
-			"bosnia-herzegovina": "Bosnia and Herzegovina",
-			"bosnia & herzegovina": "Bosnia and Herzegovina",
-			curacao: "Curaçao",
-			usa: "United States",
-			"united states (host)": "United States",
-			"mexico (host)": "Mexico",
-			"canada (host)": "Canada",
-			"argentina (title holder)": "Argentina",
-			"united states of america": "United States",
-			czechia: "Czech Republic",
-			"check republic": "Czech Republic",
-			"congo dr": "DR Congo",
-			"democratic republic of congo": "DR Congo",
-			"rd congo": "DR Congo",
-			"democratic republic of the congo": "DR Congo",
-			türkiye: "Turkey",
-			"north macedonia": "Macedonia",
-			"viet nam": "Vietnam",
-			eswatini: "Swaziland"
-		};
+		this.teamAliases = typeof TEAM_ALIASES !== "undefined" ? TEAM_ALIASES : {};
 
 		// Build normalized team lookup map for case-insensitive matching
 		this.normalizedTeamLogoMap = {};
@@ -231,6 +381,15 @@ Module.register("MMM-SoccerStandings", {
 		// ===== INITIALIZE LEAGUE SYSTEM =====
 		// Determine which leagues are enabled based on config
 		this.determineEnabledLeagues();
+
+		// Auto-populate leagueHeaders from EUROPEAN_LEAGUES for any missing codes
+		if (typeof EUROPEAN_LEAGUES !== "undefined") {
+			Object.keys(EUROPEAN_LEAGUES).forEach((code) => {
+				if (!this.config.leagueHeaders[code]) {
+					this.config.leagueHeaders[code] = EUROPEAN_LEAGUES[code].name;
+				}
+			});
+		}
 
 		// Initialize data storage - dynamically create entries for each enabled league
 		this.leagueData = {};
@@ -286,7 +445,6 @@ Module.register("MMM-SoccerStandings", {
 
 		this.isScrolling = false;
 		this.isContentHidden = false; // Add state for content visibility
-		this._lastRenderedKey = null;
 		this._pinned = false; // when true, temporarily lock view and pause auto-cycling
 		this._countdownEl = null; // header countdown element
 		this._countdownTimer = null;
@@ -1067,184 +1225,6 @@ Module.register("MMM-SoccerStandings", {
 			return;
 		}
 
-		// Split-league configurations: describes mid-season splits where the table divides
-		// into Championship and Relegation groups. Each parser uses this to select the
-		// correct post-split group table rather than the pre-split full table.
-		// Sources: leagueSplits_Guide.md
-		// championshipKeywords: lowercase heading strings used on Wikipedia to label the top group.
-		// relegationKeywords: lowercase heading strings for the bottom group.
-		// preferGroup: "championship" means we display the top post-split group table.
-		const LEAGUE_SPLITS = {
-			ROMANIA_LIGA_I: {
-				regularSeasonGames: 30,
-				championshipSize: 6,
-				relegationSize: 10,
-				pointsCarryover: "halved",
-				showAllGroups: true,
-				groups: [
-					{ label: "Play-off Group", size: 6, keywords: ["play-off table", "play-off round", "playoff table", "playoff round", "championship round", "championship group", "championship table"] },
-					{ label: "Play-out Group", size: 10, keywords: ["play-out table", "play-out round", "relegation round", "relegation group", "relegation table"] }
-				],
-				championshipKeywords: ["championship round", "championship group", "playoff round", "play-off round", "play-off table", "playoff table"],
-				relegationKeywords: ["relegation round", "relegation group", "play-out round", "play-out table"],
-				preferGroup: "championship"
-			},
-			SCOTLAND_PREMIERSHIP: {
-				regularSeasonGames: 33,
-				championshipSize: 6,
-				relegationSize: 6,
-				pointsCarryover: "all",
-				showAllGroups: true,
-				groups: [
-					{ label: "Top Six", size: 6, keywords: ["top six", "top 6", "championship group", "championship round", "championship table", "upper tier"] },
-					{ label: "Bottom Six", size: 6, keywords: ["bottom six", "bottom 6", "relegation group", "relegation round", "relegation table", "lower tier"] }
-				],
-				championshipKeywords: ["championship group", "top six", "top 6", "upper tier", "championship table"],
-				relegationKeywords: ["relegation group", "bottom six", "bottom 6", "lower tier", "relegation table"],
-				preferGroup: "championship"
-			},
-			AUSTRIA_BUNDESLIGA: {
-				regularSeasonGames: 22,
-				championshipSize: 6,
-				relegationSize: 6,
-				pointsCarryover: "halved",
-				showAllGroups: true,
-				groups: [
-					{ label: "Championship Round", size: 6, keywords: ["championship round", "meistergruppe", "meister-gruppe", "championship group", "top group", "championship table"] },
-					{ label: "Relegation Round", size: 6, keywords: ["relegation round", "qualifikationsgruppe", "relegation group", "bottom group", "relegation table"] }
-				],
-				championshipKeywords: ["championship round", "championship group", "meister-gruppe", "meistergruppe", "top group", "meistergruppe table"],
-				relegationKeywords: ["relegation round", "relegation group", "qualifikationsgruppe", "bottom group", "qualifikationsgruppe table"],
-				preferGroup: "championship"
-			},
-			BELGIUM_PRO_LEAGUE: {
-				regularSeasonGames: 30,
-				championshipSize: 6,
-				relegationSize: 10,
-				pointsCarryover: "halved",
-				showAllGroups: true,
-				groups: [
-					{ label: "Champions' Play-offs", size: 6, keywords: ["champions' play-offs", "champions play-offs", "championship play-offs", "championship playoff", "championship group", "championship round", "top 6", "po1", "play-offs i", "playoffs i"] },
-					{ label: "Europa Play-offs", size: 6, keywords: ["europa play-offs", "europe play-offs", "europa playoffs", "po2", "play-offs ii", "playoffs ii", "europa league play-offs", "conference league play-offs"] },
-					{ label: "Relegation Play-offs", size: 4, keywords: ["relegation play-offs", "relegation playoff", "relegation group", "bottom 4", "relegation table"] }
-				],
-				championshipKeywords: ["champions' play-offs", "champions play-offs", "championship play-offs", "championship playoff", "championship round", "top 6", "championship table"],
-				relegationKeywords: ["relegation play-offs", "relegation group", "bottom group", "relegation table"],
-				preferGroup: "championship"
-			},
-			SWITZERLAND_SUPER_LEAGUE: {
-				regularSeasonGames: 33,
-				championshipSize: 6,
-				relegationSize: 6,
-				pointsCarryover: "all",
-				showAllGroups: true,
-				groups: [
-					{ label: "Championship Group", size: 6, keywords: ["meisterrunde", "championship group", "championship round", "top 6", "championship table"] },
-					{ label: "Relegation Group", size: 6, keywords: ["abstiegsrunde", "relegation group", "relegation round", "bottom 6", "relegation table"] }
-				],
-				championshipKeywords: ["championship group", "meisterrunde", "top 6", "meisterrunde table"],
-				relegationKeywords: ["relegation group", "abstiegsrunde", "bottom 6", "abstiegsrunde table"],
-				preferGroup: "championship"
-			},
-			DENMARK_SUPERLIGAEN: {
-				regularSeasonGames: 22,
-				championshipSize: 6,
-				relegationSize: 6,
-				pointsCarryover: "all",
-				showAllGroups: true,
-				groups: [
-					{ label: "Championship Group", size: 6, keywords: ["championship group", "championship round", "top 6", "upper half", "championship table"] },
-					{ label: "Relegation Group", size: 6, keywords: ["relegation group", "relegation round", "bottom 6", "lower half", "relegation table"] }
-				],
-				championshipKeywords: ["championship group", "top 6", "upper half", "championship table"],
-				relegationKeywords: ["relegation group", "bottom 6", "lower half", "relegation table"],
-				preferGroup: "championship"
-			},
-			SERBIA_SUPER_LIGA: {
-				regularSeasonGames: 30,
-				championshipSize: 8,
-				relegationSize: 8,
-				pointsCarryover: "all",
-				showAllGroups: true,
-				groups: [
-					{ label: "Championship Group", size: 8, keywords: ["championship group", "championship round", "top 8", "first group", "championship table"] },
-					{ label: "Relegation Group", size: 8, keywords: ["relegation group", "relegation round", "bottom 8", "second group", "relegation table"] }
-				],
-				championshipKeywords: ["championship group", "top 8", "first group", "championship table"],
-				relegationKeywords: ["relegation group", "bottom 8", "second group", "relegation table"],
-				preferGroup: "championship"
-			},
-			CYMRU_PREMIER_LEAGUE: {
-				regularSeasonGames: 22,
-				championshipSize: 6,
-				relegationSize: 6,
-				pointsCarryover: "all",
-				showAllGroups: true,
-				groups: [
-					{ label: "Championship Group", size: 6, keywords: ["championship group", "championship round", "top 6", "upper half", "championship table"] },
-					{ label: "Relegation Group", size: 6, keywords: ["relegation group", "relegation round", "bottom 6", "lower half", "relegation table"] }
-				],
-				championshipKeywords: ["championship group", "top 6", "upper half", "championship table"],
-				relegationKeywords: ["relegation group", "bottom 6", "lower half", "relegation table"],
-				preferGroup: "championship"
-			},
-			// Greece Super League: 14 teams, 26-game double RR regular season (Phase 1), then THREE groups:
-			//   Championship play-offs (top 4): 6 more games (double RR), points carry over fully.
-			//   Europe play-offs (5th-8th, 4 teams): 6 more games (double RR), points HALVED (rounded up).
-			//   Relegation play-outs (9th-14th, 6 teams): 10 more games (double RR), points carry over fully.
-			// pointsCarryover="mixed": Championship/Relegation keep all points; Europe group halves them.
-			GREECE_SUPER_LEAGUE: {
-				regularSeasonGames: 26,
-				championshipSize: 4,
-				relegationSize: 6,
-				pointsCarryover: "mixed",
-				showAllGroups: true,
-				groups: [
-					{ label: "Championship Play-offs", size: 4, keywords: ["championship play-offs", "championship play-off", "championship playoff", "championship round", "championship group", "championship table"] },
-					{ label: "Europe Play-offs", size: 4, keywords: ["europe play-offs", "europe play-off", "europa play-offs", "conference league play-offs", "european play-offs", "europe playoff"] },
-					{ label: "Relegation Play-outs", size: 6, keywords: ["relegation play-outs", "relegation play-out", "relegation playoff", "relegation round", "relegation group", "relegation table"] }
-				],
-				championshipKeywords: ["championship play-offs", "championship play-off", "championship playoff", "championship table"],
-				relegationKeywords: ["relegation play-outs", "relegation play-out", "relegation playoff", "relegation table"],
-				preferGroup: "championship"
-			},
-			// Cyprus First Division: 14 teams, 26-game double RR regular season (Phase 1), then TWO groups:
-			//   Championship round (top 6): 10 more games (double RR within 6 teams), all points carry over.
-			//   Relegation round (7th-14th, 8 teams): 7 more games (single RR), all points carry over.
-			// Bottom three teams in the relegation round are relegated.
-			CYPRUS_FIRST_DIVISION: {
-				regularSeasonGames: 26,
-				championshipSize: 6,
-				relegationSize: 8,
-				pointsCarryover: "all",
-				showAllGroups: true,
-				groups: [
-					{ label: "Championship Round", size: 6, keywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"] },
-					{ label: "Relegation Round", size: 8, keywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"] }
-				],
-				championshipKeywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"],
-				relegationKeywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"],
-				preferGroup: "championship"
-			},
-			// Israel Premier League: 14 teams, 26-game double RR regular season (Phase 1), then TWO groups:
-			//   Championship round (top 6): 10 more games (double RR within 6 teams), all points carry over.
-			//   Relegation round (7th-14th, 8 teams): 7 more games (single RR), all points carry over.
-			ISRAEL_PREMIER_LEAGUE: {
-				regularSeasonGames: 26,
-				championshipSize: 6,
-				relegationSize: 8,
-				pointsCarryover: "all",
-				showAllGroups: true,
-				groups: [
-					{ label: "Championship Round", size: 6, keywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"] },
-					{ label: "Relegation Round", size: 8, keywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"] }
-				],
-				championshipKeywords: ["championship round", "championship playoff", "championship group", "top 6", "championship table"],
-				relegationKeywords: ["relegation round", "relegation playoff", "relegation group", "bottom 8", "relegation table"],
-				preferGroup: "championship"
-			}
-		};
-
 		// Iterate through each enabled league code and request its data with staggering to avoid spikes
 		this.enabledLeagueCodes.forEach((leagueCode, index) => {
 			const urls = this.getLeagueUrl(leagueCode);
@@ -1515,10 +1495,6 @@ Module.register("MMM-SoccerStandings", {
 				Log.info(`[PERF-09] Logo mappings ready: ${count} country groups loaded`);
 			}
 
-			// Allow the next getDom() call to re-render fully with resolved logos.
-			// Without this reset, _shouldSkipRender() would return a hidden placeholder
-			// if data had already been rendered before logos finished loading.
-			this._lastRenderedKey = null;
 			this.updateDom(this.config.animationSpeed);
 		}).catch((err) => {
 			Log.error(`[PERF-09] Could not load team-logo-mappings.js: ${err.message}`);
@@ -1823,15 +1799,6 @@ Module.register("MMM-SoccerStandings", {
 		this.error = null;
 		this.retryCount = 0;
 
-		// Reset the render-skip guard when the currently-displayed league receives
-		// new data (cache hit OR fresh web fetch). Without this, _shouldSkipRender()
-		// would return a hidden placeholder on every update after the first render,
-		// making the module go blank — especially with a single-league config where
-		// currentLeague never changes between renders.
-		if (leagueType === this.currentLeague) {
-			this._lastRenderedKey = null;
-		}
-
 		// Announce data update to screen readers (A11Y-04)
 		const leagueName = this.config.leagueHeaders[leagueType] || leagueType;
 		this.announceDataUpdate(leagueName);
@@ -2088,7 +2055,23 @@ Module.register("MMM-SoccerStandings", {
 			}
 		};
 
-		return leagueMapping[leagueCode] || null;
+		if (leagueMapping[leagueCode]) {
+			return leagueMapping[leagueCode];
+		}
+
+		// Fallback: construct result from EUROPEAN_LEAGUES for any code not hardcoded above
+		if (typeof EUROPEAN_LEAGUES !== "undefined" && EUROPEAN_LEAGUES[leagueCode]) {
+			const entry = EUROPEAN_LEAGUES[leagueCode];
+			return {
+				name: entry.name,
+				country: entry.country,
+				countryCode: entry.countryCode,
+				countryFolder: entry.countryFolder,
+				flag: entry.countryCode?.toLowerCase()
+			};
+		}
+
+		return null;
 	},
 
 	// Get league abbreviation from league code
@@ -2361,13 +2344,6 @@ Module.register("MMM-SoccerStandings", {
 	},
 
 	// Helper: skip redundant renders if same league/subtab and no pending error/loading state
-	_shouldSkipRender() {
-		const key = `${this.currentLeague}::${this.currentSubTab || "-"}`;
-		if (this._lastRenderedKey === key) return true;
-		this._lastRenderedKey = key;
-		return false;
-	},
-
 	/**
 	 * Create hidden ARIA live region for screen reader announcements (A11Y-04)
 	 */
