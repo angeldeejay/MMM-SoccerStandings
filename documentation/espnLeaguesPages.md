@@ -1,4 +1,4 @@
-# ESPN League Pages for MMM-MyTeams-LeagueTable
+# ESPN League Pages for MMM-SoccerStandings
 
 The module supports fetching league data from **ESPN**, providing a clean and reliable alternative for major and mid-tier global leagues.
 
@@ -75,7 +75,7 @@ To explicitly use ESPN for a specific league, set the `provider` config option t
 
 ```javascript
 {
-    module: "MMM-MyTeams-LeagueTable",
+    module: "MMM-SoccerStandings",
     config: {
         provider: "espn",
         selectedLeagues: ["ENGLAND_PREMIER_LEAGUE"],

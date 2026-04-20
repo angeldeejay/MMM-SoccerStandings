@@ -1,6 +1,6 @@
 # Advanced Customization Guide
 
-This guide is for users who want to push the boundaries of the **MMM-MyTeams-LeagueTable** module through custom styling and advanced logo configuration.
+This guide is for users who want to push the boundaries of the **MMM-SoccerStandings** module through custom styling and advanced logo configuration.
 
 ## Custom CSS Styling
 
@@ -10,7 +10,7 @@ The module uses standard MagicMirror CSS classes and modern CSS variables. You c
 The module defines these variables for easy theme integration:
 
 ```css
-.MMM-MyTeams-LeagueTable {
+.MMM-SoccerStandings {
   --table-font-size: clamp(12px, 1.2vw, 18px);
   --header-bg-color: rgba(255, 255, 255, 0.1);
   --row-hover-bg: rgba(255, 255, 255, 0.05);
@@ -24,7 +24,7 @@ The module defines these variables for easy theme integration:
 
 **1. Change Highlight Color for Your Team**
 ```css
-.MMM-MyTeams-LeagueTable .highlight-team {
+.MMM-SoccerStandings .highlight-team {
   background-color: #ffd700 !important;
   color: #000 !important;
   font-weight: bold;
@@ -33,7 +33,7 @@ The module defines these variables for easy theme integration:
 
 **2. Compact Mode (Smaller Rows)**
 ```css
-.MMM-MyTeams-LeagueTable .league-row {
+.MMM-SoccerStandings .league-row {
   padding: 2px 4px;
 }
 ```

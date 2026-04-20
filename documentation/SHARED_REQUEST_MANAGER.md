@@ -63,7 +63,7 @@ Shared Request Manager
 The Shared Request Manager is designed for MMM-MyTeams family of modules:
 - MMM-MyTeams-DriveToMatch 
 - MMM-MyTeams-Fixtures
-- MMM-MyTeams-LeagueTable (this module)
+- MMM-SoccerStandings (this module)
 - MMM-MyTeams-Honours
 - MMM-Celtic-OnThisDay
 
@@ -74,7 +74,7 @@ The Shared Request Manager is designed for MMM-MyTeams family of modules:
 ```bash
 # Assuming you're in MagicMirror/modules directory
 Copy-Item MMM-MyTeams-DriveToMatch/shared-request-manager.js MMM-MyTeams-Fixtures/
-Copy-Item MMM-MyTeams-DriveToMatch/shared-request-manager.js MMM-MyTeams-LeagueTable/
+Copy-Item MMM-MyTeams-DriveToMatch/shared-request-manager.js MMM-SoccerStandings/
 Copy-Item MMM-MyTeams-DriveToMatch/shared-request-manager.js MMM-MyTeams-Honours/
 Copy-Item MMM-MyTeams-DriveToMatch/shared-request-manager.js MMM-Celtic-OnThisDay/
 ```

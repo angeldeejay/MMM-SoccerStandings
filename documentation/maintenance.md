@@ -1,6 +1,6 @@
 # Module Maintenance Guide
 
-Maintaining the **MMM-MyTeams-LeagueTable** module ensures data accuracy and stability throughout the football season. This guide covers essential housekeeping tasks and the critical seasonal updates required.
+Maintaining the **MMM-SoccerStandings** module ensures data accuracy and stability throughout the football season. This guide covers essential housekeeping tasks and the critical seasonal updates required.
 
 ## 1. Seasonal URL Updates (Critical)
 
@@ -10,12 +10,12 @@ Every year, typically between July and August, the module's URL maps must be upd
 Wikipedia articles are usually titled by the season (e.g., "2025–26 Premier League").
 *   **Format**: Aug-May leagues use an en-dash encoded as `%E2%80%93` (e.g., `2025%E2%80%9326`).
 *   **Calendar Year**: Leagues like Norway and Sweden use a single year (e.g., `2026`).
-*   **Action**: Update the `wikipediaUrlMap` in `MMM-MyTeams-LeagueTable.js`. Ensure the en-dash encoding is correct to avoid 404 errors.
+*   **Action**: Update the `wikipediaUrlMap` in `MMM-SoccerStandings.js`. Ensure the en-dash encoding is correct to avoid 404 errors.
 
 ### B. Soccerway URLs
 Soccerway uses a unique ID for each season (`r#####`).
 *   **Action**: Visit the Soccerway website for each league, navigate to the current season's table, and copy the new URL including the `r#####` ID.
-*   **Update**: Modify the `soccerwayUrlMap` in `MMM-MyTeams-LeagueTable.js`.
+*   **Update**: Modify the `soccerwayUrlMap` in `MMM-SoccerStandings.js`.
 
 ### C. ESPN & BBC Sport
 *   **ESPN**: These URLs are generally path-based (e.g., `/soccer/standings/_/league/eng.1`) and rarely change between seasons.
@@ -25,7 +25,7 @@ Soccerway uses a unique ID for each season (`r#####`).
 ## 2. League Split Verification
 
 Leagues with mid-season splits (Romania, Scotland, Greece, Cyprus, Israel, Austria, etc.) may change their format or naming conventions on Wikipedia each season.
-*   **Action**: Verify the `LEAGUE_SPLITS` constant in `MMM-MyTeams-LeagueTable.js`.
+*   **Action**: Verify the `LEAGUE_SPLITS` constant in `MMM-SoccerStandings.js`.
 *   **Check Keywords**: Ensure the `keywords` in each group (and `championshipKeywords` / `relegationKeywords`) match the actual `<h2>` to `<h4>` headings used in the new season's Wikipedia article (e.g., "Championship round" vs. "Play-off Round").
 *   **Check Sizes**: Verify if the number of teams in each group has changed (e.g., Belgium sometimes changes group sizes).
 *   **Verify Logic**: Ensure the `regularSeasonGames` count is correct for the new season's format to trigger the multi-group extraction at the right time.
@@ -49,7 +49,7 @@ New teams are promoted to top-tier leagues every season.
 The module includes specialized Python scripts in the `tools/` directory to automate common maintenance tasks and reduce the risk of manual configuration errors.
 
 ### A. League Split Registry Update (`fix_splits.py`)
-When adding new split-season leagues (like Greece, Cyprus, or Israel), use this script to automatically update the `LEAGUE_SPLITS` constant and provider URL maps in `MMM-MyTeams-LeagueTable.js`.
+When adding new split-season leagues (like Greece, Cyprus, or Israel), use this script to automatically update the `LEAGUE_SPLITS` constant and provider URL maps in `MMM-SoccerStandings.js`.
 *   **Usage**: `python tools/fix_splits.py`
 *   **Features**:
     - Automatically adds new league configurations to the registry.

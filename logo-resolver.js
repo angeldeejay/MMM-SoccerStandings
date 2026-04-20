@@ -4,8 +4,8 @@
  * Migrated from client-side for performance and memory optimization.
  */
 
-const TEAM_LOGO_MAPPINGS = require("./team-logo-mappings.js");
-const TEAM_ALIASES = require("./team-aliases.js");
+const TEAM_LOGO_MAPPINGS = require("./constants/team-logo-mappings.js");
+const TEAM_ALIASES = require("./constants/team-aliases.js");
 
 class LogoResolver {
 	constructor() {

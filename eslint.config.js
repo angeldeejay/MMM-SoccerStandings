@@ -15,7 +15,9 @@ export default [
 				config: "readonly",
 				moment: "readonly",
 				TEAM_ALIASES: "readonly",
-				EUROPEAN_LEAGUES: "readonly"
+				EUROPEAN_LEAGUES: "readonly",
+				LEAGUE_SPLITS: "readonly",
+				LEAGUE_URL_MAPS: "readonly"
 			}
 		},
 		rules: {

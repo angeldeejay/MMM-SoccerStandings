@@ -1,6 +1,6 @@
 # BBC Football League Tables
 
-This document provides a comprehensive list of football league tables available on the BBC Sport website. These URLs are the default source for the MMM-MyTeams-LeagueTable module.
+This document provides a comprehensive list of football league tables available on the BBC Sport website. These URLs are the default source for the MMM-SoccerStandings module.
 
 **Caution:** Check that each URL remain valid prior to each new season starting.
 
@@ -8,8 +8,8 @@ This document provides a comprehensive list of football league tables available 
 
 ## European Competitions
 
-| Country | League Name | BBC Website | showLeague |
-|---------|-------------|------------|------------|
+| Country | League Name | BBC Website | League Code |
+|---------|-------------|------------|-------------|
 | Europe | UEFA Champions League | https://www.bbc.com/sport/football/champions-league/table | UEFA_CHAMPIONS_LEAGUE |
 | Europe | UEFA Europa League | https://www.bbc.com/sport/football/europa-league/table | UEFA_EUROPA_LEAGUE |
 | Europe | UEFA Europa Conference League | https://www.bbc.com/sport/football/europa-conference-league/table | UEFA_EUROPA_CONFERENCE_LEAGUE |
@@ -18,42 +18,42 @@ This document provides a comprehensive list of football league tables available 
 
 ## European Domestic Leagues - Tier 1
 
-| Country | League Name | BBC Website | showLeague |
-|---------|-------------|------------|------------|
+| Country | League Name | BBC Website | League Code |
+|---------|-------------|------------|-------------|
 | Austria | Austrian Bundesliga 🏆 | https://www.bbc.co.uk/sport/football/austrian-bundesliga/table | AUSTRIA_BUNDESLIGA |
-| Belgium | Belgian Pro League 🏆 | https://www.bbc.com/sport/football/belgian-pro-league/table | showBelgianProLeague |
+| Belgium | Belgian Pro League 🏆 | https://www.bbc.com/sport/football/belgian-pro-league/table | BELGIUM_PRO_LEAGUE |
 | Croatia | Croatian HNL | https://www.bbc.co.uk/sport/football/croatian-first-league/table | CROATIA_HNL |
 | Cyprus | Cypriot First Division 🏆 | https://www.bbc.co.uk/sport/football/cypriot-first-division/table | CYPRUS_FIRST_DIVISION |
 | Czech Republic | Czech Liga | https://www.bbc.co.uk/sport/football/czech-liga/table | CZECH_LIGA |
-| Denmark | Danish Superliga 🏆 | https://www.bbc.com/sport/football/danish-superliga/table | showSuperliga |
-| England | Premier League | https://www.bbc.com/sport/football/premier-league/table | showEPL |
-| France | Ligue 1 | https://www.bbc.com/sport/football/french-ligue-one/table | showLigue1 |
-| Germany | Bundesliga | https://www.bbc.com/sport/football/german-bundesliga/table | showBundesliga |
+| Denmark | Danish Superliga 🏆 | https://www.bbc.com/sport/football/danish-superliga/table | DENMARK_SUPERLIGAEN |
+| England | Premier League | https://www.bbc.com/sport/football/premier-league/table | ENGLAND_PREMIER_LEAGUE |
+| France | Ligue 1 | https://www.bbc.com/sport/football/french-ligue-one/table | FRANCE_LIGUE1 |
+| Germany | Bundesliga | https://www.bbc.com/sport/football/german-bundesliga/table | GERMANY_BUNDESLIGA |
 | Greece | Greek Super League 🏆 | https://www.bbc.com/sport/football/greek-super-league/table | GREECE_SUPER_LEAGUE |
 | Hungary | Hungarian NB I | https://www.bbc.co.uk/sport/football/hungarian-nb-i/table | HUNGARY_NBI |
 | Israel | Israeli Premier League 🏆 | https://www.bbc.co.uk/sport/football/israeli-premier-league/table | ISRAEL_PREMIER_LEAGUE |
-| Italy | Serie A | https://www.bbc.com/sport/football/italian-serie-a/table | showSerieA |
-| Netherlands | Eredivisie | https://www.bbc.com/sport/football/dutch-eredivisie/table | showEredivisie |
+| Italy | Serie A | https://www.bbc.com/sport/football/italian-serie-a/table | ITALY_SERIE_A |
+| Netherlands | Eredivisie | https://www.bbc.com/sport/football/dutch-eredivisie/table | NETHERLANDS_EREDIVISIE |
 | Northern Ireland | Irish Premiership | https://www.bbc.com/sport/football/irish-premiership/table | NI_PREMIERSHIP |
-| Norway | Eliteserien | https://www.bbc.com/sport/football/norwegian-eliteserien/table | showEliteserien |
+| Norway | Eliteserien | https://www.bbc.com/sport/football/norwegian-eliteserien/table | NORWAY_ELITESERIEN |
 | Poland | Ekstraklasa | https://www.bbc.co.uk/sport/football/polish-ekstraklasa/table | POLAND_EKSTRAKLASA |
-| Portugal | Primeira Liga | https://www.bbc.com/sport/football/portuguese-primeira-liga/table | showPrimeiraLiga |
+| Portugal | Primeira Liga | https://www.bbc.com/sport/football/portuguese-primeira-liga/table | PORTUGAL_PRIMEIRA_LIGA |
 | Republic of Ireland | Irish Premier Division | https://www.bbc.com/sport/football/league-of-ireland-premier/table | IE_PREMIER_DIVISION |
 | Romania | Liga I 🏆 | https://www.bbc.co.uk/sport/football/romanian-liga-i/table | ROMANIA_LIGA_I |
 | Russia | Russian Premier League | https://www.bbc.com/sport/football/russian-premier-league/table | showRPL |
-| Scotland | Scottish Premiership 🏆 | https://www.bbc.com/sport/football/scottish-premiership/table | showSPFL |
+| Scotland | Scottish Premiership 🏆 | https://www.bbc.com/sport/football/scottish-premiership/table | SCOTLAND_PREMIERSHIP |
 | Serbia | Serbian Super Liga 🏆 | https://www.bbc.co.uk/sport/football/serbian-super-lig/table | SERBIA_SUPER_LIGA |
-| Spain | La Liga | https://www.bbc.com/sport/football/spanish-la-liga/table | showLaLiga |
-| Sweden | Allsvenskan | https://www.bbc.com/sport/football/swedish-allsvenskan/table | showAllsvenskan |
-| Switzerland | Swiss Super League 🏆 | https://www.bbc.co.uk/sport/football/swiss-super-league/table | showSwissSuperLeague |
-| Turkey | Turkish Super Lig | https://www.bbc.com/sport/football/turkish-super-lig/table | showSuperLig |
-| Ukraine | Ukrainian Premier League | https://www.bbc.com/sport/football/ukrainian-premier-league/table | showUPL |
+| Spain | La Liga | https://www.bbc.com/sport/football/spanish-la-liga/table | SPAIN_LA_LIGA |
+| Sweden | Allsvenskan | https://www.bbc.com/sport/football/swedish-allsvenskan/table | SWEDEN_ALLSVENSKAN |
+| Switzerland | Swiss Super League 🏆 | https://www.bbc.co.uk/sport/football/swiss-super-league/table | SWITZERLAND_SUPER_LEAGUE |
+| Turkey | Turkish Super Lig | https://www.bbc.com/sport/football/turkish-super-lig/table | TURKEY_SUPER_LIG |
+| Ukraine | Ukrainian Premier League | https://www.bbc.com/sport/football/ukrainian-premier-league/table | UKRAINE_PREMIER_LEAGUE |
 | Wales | Cymru Premier 🏆 | https://www.bbc.com/sport/football/league-of-wales/table | WALES_PREMIER |
 
 ## European Domestic Leagues - Tier 2
 
-| Country | League Name | BBC Website | showLeague |
-|---------|-------------|------------|------------|
+| Country | League Name | BBC Website | League Code |
+|---------|-------------|------------|-------------|
 | Austria | 2. Liga | https://www.bbc.com/sport/football/austrian-second-league/table | showAustrian2Liga |
 | Belgium | Challenger Pro League | https://www.bbc.com/sport/football/belgian-challenger-pro-league/table | showBelgianChallenger |
 | Croatia | First NL | https://www.bbc.com/sport/football/croatian-second-league/table | showCroatiaFirstNL |
@@ -73,7 +73,7 @@ This document provides a comprehensive list of football league tables available 
 | Republic of Ireland | League of Ireland First Division | https://www.bbc.com/sport/football/league-of-ireland-first/table | showIEFirstDivision |
 | Romania | Liga II | https://www.bbc.com/sport/football/romanian-second-league/table | showRomaniaLiga2 |
 | Russia | Russian First League | https://www.bbc.com/sport/football/russian-first-league/table | showRussianFirstLeague |
-| Scotland | Scottish Championship | https://www.bbc.com/sport/football/scottish-championship/table | showSPFLC |
+| Scotland | Scottish Championship | https://www.bbc.com/sport/football/scottish-championship/table | SCOTLAND_CHAMPIONSHIP |
 | Serbia | Serbian First League | https://www.bbc.com/sport/football/serbian-first-league/table | showSerbiaFirstLeague |
 | Spain | La Liga 2 | https://www.bbc.com/sport/football/spanish-la-liga-2/table | showLaLiga2 |
 | Sweden | Superettan | https://www.bbc.com/sport/football/swedish-superettan/table | showSuperettan |
@@ -83,8 +83,8 @@ This document provides a comprehensive list of football league tables available 
 
 ## Other European and International & Cup Competitions
 
-| Country | League Name | BBC Website | showLeague |
-|---------|-------------|------------|------------|
+| Country | League Name | BBC Website | League Code |
+|---------|-------------|------------|-------------|
 | England | Community Shield | https://www.bbc.com/sport/football/community-shield | showCommunityShield |
 | England | EFL Cup | https://www.bbc.com/sport/football/league-cup | showEFLCup |
 | England | EFL League One | https://www.bbc.com/sport/football/league-one/table | showEFL1 |
@@ -113,8 +113,8 @@ This document provides a comprehensive list of football league tables available 
 
 ## Non-European Leagues
 
-| Country | League Name | BBC Website | showLeague |
-|---------|-------------|------------|------------|
+| Country | League Name | BBC Website | League Code |
+|---------|-------------|------------|-------------|
 | Argentina | Primera División | https://www.bbc.com/sport/football/argentine-primera-division/table | showPrimeraDivision |
 | Australia | A-League | https://www.bbc.com/sport/football/australian-a-league/table | showALeague |
 | Brazil | Brasileirão | https://www.bbc.com/sport/football/brazilian-serie-a/table | showBrasileirao |

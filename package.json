@@ -43,8 +43,8 @@
 	"scripts": {
 		"test": "npm run test:security",
 		"test:security": "mocha tests/security.test.js --timeout 10000",
-		"lint": "eslint *.js",
-		"format": "prettier --write *.js *.json *.md",
+		"lint": "eslint *.js parsers/*.js constants/*.js",
+		"format": "prettier --write *.js parsers/*.js constants/*.js *.json *.md",
 		"audit": "npm audit --audit-level=moderate",
 		"audit:fix": "npm audit fix",
 		"postinstall": "sass --style=compressed scss/entrypoint.scss MMM-SoccerStandings.css",

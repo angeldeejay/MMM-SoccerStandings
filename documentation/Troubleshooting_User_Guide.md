@@ -1,6 +1,6 @@
 # Troubleshooting User Guide
 
-This guide helps you resolve common issues with the **MMM-MyTeams-LeagueTable** module.
+This guide helps you resolve common issues with the **MMM-SoccerStandings** module.
 
 ## Common Issues
 
@@ -31,7 +31,7 @@ This guide helps you resolve common issues with the **MMM-MyTeams-LeagueTable** 
 *   **Cause**: Likely a syntax error in your `config.js` or a missing dependency.
 *   **Solution**:
     *   Run `npm run lint` in the module directory to check for code errors.
-    *   Ensure you ran `npm install` in the `MMM-MyTeams-LeagueTable` directory.
+    *   Ensure you ran `npm install` in the `MMM-SoccerStandings` directory.
     *   Check for "Refused to apply style" errors in the console, which might indicate a path issue or a server configuration problem.
 
 ### 5. "STALE" Indicator is Visible
@@ -75,7 +75,7 @@ This guide helps you resolve common issues with the **MMM-MyTeams-LeagueTable** 
 *   **Solution**: 
     *   The module now supports multi-group rendering (Championship + Relegation simultaneously).
     *   If the primary source is missing groups, the module automatically escalates to Wikipedia.
-    *   Ensure your `wikipediaUrlMap` in `MMM-MyTeams-LeagueTable.js` is correct for the current season.
+    *   Ensure your `wikipediaUrlMap` in `MMM-SoccerStandings.js` is correct for the current season.
     *   Check for `[Multi-group]` logs in the terminal to verify Wikipedia parsing success.
 
 ## Diagnostic Steps

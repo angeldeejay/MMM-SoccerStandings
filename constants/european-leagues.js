@@ -594,41 +594,6 @@ function isValidLeague(code, tierOneOnly = false) {
 	return true;
 }
 
-/**
- * Convert legacy league names to new format
- * Maps old config keys (e.g., "showSPFL") to new format
- * @param {object} legacyConfig - Old config object
- * @returns {object} New format config with selectedLeagues array
- */
-function migrateConfig(legacyConfig) {
-	const selectedLeagues = [];
-
-	// Map legacy keys to new league codes
-	const legacyMap = {
-		showSPFL: "SCOTLAND_PREMIERSHIP",
-		showSPFLC: "SCOTLAND_CHAMPIONSHIP",
-		showEPL: "ENGLAND_PREMIER_LEAGUE"
-	};
-
-	Object.entries(legacyMap).forEach(([oldKey, newCode]) => {
-		if (legacyConfig[oldKey] === true) {
-			selectedLeagues.push(newCode);
-		}
-	});
-
-	// Also keep UEFA leagues if they were enabled
-	if (legacyConfig.showUCL) selectedLeagues.push("UEFA_CHAMPIONS_LEAGUE");
-	if (legacyConfig.showUEL) selectedLeagues.push("UEFA_EUROPA_LEAGUE");
-	if (legacyConfig.showECL)
-		selectedLeagues.push("UEFA_EUROPA_CONFERENCE_LEAGUE");
-
-	return {
-		...legacyConfig,
-		selectedLeagues:
-			selectedLeagues.length > 0 ? selectedLeagues : ["SCOTLAND_PREMIERSHIP"]
-	};
-}
-
 // ============================================================================
 // MODULE EXPORTS
 // ============================================================================
@@ -642,7 +607,6 @@ if (typeof module !== "undefined" && module.exports) {
 		getLeague,
 		getRegions,
 		getCountries,
-		isValidLeague,
-		migrateConfig
+		isValidLeague
 	};
 }

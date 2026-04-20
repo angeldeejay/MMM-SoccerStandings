@@ -1,6 +1,6 @@
 # Configuration User Guide
 
-The **MMM-MyTeams-LeagueTable** module is highly configurable. This guide covers all available options and provides recommended setups for different use cases.
+The **MMM-SoccerStandings** module is highly configurable. This guide covers all available options and provides recommended setups for different use cases.
 
 ## Configuration Options
 
@@ -22,13 +22,10 @@ The **MMM-MyTeams-LeagueTable** module is highly configurable. This guide covers
 | `autoGenerateButtons`     | `true`                     | Auto-create league switcher buttons from `selectedLeagues`.                             |
 | `showLeagueButtons`       | `true`                     | Show or hide league switcher tabs in the header.                                        |
 | `autoFocusRelevantSubTab` | `true`                     | Automatically focus the tab showing live or upcoming matches.                           |
-| `legacyLeagueToggle`      | `true`                     | If `true`, uses legacy `showSPFL` / `showEPL` toggles instead of `selectedLeagues`.    |
 | `clearCacheButton`        | `true`                     | Display the Clear Cache button on the module.                                           |
 | `clearCacheOnStart`       | `false`                    | Force-clear all caches on every module start (useful for troubleshooting).              |
 | `debug`                   | `false`                    | Enable verbose console logging. Disable in production on Raspberry Pi.                  |
 | `dateTimeOverride`        | `null`                     | Override system date/time for testing. ISO format e.g. `"2026-06-15T14:00:00Z"`.       |
-
-> **Legacy league toggles** — only used when `legacyLeagueToggle: true`. Set each to `true` or `false`: `showSPFL`, `showSPFLC`, `showEPL`, `showUCL`, `showUEL`, `showECL`.
 
 ---
 
@@ -71,7 +68,7 @@ The **MMM-MyTeams-LeagueTable** module is highly configurable. This guide covers
 
 | Option             | Default                                | Description                                        |
 | :----------------- | :------------------------------------- | :------------------------------------------------- |
-| `showUEFAleagues`  | `false`                                | Show UEFA competition tabs in the league switcher. |
+| `showUEFAleagues`  | `null`                                 | Override UEFA league visibility. `null` = respect `selectedLeagues`; `true` = force-add; `false` = force-remove. |
 | `showUEFAnockouts` | `["Playoff","Rd16","QF","SF","Final"]` | UEFA knockout stages to display.                   |
 
 ---
@@ -80,7 +77,7 @@ The **MMM-MyTeams-LeagueTable** module is highly configurable. This guide covers
 
 | Option                 | Default                                                | Description                                                |
 | :--------------------- | :----------------------------------------------------- | :--------------------------------------------------------- |
-| `showWC2026`           | `false`                                                | Show World Cup 2026 in the league switcher.                |
+| `showWC2026`           | `null`                                                 | Override WC2026 visibility. `null` = respect `selectedLeagues` (preferred); `true` = force-add; `false` = force-remove. |
 | `onlyShowWorldCup2026` | `false`                                                | Force the module into dedicated World Cup-only mode.       |
 | `showWC2026Groups`     | `["A","B","C","D","E","F","G","H","I","J","K","L"]`    | Array of group letters to display.                         |
 | `showWC2026Knockouts`  | `["Rd32","Rd16","QF","SF","TP","Final"]`               | Knockout rounds to show.                                   |
@@ -150,7 +147,7 @@ If a league is not internally mapped, or you want to use a specific source, you 
 
 ```javascript
 {
-    module: "MMM-MyTeams-LeagueTable",
+    module: "MMM-SoccerStandings",
     position: "top_right",
     config: {
     provider: "auto", 
@@ -166,7 +163,7 @@ The simplest setup to get started.
 
 ```javascript
 {
-    module: "MMM-MyTeams-LeagueTable",
+    module: "MMM-SoccerStandings",
     position: "top_right",
     config: {
         provider: "auto", 
@@ -180,7 +177,7 @@ Rotates between the top 5 European leagues every 20 seconds.
 
 ```javascript
 {
-    module: "MMM-MyTeams-LeagueTable",
+    module: "MMM-SoccerStandings",
     position: "top_right",
     config: {
         provider: "auto", 
@@ -202,12 +199,11 @@ Focuses on the European knockout stages with specific tab visibility.
 
 ```javascript
 {
-    module: "MMM-MyTeams-LeagueTable",
+    module: "MMM-SoccerStandings",
     position: "top_right",
     config: {
         provider: "auto", 
         selectedLeagues: ["UEFA_CHAMPIONS_LEAGUE", "UEFA_EUROPA_LEAGUE"],
-        showUEFAleagues: true,
         showUEFAnockouts: ["Rd16", "QF", "SF", "Final"],
         autoFocusRelevantSubTab: true
     }
@@ -219,7 +215,7 @@ Optimized view for the upcoming World Cup.
 
 ```javascript
 {
-    module: "MMM-MyTeams-LeagueTable",
+    module: "MMM-SoccerStandings",
     position: "top_right",
     config: {
         provider: "auto", 
@@ -245,7 +241,7 @@ Enables all leagues, auto-cycling, high contrast, and manual overrides.
 
 ```javascript
 {
-    module: "MMM-MyTeams-LeagueTable",
+    module: "MMM-SoccerStandings",
     position: "top_right",
     config: {
     provider: "auto", 
@@ -280,28 +276,19 @@ Enables all leagues, auto-cycling, high contrast, and manual overrides.
     "WORLD_CUP_2026" // Enable during World Cup 2026
     ],
 
-    // Method 2: Use legacyLeagueToggle = true to enable old config style (for backward compatibility)
-    legacyLeagueToggle: false, // If true, uses showSPFL, showEPL, etc. from config
-          
-    // ===== LEGACY League toggles (used if legacyLeagueToggle: true) =====  // Set true to show, false to hide
-    showSPFL: true, // Show Scottish Premiership
-    showSPFLC: false, // Show Scottish Championship
-    showEPL: false, // Show English Premier League
-    showUCL: false, // Show UEFA Champions League
-    showUEL: false, // Show UEFA Europa League
-    showECL: false, // Show UEFA Europa Conference League
-    
-    // ===== NEW: Automatic button generation from selectedLeagues =====
+    // ===== Automatic button generation from selectedLeagues =====
     autoGenerateButtons: true, // Auto-create buttons for all leagues in selectedLeagues
     showLeagueButtons: true, // Show/hide league selector buttons in header
     autoFocusRelevantSubTab: true, // Automatically focus on the sub-tab with live or upcoming matches
 
-    // ===== NEW: UEFA League Competitions Specific Options =====
-    showUEFAleagues: true, // Set to true to show UEFA leagues in league switcher
+    // ===== UEFA League Competitions Specific Options =====
+    // null = no override; respect selectedLeagues. true = force-add; false = force-remove.
+    showUEFAleagues: null,
     showUEFAnockouts: ["Playoff", "Rd16", "QF", "SF", "Final"], // UEFA knockout stages to show
 
-    // ===== NEW: FIFA World Cup 2026 Specific Options =====
-    showWC2026: true, // Set to true to show World Cup 2026 in league switcher
+    // ===== FIFA World Cup 2026 Specific Options =====
+    // Preferred: add "WORLD_CUP_2026" to selectedLeagues. null = no override.
+    showWC2026: null, // true = force-add; false = force-remove even if in selectedLeagues
     onlyShowWorldCup2026: false, // If true, only shows World Cup 2026 view
     showWC2026Groups: ["A","B","C","D","E","F","G","H","I","J","K","L"], // Groups to show
     showWC2026Knockouts: ["Rd32", "Rd16", "QF", "SF", "TP", "Final"], // Knockout rounds to show

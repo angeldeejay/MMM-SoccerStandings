@@ -1,6 +1,6 @@
 # FIFA World Cup 2026 User Guide
 
-Welcome to the **FIFA World Cup 2026** edition of the `MMM-MyTeams-LeagueTable` module. This guide provides a comprehensive overview of the tournament participants, group structures, and qualification details.
+Welcome to the **FIFA World Cup 2026** edition of the `MMM-SoccerStandings` module. This guide provides a comprehensive overview of the tournament participants, group structures, and qualification details.
 
 ## New: Automatic Sub-tab Cycling and Stage Progression
 
@@ -25,20 +25,18 @@ This module now supports automatic cycling of World Cup sub-tabs and dynamic pro
 - `autoCycle: true`
 - `wcSubtabCycleInterval: 15000` (milliseconds; default)
 - `defaultWCSubTab: "A"`
-- Ensure `showWC2026: true` or include `"WORLD_CUP_2026"` in `selectedLeagues`
+- Include `"WORLD_CUP_2026"` in `selectedLeagues` to enable World Cup display
 
 Example config snippet:
 
 ```
 {
-  module: "MMM-MyTeams-LeagueTable",
+  module: "MMM-SoccerStandings",
   position: "top_right",
   config: {
     autoCycle: true,
     wcSubtabCycleInterval: 15000,
-    showWC2026: true,
     selectedLeagues: ["WORLD_CUP_2026", "ENGLAND_PREMIER_LEAGUE"],
-    legacyLeagueToggle: false,
     defaultWCSubTab: "A"
   }
 }
@@ -109,7 +107,7 @@ _Note: The inter-confederation play-off tournament will involve six teams (one f
 
 ## Module Features for World Cup 2026
 
-The `MMM-MyTeams-LeagueTable` module provides specialized features for tracking the World Cup:
+The `MMM-SoccerStandings` module provides specialized features for tracking the World Cup:
 
 ### 1. Dedicated World Cup Mode
 
@@ -117,8 +115,9 @@ Enable the dedicated view in your `config.js`:, this will display only the World
 
 ```javascript
 {
-  module: "MMM-MyTeams-LeagueTable",
+  module: "MMM-SoccerStandings",
   config: {
+    selectedLeagues: ["WORLD_CUP_2026"],
     onlyShowWorldCup2026: true,
     showWC2026Groups: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"], 
     showWC2026Knockouts: ["Rd32", "Rd16", "QF", "SF", "TP", "Final"]

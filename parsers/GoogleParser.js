@@ -184,7 +184,7 @@ class GoogleParser extends BaseParser {
 				points,
 				form: [] // Google snippets rarely show full form history in accessible tables
 			};
-		} catch (error) {
+		} catch {
 			return null;
 		}
 	}

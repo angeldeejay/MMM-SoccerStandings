@@ -1,6 +1,6 @@
 # Google Search League Tables
 
-This document provides a comprehensive list of Google Search URLs to fetch football league tables. These URLs can be used as a fallback or alternative source for the MMM-MyTeams-LeagueTable module.
+This document provides a comprehensive list of Google Search URLs to fetch football league tables. These URLs can be used as a fallback or alternative source for the MMM-SoccerStandings module.
 
 **Caution:** Check that each URL remain valid prior to each new season starting.
 

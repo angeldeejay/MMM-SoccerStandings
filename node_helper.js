@@ -13,12 +13,12 @@ const SharedRequestManager = require("./shared-request-manager.js");
 const requestManager = SharedRequestManager.getInstance();
 const NodeHelper = require("node_helper");
 const CacheManager = require("./cache-manager.js");
-const BBCParser = require("./BBCParser.js");
-const FIFAParser = require("./FIFAParser.js");
-const SoccerwayParser = require("./SoccerwayParser.js");
-const WikipediaParser = require("./WikipediaParser.js");
-const ESPNParser = require("./ESPNParser.js");
-const GoogleParser = require("./GoogleParser.js");
+const BBCParser = require("./parsers/BBCParser.js");
+const FIFAParser = require("./parsers/FIFAParser.js");
+const SoccerwayParser = require("./parsers/SoccerwayParser.js");
+const WikipediaParser = require("./parsers/WikipediaParser.js");
+const ESPNParser = require("./parsers/ESPNParser.js");
+const GoogleParser = require("./parsers/GoogleParser.js");
 const logoResolver = require("./logo-resolver.js");
 
 module.exports = NodeHelper.create({
@@ -1056,13 +1056,5 @@ module.exports = NodeHelper.create({
 				" MMM-SoccerStandings: Cache cleanup scheduled every 6 hours"
 			);
 		}
-	},
-
-	// Clean up team name
-	cleanTeamName(name) {
-		return name
-			.replace(/^\d+\s*/, "") // Remove leading position numbers
-			.replace(/\s+/g, " ") // Normalize whitespace
-			.trim();
 	}
 });

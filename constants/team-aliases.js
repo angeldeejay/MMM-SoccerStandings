@@ -4,7 +4,6 @@
  * Loaded as a global in the browser (via getScripts), required in Node.js (logo-resolver.js).
  */
 
-/* eslint-disable no-unused-vars */
 const TEAM_ALIASES = {
 	"cabo verde": "Cape Verde",
 	"cape verde islands": "Cape Verde",

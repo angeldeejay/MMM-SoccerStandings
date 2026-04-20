@@ -1,6 +1,6 @@
 # Accessibility Features
 
-The **MMM-MyTeams-LeagueTable** module is designed with accessibility in mind, ensuring that football fans of all abilities can stay updated with their favorite teams.
+The **MMM-SoccerStandings** module is designed with accessibility in mind, ensuring that football fans of all abilities can stay updated with their favorite teams.
 
 **🎉 WCAG 2.1 Level AA Compliant** (as of v1.9.0 - February 2026)
 

@@ -1,6 +1,6 @@
 # How This Module Works
 
-The **MMM-MyTeams-LeagueTable** is a comprehensive football data module for MagicMirror². It uses a distributed architecture to provide live updates while remaining efficient on low-power devices.
+The **MMM-SoccerStandings** is a comprehensive football data module for MagicMirror². It uses a distributed architecture to provide live updates while remaining efficient on low-power devices.
 
 ## 1. Architecture: The Backend (node_helper.js)
 The core logic resides in the `node_helper.js`. This is the "brain" of the module that runs on your MagicMirror server (e.g., Raspberry Pi).
@@ -47,7 +47,7 @@ The module uses a **Provider Factory** pattern to select the most appropriate pa
 ## 3. League Split System
 To handle the complexity of European leagues that split into Championship and Relegation groups mid-season, the module implements a robust **Split Configuration** system:
 
-*   **Split Configuration**: The `LEAGUE_SPLITS` constant in `MMM-MyTeams-LeagueTable.js` defines the mechanics for leagues like the Romanian Liga I, Scottish Premiership, Austrian Bundesliga, Belgian Pro League, Greece Super League, Cyprus First Division, and Israel Premier League. This includes regular season game counts, group sizes, and point carryover rules.
+*   **Split Configuration**: The `LEAGUE_SPLITS` constant in `MMM-SoccerStandings.js` defines the mechanics for leagues like the Romanian Liga I, Scottish Premiership, Austrian Bundesliga, Belgian Pro League, Greece Super League, Cyprus First Division, and Israel Premier League. This includes regular season game counts, group sizes, and point carryover rules.
 *   **Awaiting Split Resilience**: A specialized state detection system handles the "limbo" period when the first phase of a split-season league has finished but the split groups haven't been officially announced. The module prevents 404 errors by detecting the completed game count and displaying a **⏳ AWAITING SPLIT** badge in the header.
 *   **Multi-Group Rendering**: When a split is detected, the module creates a `splitGroups` data structure that allows the frontend to render multiple tables simultaneously.
 *   **Labeled Separators**: The UI inserts centered, uppercase separator rows between groups to clearly label the "Championship Group", "Relegation Group", etc.
@@ -62,7 +62,7 @@ To ensure speed and reliability, the module implements a multi-tier caching stra
 *   **Proactive Caching**: When you switch leagues, the module serves the cached version *first* so you see data instantly, then fetches a live update in the background.
 *   **Stale Fallback**: If a live update fails, the module continues to display the cached data but adds a "STALE" indicator to the header.
 
-## 4. Architecture: The Frontend (MMM-MyTeams-LeagueTable.js)
+## 4. Architecture: The Frontend (MMM-SoccerStandings.js)
 The frontend is responsible for the visual presentation and user interaction.
 
 *   **DOM Batching**: It uses `DocumentFragment` to update the screen in one go, preventing flickering and reducing CPU usage.

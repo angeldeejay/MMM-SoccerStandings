@@ -1,6 +1,6 @@
 # Data Provider Factory Strategy
 
-The **MMM-MyTeams-LeagueTable** module uses a **Provider Factory** pattern to fetch and parse football league data from multiple sources. This ensures resilience and expands coverage to leagues not found on the BBC Sport website (e.g., Romania Liga 1 "SuperLiga").
+The **MMM-SoccerStandings** module uses a **Provider Factory** pattern to fetch and parse football league data from multiple sources. This ensures resilience and expands coverage to leagues not found on the BBC Sport website (e.g., Romania Liga 1 "SuperLiga").
 
 ## How It Works
 
@@ -28,7 +28,7 @@ Add the following to your `config.js`:
 
 ```javascript
 {
-    module: "MMM-MyTeams-LeagueTable",
+    module: "MMM-SoccerStandings",
     config: {
         provider: "auto", // Options: "auto", "bbc", "google", "wikipedia", "soccerway", "espn"
         selectedLeagues: ["SCOTLAND_PREMIERSHIP", "ROMANIA_LIGA_I", "BOLIVIA_LIGA_2"],

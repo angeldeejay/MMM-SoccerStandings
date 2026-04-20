@@ -1,4 +1,4 @@
-# Soccerway League Pages for MMM-MyTeams-LeagueTable
+# Soccerway League Pages for MMM-SoccerStandings
 
 This module supports fetching league data from **Soccerway**, expanding its coverage to include leagues not found on BBC Sport (e.g., Romania's Liga 1 "SuperLiga").
 
@@ -110,7 +110,7 @@ To explicitly use Soccerway for a league, set the `provider` config option to `"
 
 ```javascript
 {
-    module: "MMM-MyTeams-LeagueTable",
+    module: "MMM-SoccerStandings",
     config: {
         provider: "soccerway", // Set to "soccerway" to prioritize Soccerway
         selectedLeagues: ["ROMANIA_LIGA_I"],

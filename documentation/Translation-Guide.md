@@ -1,8 +1,8 @@
 # Translation Guide
 
-The **MMM-MyTeams-LeagueTable** module supports multiple languages. This guide explains how to use existing translations and how to add support for a new language.
+The **MMM-SoccerStandings** module supports multiple languages. This guide explains how to use existing translations and how to add support for a new language.
 
-This folder contains translation files for the MMM-MyTeams-LeagueTable module.
+This folder contains translation files for the MMM-SoccerStandings module.
 
 ## Supported Languages
 

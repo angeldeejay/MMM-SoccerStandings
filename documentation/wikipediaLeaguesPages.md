@@ -1,4 +1,4 @@
-# Wikipedia League Pages for MMM-MyTeams-LeagueTable
+# Wikipedia League Pages for MMM-SoccerStandings
 
 The module uses Wikipedia as its primary fallback for leagues not covered by BBC Sport. Wikipedia is preferred because it uses standard `wikitable` HTML that is highly reliable for scraping without JavaScript.
 
@@ -109,7 +109,7 @@ To explicitly use Wikipedia for a specific league, set the `provider` config opt
 
 ```javascript
 {
-    module: "MMM-MyTeams-LeagueTable",
+    module: "MMM-SoccerStandings",
     config: {
         provider: "wikipedia",
         selectedLeagues: ["ROMANIA_LIGA_I"],

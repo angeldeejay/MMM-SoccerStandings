@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **MMM-MyTeams-LeagueTable** module now supports configurable selection of **any European nation's top-tier and second-tier men's professional football leagues**, plus UEFA competitions. Users can easily enable/disable specific leagues via configuration.
+The **MMM-SoccerStandings** module now supports configurable selection of **any European nation's top-tier and second-tier men's professional football leagues**, plus UEFA competitions. Users can easily enable/disable specific leagues via configuration.
 
 ## Quick Start
 
@@ -12,7 +12,7 @@ The recommended approach uses the `selectedLeagues` array to specify which leagu
 
 ```javascript
 {
-  module: "MMM-MyTeams-LeagueTable",
+  module: "MMM-SoccerStandings",
   position: "top_left",
   header: "Football Standings",
   config: {
@@ -48,7 +48,7 @@ For existing configurations, the module still supports the old `showXXX` toggles
 
 ```javascript
 {
-  module: "MMM-MyTeams-LeagueTable",
+  module: "MMM-SoccerStandings",
   position: "top_left",
   config: {
     // Keep legacy mode enabled (default: true)
@@ -153,7 +153,7 @@ Display the "Big Five" European football leagues:
 
 ```javascript
 {
-  module: "MMM-MyTeams-LeagueTable",
+  module: "MMM-SoccerStandings",
   position: "top_left",
   header: "Top 5 European Leagues",
   config: {
@@ -176,7 +176,7 @@ Display the "Big Five" European football leagues:
 
 ```javascript
 {
-  module: "MMM-MyTeams-LeagueTable",
+  module: "MMM-SoccerStandings",
   config: {
     selectedLeagues: [
       "ENGLAND_PREMIER_LEAGUE",
@@ -195,7 +195,7 @@ Show specific leagues plus UEFA competitions:
 
 ```javascript
 {
-  module: "MMM-MyTeams-LeagueTable",
+  module: "MMM-SoccerStandings",
   position: "top_left",
   header: "Football Standings",
   config: {

@@ -1,4 +1,4 @@
-# European Football League Split Formats — MMM-MyTeams-LeagueTable Guide
+# European Football League Split Formats — MMM-SoccerStandings Guide
 
 This document lists those European Tier 1 and Tier 2 football leagues that employ a mid-season split to maintain competitive balance or manage match calendars. It explains how the module detects, parses, and displays each league's split structure.
 
@@ -111,7 +111,7 @@ While historical formats included a 6/6 split, the 2025/26 season operates with 
 
 ## 5. Module Implementation Details
 
-The module handles split-league seasons using the `LEAGUE_SPLITS` configuration object inside `MMM-MyTeams-LeagueTable.js`. Key properties for each entry:
+The module handles split-league seasons using the `LEAGUE_SPLITS` configuration object inside `MMM-SoccerStandings.js`. Key properties for each entry:
 
 | Property | Purpose |
 |----------|---------|

@@ -1,6 +1,6 @@
-# MMM-MyTeams-LeagueTable Mock Data Guide
+# MMM-SoccerStandings Mock Data Guide
 
-This guide explains how to use the mock data functionality in the **MMM-MyTeams-LeagueTable** module. This feature is primarily used for testing UI layouts, verifying tournament stage transitions (like World Cup knockouts), and debugging when live data sources are unavailable or when the play off qualifier are not yet fullt determined.
+This guide explains how to use the mock data functionality in the **MMM-SoccerStandings** module. This feature is primarily used for testing UI layouts, verifying tournament stage transitions (like World Cup knockouts), and debugging when live data sources are unavailable or when the play off qualifier are not yet fullt determined.
 
 ## Configuration Flags
 
@@ -8,7 +8,7 @@ To enable mock data, add the following flags to your module configuration in `co
 
 ```javascript
 {
-  module: "MMM-MyTeams-LeagueTable",
+  module: "MMM-SoccerStandings",
   position: "top_right",
   config: {
     useMockData: true,      // Enables mock data generation for test purposes only- set to false when data fully available

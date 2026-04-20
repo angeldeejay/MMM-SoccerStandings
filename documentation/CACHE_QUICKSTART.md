@@ -21,9 +21,9 @@ npm start
 When the module starts, you should see:
 
 ```
-Starting node helper for: MMM-MyTeams-LeagueTable
+Starting node helper for: MMM-SoccerStandings
 CacheManager: Created cache directory at /path/to/.cache
-MMM-MyTeams-LeagueTable: Cache cleanup scheduled every 6 hours
+MMM-SoccerStandings: Cache cleanup scheduled every 6 hours
 ```
 
 ### Step 2: First Run - Cache Creation
@@ -31,9 +31,9 @@ MMM-MyTeams-LeagueTable: Cache cleanup scheduled every 6 hours
 The first time each league data is fetched:
 
 ```
-MMM-MyTeams-LeagueTable: Fetching SCOTLAND_PREMIERSHIP data from http://...
-MMM-MyTeams-LeagueTable: Successfully fetched SCOTLAND_PREMIERSHIP webpage
-MMM-MyTeams-LeagueTable: Parsed SCOTLAND_PREMIERSHIP data: {"teams": 12}
+MMM-SoccerStandings: Fetching SCOTLAND_PREMIERSHIP data from http://...
+MMM-SoccerStandings: Successfully fetched SCOTLAND_PREMIERSHIP webpage
+MMM-SoccerStandings: Parsed SCOTLAND_PREMIERSHIP data: {"teams": 12}
 CacheManager: Cache SET for SCOTLAND_PREMIERSHIP (12 teams)
 ```
 
@@ -42,7 +42,7 @@ CacheManager: Cache SET for SCOTLAND_PREMIERSHIP (12 teams)
 Navigate to the module and check the cache:
 
 ```bash
-cd MMM-MyTeams-LeagueTable
+cd MMM-SoccerStandings
 ls -la .cache/
 
 # Output:
@@ -57,7 +57,7 @@ Add debug to your config to see detailed cache logs:
 
 ```javascript
 {
-  module: "MMM-MyTeams-LeagueTable",
+  module: "MMM-SoccerStandings",
   position: "top_left",
   config: {
     debug: true,  // ← Add this
@@ -84,8 +84,8 @@ CacheManager: Cache HIT (memory) for SCOTLAND_PREMIERSHIP
 4. **Check logs**: You'll see:
 
 ```
-MMM-MyTeams-LeagueTable: Error fetching SCOTLAND_PREMIERSHIP data: Network error
-MMM-MyTeams-LeagueTable: Using cached data for SCOTLAND_PREMIERSHIP after fetch failure
+MMM-SoccerStandings: Error fetching SCOTLAND_PREMIERSHIP data: Network error
+MMM-SoccerStandings: Using cached data for SCOTLAND_PREMIERSHIP after fetch failure
 ```
 
 ### Scenario 2: BBC HTML Structure Changes
@@ -98,8 +98,8 @@ If BBC Sport changes their website format:
 4. **Check logs**:
 
 ```
-MMM-MyTeams-LeagueTable: Error fetching SCOTLAND_PREMIERSHIP data: No valid table found
-MMM-MyTeams-LeagueTable: Using cached data for SCOTLAND_PREMIERSHIP after fetch failure
+MMM-SoccerStandings: Error fetching SCOTLAND_PREMIERSHIP data: No valid table found
+MMM-SoccerStandings: Using cached data for SCOTLAND_PREMIERSHIP after fetch failure
 ```
 
 ## Check Cache Health
@@ -139,13 +139,13 @@ stats.entries.forEach(entry => {
 Run it:
 
 ```bash
-cd MMM-MyTeams-LeagueTable
+cd MMM-SoccerStandings
 node test-cache.js
 
 # Output:
 # === Cache Statistics ===
 # 
-# Cache Directory: /home/user/MagicMirror/modules/MMM-MyTeams-LeagueTable/.cache
+# Cache Directory: /home/user/MagicMirror/modules/MMM-SoccerStandings/.cache
 # Total Files: 3
 # Memory Entries: 2
 # 
