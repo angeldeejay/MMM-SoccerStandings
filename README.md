@@ -1,8 +1,12 @@
-# MMM-MyTeams-LeagueTable
+# MMM-SoccerStandings
 
 A comprehensive **MagicMirror²** module that displays football league standings from multiple competitions including the FIFA 2026 World Cup , UEFA Champions League (UCL), UEFA Europa League (UEL), UEFA Europa Conference League (ECL), English Premier League (EPL), German Bundesliga,French La Ligue , Italian Serie A , Spanish Primera División, Portuguese Liga, SPFL (Scottish Professional Football League) and Scottish Championship (SPFLC) as well as most other European and World wide leagues, with data sourced from the official website of the BBC Sport with robust fallback data and detailed error handling.
 
-- **Author**: gitgitaway
+Inspired from [MMM-MMM-MyTeams-LeagueTable](https://github.com/gitgitaway/MMM-MMM-MyTeams-LeagueTable)
+
+- **Author**: [
+    <img src="//avatars.githubusercontent.com/u/142350" width="16" height="16" />
+  ](#) [Andrés Vanegas <angeldeejay>](https://github.com/angeldeejay)
 
 [![MagicMirror²](https://img.shields.io/badge/MagicMirror%C2%B2-v2.1.0+-blue.svg)](https://magicmirror.builders)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -108,19 +112,19 @@ cd ~/MagicMirror/modules/
 2. Clone this repository:
 
 ```bash
-git clone https://github.com/gitgitaway/MMM-MyTeams-LeagueTable.git
+git clone https://github.com/gitgitaway/MMM-SoccerStandings.git
 ```
 
 3. Install dependencies:
 ```bash
-cd modules/MMM-MyTeams-LeagueTable
+cd modules/MMM-SoccerStandings
 npm install
 ```
 
 ## Update
 
 ```bash
-cd ~/MagicMirror/modules/MMM-MyTeams-LeagueTable
+cd ~/MagicMirror/modules/MMM-SoccerStandings
 git pull
 ```
 ## Documentation
@@ -135,7 +139,7 @@ To use this module, add it to the modules array in the `~/MagicMirror/config/con
 
 ```javascript
 {
-  module: "MMM-MyTeams-LeagueTable",
+  module: "MMM-SoccerStandings",
   position: "top_right",
   config: {
     selectedLeagues: ["SPAIN_LA_LIGA"]
@@ -147,10 +151,10 @@ To use this module, add it to the modules array in the `~/MagicMirror/config/con
 
 ```javascript
 {
- module: "MMM-MyTeams-LeagueTable",
-   position: "top_left",
-   header: "League Standings", // Set to null  or  "League Standings",
-   config: {
+  module: "MMM-SoccerStandings",
+  position: "top_left",
+  header: "League Standings", // Set to null  or  "League Standings",
+  config: {
     updateInterval: 30 * 60 * 1000, // How often to refresh (ms) – default: 30 min
     retryDelay: 15000, // Delay between retry attempts after an error (ms)
     maxRetries: 3, // Stop retrying after this many failures
@@ -160,31 +164,28 @@ To use this module, add it to the modules array in the `~/MagicMirror/config/con
     maxTeams: 36, // 0 = show all teams
     highlightTeams: ["Celtic", "Hearts"], // Emphasize teams by exact name e.g. ["Celtic", "Hearts"],
     scrollable: true, // Enable vertical scrolling if max height exceeded
-
     // ===== NEW: League Selection System (replaces old individual toggles) =====
     // Method 1: Use selectedLeagues array to choose specific leagues by code
     // Leave empty to use legacy showXXX options, or populate with league codes
     // Example: Scottish Premiership enabled by default
     // Add more league codes here, e.g., "ENGLAND_PREMIER_LEAGUE", "GERMANY_BUNDESLIGA", etc.
     selectedLeagues: [
-    "SCOTLAND_PREMIERSHIP",
-    "ENGLAND_PREMIER_LEAGUE",
-    "GERMANY_BUNDESLIGA",
-    "FRANCE_LIGUE1",
-    "SPAIN_LA_LIGA",
-    "ITALY_SERIE_A",
-    "PORTUGAL_PRIMEIRA_LIGA",
-    "BELGIUM_PRO_LEAGUE",
-    "NETHERLANDS_EREDIVISIE",
-    "UEFA_EUROPA_CONFERENCE_LEAGUE",
-    "UEFA_EUROPA_LEAGUE",
-    "UEFA_CHAMPIONS_LEAGUE",
-    "WORLD_CUP_2026" // Enable during World Cup 2026
+      "SCOTLAND_PREMIERSHIP",
+      "ENGLAND_PREMIER_LEAGUE",
+      "GERMANY_BUNDESLIGA",
+      "FRANCE_LIGUE1",
+      "SPAIN_LA_LIGA",
+      "ITALY_SERIE_A",
+      "PORTUGAL_PRIMEIRA_LIGA",
+      "BELGIUM_PRO_LEAGUE",
+      "NETHERLANDS_EREDIVISIE",
+      "UEFA_EUROPA_CONFERENCE_LEAGUE",
+      "UEFA_EUROPA_LEAGUE",
+      "UEFA_CHAMPIONS_LEAGUE",
+      "WORLD_CUP_2026", // Enable during World Cup 2026
     ],
-
     // Method 2: Use legacyLeagueToggle = true to enable old config style (for backward compatibility)
     legacyLeagueToggle: false, // If true, uses showSPFL, showEPL, etc. from config
-          
     // ===== LEGACY League toggles (used if legacyLeagueToggle: true) =====  // Set true to show, false to hide
     showSPFL: true, // Show Scottish Premiership
     showSPFLC: false, // Show Scottish Championship
@@ -192,25 +193,21 @@ To use this module, add it to the modules array in the `~/MagicMirror/config/con
     showUCL: false, // Show UEFA Champions League
     showUEL: false, // Show UEFA Europa League
     showECL: false, // Show UEFA Europa Conference League
-    
     // ===== NEW: Automatic button generation from selectedLeagues =====
     autoGenerateButtons: true, // Auto-create buttons for all leagues in selectedLeagues
     showLeagueButtons: true, // Show/hide league selector buttons in header
     autoFocusRelevantSubTab: true, // Automatically focus on the sub-tab with live or upcoming matches
-
     // ===== NEW: UEFA League Competitions Specific Options =====
     showUEFAleagues: true, // Set to true to show UEFA leagues in league switcher
     showUEFAnockouts: ["Playoff", "Rd16", "QF", "SF", "Final"], // UEFA knockout stages to show
-
     // ===== NEW: FIFA World Cup 2026 Specific Options =====
     showWC2026: true, // Set to true to show World Cup 2026 in league switcher
     onlyShowWorldCup2026: false, // If true, only shows World Cup 2026 view
-    showWC2026Groups: ["A","B","C","D","E","F","G","H","I","J","K","L"], // Groups to show
+    showWC2026Groups: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"], // Groups to show
     showWC2026Knockouts: ["Rd32", "Rd16", "QF", "SF", "TP", "Final"], // Knockout rounds to show
     defaultWCSubTab: "C", // Default tab to focus on start-up (e.g., "C", "Final", etc.)
     displayAllTabs: true, // Override to show all tabs regardless of stage completion
     useMockData: false, // For testing use only (only for World Cup 2026) for when data not available - Swet to false before competion begins
-
     // ===== Display Options =====
     showPosition: true, // Show table position
     showTeamLogos: true, // Show team logos
@@ -227,40 +224,32 @@ To use this module, add it to the modules array in the `~/MagicMirror/config/con
     enhancedIndicatorShapes: true, // true = shape-coded tokens (circle/square/triangle); false = colored text only, no background
     firstPlaceColor: "rgb(190, 245, 190)", // Color for the team in first position
     highlightedColor: "rgba(255, 255, 255, 0.1)", // Color for highlighted teams
-    
     // ===== UX Options (Phase 4) =====
     tableDensity: "normal", // Table row density: "compact", "normal", "comfortable"
     fixtureDateFilter: null, // Filter fixtures by date range: null (show all), "today", "week", "month", or {start: "YYYY-MM-DD", end: "YYYY-MM-DD"}
     enableVirtualScrolling: true, // Enable virtual scrolling for large tables (>50 rows)
     virtualScrollThreshold: 10, // Number of rows before virtual scrolling activates
-
-    
     // ===== Auto-cycling options =====
     autoCycle: true, // Enable auto-cycling between leagues
     cycleInterval: 15 * 1000, // Time to display each league (15 seconds)
     wcSubtabCycleInterval: 20 * 1000, // Time to display each WC sub-tab (groups/knockouts)
     autoCycleWcSubtabs: true, // Allow auto-cycling of World Cup sub-tabs
-
-    
     // Theme overrides
     darkMode: true, // null=auto, true=force dark, false=force light
     fontColorOverride: "#FFFFFF", // Set to "null" for your existing css colour scheme or override all font colors "#FFFFFF" to force white text
     opacityOverride: null, // null=auto,  set to  1.0 to force full opacity
-    
     // ===== Theme Options (Phase 4) =====
     theme: "auto", // Color theme: "auto" (follows system), "light", "dark"
-    customTeamColors: {"Celtic": "#018749", "Hearts": "#ea00ff86"}, // Custom colors for specific teams: {"Team Name": "#HEXCOLOR"}
-    
+    customTeamColors: { Celtic: "#018749", Hearts: "#ea00ff86" }, // Custom colors for specific teams: {"Team Name": "#HEXCOLOR"}
     // Debug
     debug: false, // Set to true to enable console logging
     dateTimeOverride: null, // Override system date/time for testing. Use ISO date format (e.g., "2026-01-15" or "2026-01-15T14:30:00Z"). null = use system date
-
     // Cache controls
-    clearCacheButton: true,    // Allows user to clear cache from the display
+    clearCacheButton: true, // Allows user to clear cache from the display
     clearCacheOnStart: false, // Set to true to force-clear ALL caches (disk, fixture, logo) on every module start - useful for development and troubleshooting
-    maxTableHeight: 520 // Height in px to show 12 teams
-   }
+    maxTableHeight: 520, // Height in px to show 12 teams
   },
+},
 ```
 
 See - **[Configuration User Guide](./documentation/Configuration_User_Guide.md)**: for further detailed configuration options.
