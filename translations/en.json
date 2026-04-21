@@ -105,10 +105,15 @@
   "COL_POINTS": "Pts",
   "COL_FORM": "Form",
   "PLAYOFF": "Playoff",
+  "RD32": "Rd32",
   "ROUND_OF_32": "Rd32",
+  "RD16": "Rd16",
   "ROUND_OF_16": "Rd16",
+  "QF": "QF",
   "QUARTER_FINAL": "QF",
+  "SF": "SF",
   "SEMI_FINAL": "SF",
+  "TP": "3rd Place",
   "THIRD_PLACE": "3rd Place",
   "FINAL": "Final"
 }

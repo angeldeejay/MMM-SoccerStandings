@@ -8,9 +8,9 @@ class BBCParser extends BaseParser {
 	/**
 	 * Parse league data from HTML (BBC Sport structure)
 	 * This method orchestrates the parsing process by trying multiple strategies.
-	 * It first attempts to find standard HTML tables, and if that fails, it tries 
+	 * It first attempts to find standard HTML tables, and if that fails, it tries
 	 * the modern Grid/Div layout used by newer BBC Sport pages.
-	 * 
+	 *
 	 * @param {string} html - Raw HTML content from the BBC Sport league page
 	 * @param {string} leagueType - The internal code for the league (e.g., "SCOTLAND_PREMIERSHIP")
 	 * @returns {object} - A standardized league data object containing team standings and metadata
@@ -36,7 +36,7 @@ class BBCParser extends BaseParser {
 					this.logDebug(
 						`Checking table candidate (length: ${tableHtml.length})`
 					);
-					
+
 					// HEURISTIC: Reject tables that don't look like league standings by checking for required headers.
 					// This prevents parsing unrelated tables like "Recent Results" or "Next Fixtures".
 					if (
@@ -334,7 +334,7 @@ class BBCParser extends BaseParser {
 			// Improved fixture block detection using lookahead for the next fixture or section boundary
 			// This handles nested tags better than matching closing tags
 			const fixtureRegex =
-				/<(article|div|li)([^>]*?(?:class="[^"]*?(?:sp-c-fixture|GridContainer|MatchItem|FixtureBlock|MatchListItem|HeadToHeadWrapper|StyledHeadToHeadWrapper|MatchGroup|FixtureList|ListItem|MatchRecord|LiveMatch|UpcomingMatch)[^"]*?"|data-event-id="[^"]+"|data-testid="[^"]*(?:fixture|match-list-item|match-record)[^"]*")[^>]*?)>([\s\S]*?)(?=<article|<div[^>]*?(?:data-event-id|data-testid="[^"]*(?:fixture|match-list-item|match-record)[^"]*")|<li[^>]*?(?:class="[^"]*?(?:HeadToHeadWrapper|ListItem|MatchRecord)[^"]*?"|data-event-id)|<div[^>]*?class="[^"]*?(?:sp-c-fixture|GridContainer|MatchItem|FixtureBlock|MatchListItem|MatchGroup|FixtureList|ListItem|MatchRecord|LiveMatch|UpcomingMatch)[^"]*?"|$)/gi;
+				/<(article|div|li)([^>]*?(?:class="[^"]*?(?:sp-c-fixture|GridContainer|MatchItem|FixtureBlock|MatchListItem|HeadToHeadWrapper|StyledHeadToHeadWrapper|MatchGroup|FixtureList|MatchRecord|LiveMatch|UpcomingMatch)[^"]*?"|data-event-id="[^"]+"|data-testid="[^"]*(?:fixture|match-list-item|match-record)[^"]*")[^>]*?)>([\s\S]*?)(?=<article|<div[^>]*?(?:data-event-id|data-testid="[^"]*(?:fixture|match-list-item|match-record)[^"]*")|<li[^>]*?(?:class="[^"]*?(?:HeadToHeadWrapper|MatchRecord)[^"]*?"|data-event-id)|<div[^>]*?class="[^"]*?(?:sp-c-fixture|GridContainer|MatchItem|FixtureBlock|MatchListItem|MatchGroup|FixtureList|MatchRecord|LiveMatch|UpcomingMatch)[^"]*?"|<\/ul>|<\/section>|$)/gi;
 
 			let m;
 			let sectionFixtures = 0;
@@ -444,6 +444,31 @@ class BBCParser extends BaseParser {
 					}
 				}
 
+				// Priority 4.5: BBC current HTML - DesktopValue spans give the full team name exactly
+				// once per team, in home→away order. Prevents mobile/desktop name collision where
+				// "Atlético" (MobileValue) and "Atletico Madrid" (DesktopValue) for the same team
+				// appear as two unique strings in Priority 5, causing wrong team assignment.
+				if (!homeTeam || !awayTeam || homeTeam === awayTeam) {
+					const desktopNames = [];
+					const dvRegex = /class="[^"]*DesktopValue[^"]*"[^>]*>([^<]+)</gi;
+					let dvMatch;
+					while ((dvMatch = dvRegex.exec(block)) !== null) {
+						const name = dvMatch[1].trim();
+						if (
+							name &&
+							name.length > 0 &&
+							name.length < 50 &&
+							!desktopNames.includes(name)
+						) {
+							desktopNames.push(name);
+						}
+					}
+					if (desktopNames.length >= 2) {
+						homeTeam = desktopNames[0];
+						awayTeam = desktopNames[1];
+					}
+				}
+
 				// Priority 5: Collect all team names and pick first two in order (Task: Fix Swap)
 				if (!homeTeam || !awayTeam || homeTeam === awayTeam) {
 					const allRaw = extractTeams(block);
@@ -500,18 +525,23 @@ class BBCParser extends BaseParser {
 				let scores = [];
 
 				// Step 1: Extract aggregate score first (if present).
-				// BBC Sport uses multiple formats: "(agg 3-2)", "(3-2 agg)", "agg 3-2",
-				// "aggregate 3-2", and "(3-2 on aggregate)".
-				// FIX: Require "agg" word if in brackets to avoid picking up match scores.
+				// P0: BBC current HTML uses data-testid="agg-score" with text like "(Agg 1-0)"
+				const aggTestidEl = block.match(
+					/data-testid="agg-score"[^>]*>\(?[Aa]gg\s+(\d+[-–]\d+)\)?</
+				);
+				// P1–P5: Legacy and other BBC formats
 				const aggMatch =
+					aggTestidEl ||
 					block.match(/\((?:agg(?:regate)?\s+)(\d+[-–]\d+)\s*\)/i) ||
 					block.match(/\((\d+[-–]\d+)\s*(?:agg(?:regate)?)\)/i) ||
 					block.match(/agg(?:regate)?\s*(\d+[-–]\d+)/i) ||
 					block.match(/(\d+[-–]\d+)\s*(?:on\s*)?agg(?:regate)?/i) ||
 					block.match(/aggregate\s*score[^<]*(\d+[-–]\d+)/i);
-				const aggregateScore = aggMatch ? aggMatch[1].replace("–", "-") : undefined;
+				const aggregateScore = aggMatch
+					? aggMatch[1].replace("–", "-")
+					: undefined;
 
-				// Step 1b: Look for "X-Y on the night" pattern — BBC often uses this for
+				// Step 1b: Look for "X-Y on the night" pattern - BBC often uses this for
 				// the 2nd-leg individual score when the aggregate is the displayed headline.
 				const onTheNightMatch =
 					block.match(/(\d+)[-–](\d+)\s+on\s+the\s+night/i) ||
@@ -523,17 +553,47 @@ class BBCParser extends BaseParser {
 				let blockForScoring = block;
 				if (aggregateScore) {
 					// Remove all variations of aggregate score notation from the block before score extraction
-					blockForScoring = block.replace(/\((?:agg(?:regate)?\s+)(\d+[-–]\d+)\s*\)/gi, "");
-					blockForScoring = blockForScoring.replace(/\((\d+[-–]\d+)\s*(?:agg(?:regate)?)\)/gi, "");
-					blockForScoring = blockForScoring.replace(/agg(?:regate)?\s*(\d+[-–]\d+)/gi, "");
-					blockForScoring = blockForScoring.replace(/(\d+[-–]\d+)\s*(?:on\s*)?agg(?:regate)?/gi, "");
-					blockForScoring = blockForScoring.replace(/aggregate\s*score[^<]*(\d+[-–]\d+)/gi, "");
+					blockForScoring = block.replace(
+						/\((?:agg(?:regate)?\s+)(\d+[-–]\d+)\s*\)/gi,
+						""
+					);
+					blockForScoring = blockForScoring.replace(
+						/\((\d+[-–]\d+)\s*(?:agg(?:regate)?)\)/gi,
+						""
+					);
+					blockForScoring = blockForScoring.replace(
+						/agg(?:regate)?\s*(\d+[-–]\d+)/gi,
+						""
+					);
+					blockForScoring = blockForScoring.replace(
+						/(\d+[-–]\d+)\s*(?:on\s*)?agg(?:regate)?/gi,
+						""
+					);
+					blockForScoring = blockForScoring.replace(
+						/aggregate\s*score[^<]*(\d+[-–]\d+)/gi,
+						""
+					);
 				}
 
-				// Step 1c: If "on the night" score was found, use it immediately — it is the
+				// Step 1c: If "on the night" score was found, use it immediately - it is the
 				// definitive individual-leg score and avoids picking up the aggregate.
 				if (onTheNightMatch) {
 					scores = [onTheNightMatch[1], onTheNightMatch[2]];
+				}
+
+				// Step 1.5: BBC current HTML - HomeScore/AwayScore stable class suffixes
+				// data-testid="score" wraps two child divs whose class ends in HomeScore / AwayScore.
+				// These suffix tokens are part of the component name and won't change with CSS-in-JS hash churn.
+				if (scores.length < 2) {
+					const homeEl = block.match(
+						/class="[^"]*HomeScore[^"]*"[^>]*>(\d+)<\/div>/
+					);
+					const awayEl = block.match(
+						/class="[^"]*AwayScore[^"]*"[^>]*>(\d+)<\/div>/
+					);
+					if (homeEl && awayEl) {
+						scores = [homeEl[1], awayEl[1]];
+					}
 				}
 
 				// Step 2: Check aria-label first as it's very reliable for current scores.
@@ -548,8 +608,10 @@ class BBCParser extends BaseParser {
 						const cleanAria = ariaText
 							.replace(/agg(?:regate)?\s*\d+[-–]\d+/gi, "")
 							.replace(/\d+[-–]\d+\s*(?:on\s*)?agg(?:regate)?/gi, "");
-						
-						const scorePair = cleanAria.match(/(\d+)\s*,\s*(\d+)/) || cleanAria.match(/(\d+)\s*[-–]\s*(\d+)/);
+
+						const scorePair =
+							cleanAria.match(/(\d+)\s*,\s*(\d+)/) ||
+							cleanAria.match(/(\d+)\s*[-–]\s*(\d+)/);
 						if (scorePair) {
 							scores = [scorePair[1], scorePair[2]];
 						}
@@ -566,15 +628,18 @@ class BBCParser extends BaseParser {
 					const candidateScores = scoresRaw
 						.map((s) => s.replace(/<[^>]*>/g, "").trim())
 						.filter((s) => /^\d+$/.test(s));
-					
+
 					if (candidateScores.length >= 2) {
 						scores = candidateScores;
 					}
 				}
 
-				// Step 4: Fallback to hyphenated score match
+				// Step 4: Fallback to hyphenated score match - capped at 2 digits to avoid
+				// matching year-month date strings like "2026-04" that appear in URLs/datetime attrs.
 				if (scores.length < 2) {
-					const sm = blockForScoring.match(/(\d+)\s*[-–,]\s*(\d+)/);
+					const sm = blockForScoring.match(
+						/(?<![0-9])(\d{1,2})\s*[-–]\s*(\d{1,2})(?![0-9])/
+					);
 					if (sm) {
 						scores = [sm[1], sm[2]];
 					}
@@ -605,34 +670,31 @@ class BBCParser extends BaseParser {
 				let statusStr = "";
 				let isLive = false;
 
-			// Improved status detection (Task: Precision)
-			// FIX: Only set live status for ACTUALLY live matches, not upcoming ones.
-			// BBC Sport has changed its CSS class names over time.  We therefore test
-			// MULTIPLE class name patterns so that either old or new BBC markup triggers
-			// correct live and finished detection.
+				// Improved status detection (Task: Precision)
+				// FIX: Only set live status for ACTUALLY live matches, not upcoming ones.
+				// BBC Sport has changed its CSS class names over time.  We therefore test
+				// MULTIPLE class name patterns so that either old or new BBC markup triggers
+				// correct live and finished detection.
 
-			// Helper: detect whether any known "live" class appears in this block.
-			// Covers: legacy "LiveFixture", modern "sp-c-fixture--live", and related variants.
-			const hasLiveClass =
-				block.includes("LiveFixture") ||
-				block.includes("sp-c-fixture--live") ||
-				block.includes("fixture--live") ||
-				block.includes("live-fixture") ||
-				/class="[^"]*\blive\b[^"]*"/.test(block) ||
-				/data-[a-z-]*status[^=]*=["'][^"']*live[^"']*["']/i.test(block) ||
-				/aria-label="[^"]*\blive\b[^"]*"/i.test(block);
+				// Helper: detect whether any known "live" class appears in this block.
+				// Covers: legacy "LiveFixture", modern "sp-c-fixture--live", and related variants.
+				const hasLiveClass =
+					block.includes("LiveFixture") ||
+					block.includes("sp-c-fixture--live") ||
+					block.includes("fixture--live") ||
+					block.includes("live-fixture") ||
+					/class="[^"]*\blive\b[^"]*"/.test(block) ||
+					/data-[a-z-]*status[^=]*=["'][^"']*live[^"']*["']/i.test(block) ||
+					/aria-label="[^"]*\blive\b[^"]*"/i.test(block);
 
-			// Helper: detect finished class names (old and modern BBC markup).
-			const hasFinishedClass =
-				block.includes("FinishedFixture") ||
-				block.includes("sp-c-fixture--result") ||
-				block.includes("fixture--result");
+				// Helper: detect finished class names (old and modern BBC markup).
+				const hasFinishedClass =
+					block.includes("FinishedFixture") ||
+					block.includes("sp-c-fixture--result") ||
+					block.includes("fixture--result");
 
-			// Priority 1: Check for finished status first
-				if (
-					hasFinishedClass ||
-					/\b(FT|PEN|Full time)\b/i.test(block)
-				) {
+				// Priority 1: Check for finished status first
+				if (hasFinishedClass || /\b(FT|PEN|Full time)\b/i.test(block)) {
 					const sm = block.match(/\b(FT|PEN)\b/i);
 					statusStr = sm ? sm[1].toUpperCase() : "FT";
 				}
@@ -1162,7 +1224,9 @@ class BBCParser extends BaseParser {
 			});
 
 			// Log which fixtures were kept after deduplication
-			this.logDebug(`[${leagueType}] *** Fixtures KEPT after deduplication: ***`);
+			this.logDebug(
+				`[${leagueType}] *** Fixtures KEPT after deduplication: ***`
+			);
 			dedupedFixtures.forEach((fix, idx) => {
 				this.logDebug(
 					`[${leagueType}]   ${idx + 1}. "${fix.homeTeam}" vs "${fix.awayTeam}" | ${fix.date}`
@@ -1186,7 +1250,9 @@ class BBCParser extends BaseParser {
 		this.logDebug(`[BBCParser-DETAILED] ===== END FIXTURES AFTER DEDUP =====`);
 
 		// FIX: FIRST - Remove fixtures with truncated/corrupted team names by finding better versions
-		this.logDebug(`[BBCParser-TRUNCATION] Checking for truncated team names...`);
+		this.logDebug(
+			`[BBCParser-TRUNCATION] Checking for truncated team names...`
+		);
 		const truncatedFixtures = [];
 
 		dedupedFixtures.forEach((fixture, idx) => {
@@ -1492,7 +1558,9 @@ class BBCParser extends BaseParser {
 
 		// FIX: Final cleanup - Apply known team name completions that weren't caught by automated detection
 		// This handles cases where BBC consistently uses partial names across ALL fixtures
-		this.logDebug(`[BBCParser-CLEANUP] Applying known team name completions...`);
+		this.logDebug(
+			`[BBCParser-CLEANUP] Applying known team name completions...`
+		);
 		const knownPartialNames = {
 			// UEFA European competitions common partial names
 			atletico: "Atletico Madrid",
@@ -1519,7 +1587,7 @@ class BBCParser extends BaseParser {
 					knownPartialNames[homeNorm].toLowerCase()
 			) {
 				this.logDebug(
-					`[BBCParser-CLEANUP] Completing home team: "${fixture.homeTeam}" → "${knownPartialNames[homeNorm]}"`
+					`[BBCParser-CLEANUP] Completing home team: "${fixture.homeTeam}" -> "${knownPartialNames[homeNorm]}"`
 				);
 				fixture.homeTeam = knownPartialNames[homeNorm];
 			}
@@ -1531,7 +1599,7 @@ class BBCParser extends BaseParser {
 					knownPartialNames[awayNorm].toLowerCase()
 			) {
 				this.logDebug(
-					`[BBCParser-CLEANUP] Completing away team: "${fixture.awayTeam}" → "${knownPartialNames[awayNorm]}"`
+					`[BBCParser-CLEANUP] Completing away team: "${fixture.awayTeam}" -> "${knownPartialNames[awayNorm]}"`
 				);
 				fixture.awayTeam = knownPartialNames[awayNorm];
 			}
@@ -1579,7 +1647,7 @@ class BBCParser extends BaseParser {
 
 							// Ensure second leg upcoming fixtures don't have scores that would categorise them as finished.
 							// Only clear scores when the second leg genuinely has not started yet.
-							// A fixture whose date is already in the past MUST have concluded — protect its
+							// A fixture whose date is already in the past MUST have concluded - protect its
 							// scores even when live-detection failed (e.g. BBC changed class names).
 							const secondLegStatus = (fixture.status || "").toUpperCase();
 							const todayStr = this.getCurrentDateString();
@@ -1598,7 +1666,7 @@ class BBCParser extends BaseParser {
 								fixture.homeScore !== undefined &&
 								fixture.awayScore !== undefined
 							) {
-								// Genuinely upcoming second leg — scores are likely the aggregate misapplied.
+								// Genuinely upcoming second leg - scores are likely the aggregate misapplied.
 								if (this.config.debug) {
 									console.log(
 										`[BBCParser] Clearing premature scores from upcoming 2nd leg: ${fixture.homeTeam} vs ${fixture.awayTeam} (${fixture.date})`
@@ -1620,7 +1688,7 @@ class BBCParser extends BaseParser {
 								other.aggregateScore = `${fixture.awayScore}-${fixture.homeScore}`;
 							}
 
-							// Same check for the symmetric fixture — also uses past-date guard.
+							// Same check for the symmetric fixture - also uses past-date guard.
 							const otherStatus = (other.status || "").toUpperCase();
 							const todayStr2 = this.getCurrentDateString();
 							const otherInPast = other.date < todayStr2;
@@ -1694,17 +1762,23 @@ class BBCParser extends BaseParser {
 				!f2.aggregateScore ||
 				f2.homeScore !== undefined ||
 				f2.awayScore !== undefined
-			) return;
+			)
+				return;
 
 			const aggParts = f2.aggregateScore.split("-").map(Number);
-			if (aggParts.length !== 2 || isNaN(aggParts[0]) || isNaN(aggParts[1])) return;
+			if (aggParts.length !== 2 || isNaN(aggParts[0]) || isNaN(aggParts[1]))
+				return;
 
 			// Find the matching 1st leg: same two teams (home/away swapped), earlier date, has scores
 			const firstLeg = dedupedFixtures.find((f1) => {
 				if (f1 === f2) return false;
 				if (f1.date >= f2.date) return false;
-				if (f1.homeScore === undefined || f1.awayScore === undefined) return false;
-				return teamsSimilar(f1.homeTeam, f2.awayTeam) && teamsSimilar(f1.awayTeam, f2.homeTeam);
+				if (f1.homeScore === undefined || f1.awayScore === undefined)
+					return false;
+				return (
+					teamsSimilar(f1.homeTeam, f2.awayTeam) &&
+					teamsSimilar(f1.awayTeam, f2.homeTeam)
+				);
 			});
 
 			if (!firstLeg) return;
@@ -1715,7 +1789,7 @@ class BBCParser extends BaseParser {
 			if (calcHome < 0 || calcAway < 0) {
 				if (this.config && this.config.debug) {
 					console.log(
-						`[BBCParser-2NDLEG] Negative score calc for ${f2.homeTeam} vs ${f2.awayTeam} (${f2.date}): agg=${f2.aggregateScore}, 1st=${firstLeg.homeScore}-${firstLeg.awayScore} → ${calcHome}-${calcAway}. Skipping.`
+						`[BBCParser-2NDLEG] Negative score calc for ${f2.homeTeam} vs ${f2.awayTeam} (${f2.date}): agg=${f2.aggregateScore}, 1st=${firstLeg.homeScore}-${firstLeg.awayScore} -> ${calcHome}-${calcAway}. Skipping.`
 					);
 				}
 				return;
@@ -1848,7 +1922,7 @@ class BBCParser extends BaseParser {
 		// Exact match replacements for truncated names (case-insensitive)
 		const replacements = {
 			// UEFA Competition truncations
-			"atletico": "Atletico Madrid",
+			atletico: "Atletico Madrid",
 			"nottm forrest": "Nottingham Forest",
 			"nottm forest": "Nottingham Forest",
 			// Scottish Premiership special cases
@@ -1857,21 +1931,29 @@ class BBCParser extends BaseParser {
 			// English Premier League special cases
 			"afc bournemouth": "Bournemouth",
 			// European clubs special cases
-			"paris saint germain": "Paris Sg",
-			"paris st germain": "Paris Sg",
+			"paris saint germain": "Paris SG",
+			"paris saint-germain": "Paris SG",
+			"paris st germain": "Paris SG",
+			"paris st-germain": "Paris SG",
+			germain: "Paris SG",
+			"st germain": "Paris SG",
+			"st-germain": "Paris SG",
 			"paris fc": "Paris Fc",
-			"leipzig": "Rb Leipzig",
+			leipzig: "Rb Leipzig",
 			"rb leipzig": "Rb Leipzig",
-			"oviedo": "Real Oviedo"
+			oviedo: "Real Oviedo",
+			"fc st pauli": "St Pauli",
+			"team to be confirmed": "-",
+			tbc: "-"
 		};
 
 		const lowerName = teamName.toLowerCase().trim();
-		
+
 		// Check for exact match in replacements
 		if (replacements[lowerName]) {
 			if (this.config.debug) {
 				console.log(
-					`[BBCParser-NORMALIZE] Expanding truncated name: "${teamName}" → "${replacements[lowerName]}"`
+					`[BBCParser-NORMALIZE] Expanding truncated name: "${teamName}" -> "${replacements[lowerName]}"`
 				);
 			}
 			return replacements[lowerName];
@@ -1922,7 +2004,7 @@ class BBCParser extends BaseParser {
 		//
 		// UEFA knockout calendar (typical month assignment):
 		//   Jan/Feb  → Playoff      (Rd32 or knockout play-offs)
-		//   March    → Rd16         (Round of 16 — NEVER QF or later)
+		//   March    → Rd16         (Round of 16 - NEVER QF or later)
 		//   April    → QF           (Quarter-final)
 		//   Apr/May  → SF           (Semi-final)
 		//   May/Jun  → Final
@@ -1942,11 +2024,18 @@ class BBCParser extends BaseParser {
 		// If the section-header stage contradicts the date, override with the date.
 		const stageUpper = stage.toUpperCase();
 		if (dateStage && stageUpper) {
-			const mismatch = (
-				(dateStage === "Rd16"   && (stageUpper === "QF" || stageUpper === "SF" || stageUpper === "FINAL")) ||
-				(dateStage === "QF"     && (stageUpper === "SF" || stageUpper === "FINAL")) ||
-				(dateStage === "Playoff"&& (stageUpper === "RD16" || stageUpper === "QF" || stageUpper === "SF" || stageUpper === "FINAL"))
-			);
+			const mismatch =
+				(dateStage === "Rd16" &&
+					(stageUpper === "QF" ||
+						stageUpper === "SF" ||
+						stageUpper === "FINAL")) ||
+				(dateStage === "QF" &&
+					(stageUpper === "SF" || stageUpper === "FINAL")) ||
+				(dateStage === "Playoff" &&
+					(stageUpper === "RD16" ||
+						stageUpper === "QF" ||
+						stageUpper === "SF" ||
+						stageUpper === "FINAL"));
 			if (mismatch) return dateStage;
 		}
 
@@ -1958,7 +2047,7 @@ class BBCParser extends BaseParser {
 		if (/^qf$/i.test(stage)) return "QF";
 		if (/^sf$/i.test(stage)) return "SF";
 		if (/^final$/i.test(stage)) return "Final";
-		
+
 		// If it's GS but we are in knockout months, reconsider
 		if (/^gs$/i.test(stage)) {
 			if (fixture.date) {
@@ -1986,7 +2075,7 @@ class BBCParser extends BaseParser {
 		if (/Semi|SF/i.test(stage)) return "SF";
 		if (/Final/i.test(stage)) return "Final";
 
-		// Priority 3: Month-based fallback — only reached when the fixture has no
+		// Priority 3: Month-based fallback - only reached when the fixture has no
 		// recognisable stage value.
 		if (fixture.date) {
 			const parts = fixture.date.split("-");

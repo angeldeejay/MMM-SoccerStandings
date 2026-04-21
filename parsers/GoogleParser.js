@@ -14,7 +14,9 @@ class GoogleParser extends BaseParser {
 	parseLeagueData(html, leagueType) {
 		try {
 			const teams = [];
-			this.logDebug(`Starting to parse ${leagueType} HTML data from Google Search`);
+			this.logDebug(
+				`Starting to parse ${leagueType} HTML data from Google Search`
+			);
 
 			// Google often uses standard <table> elements in their sports snippets
 			// We look for tables and pick the one that looks most like a league table
@@ -27,7 +29,9 @@ class GoogleParser extends BaseParser {
 				const tableHtml = m[1].toLowerCase();
 				// Check for common headers in Google's sports tables (P, W, D, L, GD, Pts)
 				if (
-					(tableHtml.includes(">p<") || tableHtml.includes(">played<") || tableHtml.includes(">pl<")) &&
+					(tableHtml.includes(">p<") ||
+						tableHtml.includes(">played<") ||
+						tableHtml.includes(">pl<")) &&
 					(tableHtml.includes(">pts<") || tableHtml.includes(">points<"))
 				) {
 					const rowCount = (tableHtml.match(/<tr/gi) || []).length;
@@ -57,14 +61,16 @@ class GoogleParser extends BaseParser {
 
 				while ((rowMatch = rowRegex.exec(bestTable)) !== null) {
 					const rowHtml = rowMatch[1];
-					
+
 					// Skip header rows
-					if (rowHtml.includes("<th") || 
-						rowHtml.toLowerCase().includes(">pts<") || 
+					if (
+						rowHtml.includes("<th") ||
+						rowHtml.toLowerCase().includes(">pts<") ||
 						rowHtml.toLowerCase().includes(">played<") ||
 						rowHtml.toLowerCase().includes(">team<")
-					) continue;
-					
+					)
+						continue;
+
 					if (!rowHtml.includes("<td")) continue;
 
 					const team = this.parseTeamRow(rowHtml, posCounter);
@@ -87,7 +93,10 @@ class GoogleParser extends BaseParser {
 				leagueType: leagueType
 			};
 		} catch (error) {
-			console.error(` MMM-SoccerStandings: [Google] Error parsing ${leagueType}:`, error);
+			console.error(
+				` MMM-SoccerStandings: [Google] Error parsing ${leagueType}:`,
+				error
+			);
 			return null;
 		}
 	}
@@ -107,7 +116,10 @@ class GoogleParser extends BaseParser {
 			while ((cellMatch = cellRegex.exec(rowHtml)) !== null) {
 				// Clean HTML tags and entities
 				let content = cellMatch[1].replace(/<[^>]*>/g, " ").trim();
-				content = content.replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+				content = content
+					.replace(/&nbsp;/g, " ")
+					.replace(/\s+/g, " ")
+					.trim();
 				cells.push(content);
 			}
 
@@ -117,7 +129,7 @@ class GoogleParser extends BaseParser {
 			// 1. Pos | Team | P | W | D | L | GD | Pts
 			// 2. Pos | Team | P | GD | Pts
 			// 3. Team | P | W | D | L | GD | Pts (Pos is implied or in first cell)
-			
+
 			let pos = parseInt(cells[0], 10);
 			let teamName = "";
 			let statsStartIdx = 2;
@@ -131,18 +143,25 @@ class GoogleParser extends BaseParser {
 				teamName = cells[1];
 				statsStartIdx = 2;
 			}
-			
+
 			// Clean up team name (sometimes it has rank prefix like "1 Manchester City")
 			teamName = teamName.replace(/^\d+\s+/, "").trim();
 
 			// Extract numeric stats after the name
-			const stats = cells.slice(statsStartIdx).map(c => {
+			const stats = cells.slice(statsStartIdx).map((c) => {
 				// Handle minus sign variations (U+2212, U+2013, etc.)
-				const cleaned = c.replace(/[−–—]/g, "-").replace(/[+]/g, "").trim();
+				const cleaned = c.replace(/[−–-]/g, "-").replace(/[+]/g, "").trim();
 				return parseInt(cleaned, 10);
 			});
-			
-			let played = 0, won = 0, drawn = 0, lost = 0, goalsFor = 0, goalsAgainst = 0, goalDifference = 0, points = 0;
+
+			let played = 0,
+				won = 0,
+				drawn = 0,
+				lost = 0,
+				goalsFor = 0,
+				goalsAgainst = 0,
+				goalDifference = 0,
+				points = 0;
 
 			// Heuristic based on number of columns
 			if (stats.length >= 6) {
@@ -151,12 +170,14 @@ class GoogleParser extends BaseParser {
 				won = stats[1] || 0;
 				drawn = stats[2] || 0;
 				lost = stats[3] || 0;
-				
+
 				if (stats.length >= 8) {
 					// Likely P, W, D, L, GF, GA, GD, Pts
 					goalsFor = stats[4] || 0;
 					goalsAgainst = stats[5] || 0;
-					goalDifference = !isNaN(stats[6]) ? stats[6] : (goalsFor - goalsAgainst);
+					goalDifference = !isNaN(stats[6])
+						? stats[6]
+						: goalsFor - goalsAgainst;
 					points = stats[7] || 0;
 				} else {
 					goalDifference = !isNaN(stats[4]) ? stats[4] : 0;

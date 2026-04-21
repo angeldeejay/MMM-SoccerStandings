@@ -70,7 +70,10 @@ class WikipediaParser extends BaseParser {
 
 			if (tableEnd === -1) break;
 
-			tables.push({ tableHtml: html.substring(openIdx, tableEnd), startIdx: openIdx });
+			tables.push({
+				tableHtml: html.substring(openIdx, tableEnd),
+				startIdx: openIdx
+			});
 			searchFrom = tableEnd;
 		}
 
@@ -107,11 +110,11 @@ class WikipediaParser extends BaseParser {
 	/**
 	 * Generic group-table finder used by both single-group and multi-group strategies.
 	 *
-	 * Strategy 1 — heading keyword match (most reliable):
+	 * Strategy 1 - heading keyword match (most reliable):
 	 *   Scan each wikitable's nearest preceding heading for the provided keywords.
 	 *   Wikipedia consistently titles split sections (e.g. "Play-off table").
 	 *
-	 * Strategy 2 — size-based match (fallback when no heading matches):
+	 * Strategy 2 - size-based match (fallback when no heading matches):
 	 *   Look for a football-like table whose data-row count is within ±2 of expectedSize.
 	 *   Tolerance of 2 covers "Source" and "Notes" footer rows that use <td>.
 	 *
@@ -124,14 +127,14 @@ class WikipediaParser extends BaseParser {
 	 * @returns {{tableHtml: string, tableIndex: number}|null}
 	 */
 	_findGroupTable(html, lc, tables, keywords, expectedSize, usedIndices) {
-		const kws = keywords.map(k => k.toLowerCase());
+		const kws = keywords.map((k) => k.toLowerCase());
 
 		// Strategy 1: heading keyword match
 		for (let i = 0; i < tables.length; i++) {
 			if (usedIndices && usedIndices.has(i)) continue;
 			const { tableHtml, startIdx } = tables[i];
 			const heading = this._findNearestHeading(html, lc, startIdx);
-			if (!kws.some(kw => heading.includes(kw))) continue;
+			if (!kws.some((kw) => heading.includes(kw))) continue;
 			if (this._isScorerTable(tableHtml)) continue;
 			if (!this._hasFootballHeaders(tableHtml)) continue;
 			return { tableHtml, tableIndex: i };
@@ -146,7 +149,7 @@ class WikipediaParser extends BaseParser {
 				if (!this._hasFootballHeaders(tableHtml)) continue;
 
 				const rowMatches = tableHtml.match(/<tr[^>]*>[\s\S]*?<\/tr>/gi) || [];
-				const dataRows = rowMatches.filter(r => /<td/i.test(r));
+				const dataRows = rowMatches.filter((r) => /<td/i.test(r));
 				if (Math.abs(dataRows.length - expectedSize) <= 2) {
 					return { tableHtml, tableIndex: i };
 				}
@@ -167,7 +170,9 @@ class WikipediaParser extends BaseParser {
 	_findSplitGroupTable(html, tables, splitConfig) {
 		const lc = html.toLowerCase();
 		const result = this._findGroupTable(
-			html, lc, tables,
+			html,
+			lc,
+			tables,
 			splitConfig.championshipKeywords || [],
 			splitConfig.championshipSize,
 			null
@@ -200,30 +205,50 @@ class WikipediaParser extends BaseParser {
 
 	/**
 	 * Detect if a table is likely a "Top Scorers" table rather than a standings table.
-	 * @param {string} tableHtml 
+	 * @param {string} tableHtml
 	 * @returns {boolean}
 	 */
 	_isScorerTable(tableHtml) {
 		const tl = tableHtml.toLowerCase();
 		// Scorer tables have "Goals" or "Scorer" headers but usually lack "Pts" or "Pld"
-		const hasScorerHeaders = tl.includes(">goals<") || tl.includes(">scorer<") || tl.includes(">player<");
-		const hasStandingsHeaders = tl.includes(">pts<") || tl.includes(">points<") || tl.includes(">pld<") || tl.includes(">played<");
-		
+		const hasScorerHeaders =
+			tl.includes(">goals<") ||
+			tl.includes(">scorer<") ||
+			tl.includes(">player<");
+		const hasStandingsHeaders =
+			tl.includes(">pts<") ||
+			tl.includes(">points<") ||
+			tl.includes(">pld<") ||
+			tl.includes(">played<");
+
 		return hasScorerHeaders && !hasStandingsHeaders;
 	}
 
 	/**
 	 * Verify if a table has standard football standings headers.
-	 * @param {string} tableHtml 
+	 * @param {string} tableHtml
 	 * @returns {boolean}
 	 */
 	_hasFootballHeaders(tableHtml) {
 		const tl = tableHtml.toLowerCase();
-		const footballHeaders = ["team", "club", "pos", "pld", "played", "pts", "points", "mp"];
+		const footballHeaders = [
+			"team",
+			"club",
+			"pos",
+			"pld",
+			"played",
+			"pts",
+			"points",
+			"mp"
+		];
 		// Require at least two standard headers to match
 		let matchCount = 0;
 		for (const h of footballHeaders) {
-			if (tl.includes(`>${h}<`) || tl.includes(`>${h}.<`) || tl.includes(`>${h} `)) {
+			if (
+				tl.includes(`>${h}<`) ||
+				tl.includes(`>${h}.<`) ||
+				tl.includes(`>${h} `)
+			) {
 				matchCount++;
 			}
 		}
@@ -237,7 +262,7 @@ class WikipediaParser extends BaseParser {
 	 *   Iterates splitConfig.groups and finds a wikitable for each group definition
 	 *   using heading keywords first, then size matching.  Returns a splitGroups array
 	 *   alongside teams (= championship group, for backward compatibility).
-	 *   Groups that cannot be found are skipped gracefully — partial results are returned
+	 *   Groups that cannot be found are skipped gracefully - partial results are returned
 	 *   so a partially-complete display is shown rather than nothing at all.
 	 *
 	 * Single-group fallback:
@@ -253,8 +278,11 @@ class WikipediaParser extends BaseParser {
 		try {
 			// Prefer the directly-passed splitConfig (avoids shared-singleton race condition)
 			// and fall back to the stored this.config.splitConfig for backward compatibility.
-			const splitConfig = splitConfigParam || (this.config && this.config.splitConfig) || null;
-			this.logDebug(`Starting to parse ${leagueType} HTML data from Wikipedia${splitConfig ? " (split-league)" : ""}`);
+			const splitConfig =
+				splitConfigParam || (this.config && this.config.splitConfig) || null;
+			this.logDebug(
+				`Starting to parse ${leagueType} HTML data from Wikipedia${splitConfig ? " (split-league)" : ""}`
+			);
 
 			const allTablesWithPos = this._extractWikiTables(html);
 			this.logDebug(`Found ${allTablesWithPos.length} wikitables on page`);
@@ -276,7 +304,9 @@ class WikipediaParser extends BaseParser {
 
 				for (const groupDef of splitConfig.groups) {
 					const result = this._findGroupTable(
-						html, lc, allTablesWithPos,
+						html,
+						lc,
+						allTablesWithPos,
 						groupDef.keywords || [],
 						groupDef.size,
 						usedIndices
@@ -287,17 +317,23 @@ class WikipediaParser extends BaseParser {
 						const groupTeams = this._extractTeamsFromTable(result.tableHtml);
 						if (groupTeams.length > 0) {
 							splitGroups.push({ label: groupDef.label, teams: groupTeams });
-							this.logDebug(`[Multi-group] Found "${groupDef.label}" with ${groupTeams.length} teams`);
+							this.logDebug(
+								`[Multi-group] Found "${groupDef.label}" with ${groupTeams.length} teams`
+							);
 						}
 					} else {
-						this.logDebug(`[Multi-group] Could not find table for group "${groupDef.label}"`);
+						this.logDebug(
+							`[Multi-group] Could not find table for group "${groupDef.label}"`
+						);
 					}
 				}
 
 				if (splitGroups.length > 0) {
 					// teams = top group teams for backward compat with isDataComplete / pre-split guard
 					const topTeams = splitGroups[0].teams;
-					this.logDebug(`[Multi-group] Returning ${splitGroups.length} groups for ${leagueType}`);
+					this.logDebug(
+						`[Multi-group] Returning ${splitGroups.length} groups for ${leagueType}`
+					);
 					return {
 						teams: topTeams,
 						splitGroups: splitGroups,
@@ -308,7 +344,9 @@ class WikipediaParser extends BaseParser {
 					};
 				}
 				// If no group tables were found (split not yet occurred), fall through to single-group path
-				this.logDebug(`[Multi-group] No group tables found yet for ${leagueType} — pre-split season`);
+				this.logDebug(
+					`[Multi-group] No group tables found yet for ${leagueType} - pre-split season`
+				);
 			}
 
 			// === SINGLE-GROUP / PRE-SPLIT PATH ===
@@ -317,13 +355,21 @@ class WikipediaParser extends BaseParser {
 
 			// Try to locate the championship group table via the legacy championshipKeywords
 			if (splitConfig && allTablesWithPos.length > 0) {
-				const champTable = this._findSplitGroupTable(html, allTablesWithPos, splitConfig);
+				const champTable = this._findSplitGroupTable(
+					html,
+					allTablesWithPos,
+					splitConfig
+				);
 				if (champTable) {
 					bestTable = champTable;
 					splitGroupFound = true;
-					this.logDebug(`[Split] Found championship group table for ${leagueType}`);
+					this.logDebug(
+						`[Split] Found championship group table for ${leagueType}`
+					);
 				} else {
-					this.logDebug(`[Split] No championship group table found for ${leagueType} — using full table`);
+					this.logDebug(
+						`[Split] No championship group table found for ${leagueType} - using full table`
+					);
 				}
 			}
 
@@ -334,7 +380,7 @@ class WikipediaParser extends BaseParser {
 					if (this._isScorerTable(tableHtml)) continue;
 					if (!this._hasFootballHeaders(tableHtml)) continue;
 					const rowMatches = tableHtml.match(/<tr[^>]*>[\s\S]*?<\/tr>/gi) || [];
-					const dataRows = rowMatches.filter(r => /<td/i.test(r));
+					const dataRows = rowMatches.filter((r) => /<td/i.test(r));
 					if (dataRows.length > maxRows) {
 						maxRows = dataRows.length;
 						bestTable = tableHtml;
@@ -354,7 +400,9 @@ class WikipediaParser extends BaseParser {
 				return null;
 			}
 
-			this.logDebug(`Parsed ${teams.length} teams for ${leagueType} from Wikipedia${splitGroupFound ? " (championship group)" : ""}`);
+			this.logDebug(
+				`Parsed ${teams.length} teams for ${leagueType} from Wikipedia${splitGroupFound ? " (championship group)" : ""}`
+			);
 
 			return {
 				teams: teams,
@@ -364,7 +412,10 @@ class WikipediaParser extends BaseParser {
 				leagueType: leagueType
 			};
 		} catch (error) {
-			console.error(` MMM-SoccerStandings: [Wikipedia] Error parsing ${leagueType}:`, error);
+			console.error(
+				` MMM-SoccerStandings: [Wikipedia] Error parsing ${leagueType}:`,
+				error
+			);
 			return null;
 		}
 	}
@@ -431,9 +482,14 @@ class WikipediaParser extends BaseParser {
 			// Wikipedia uses U+2212 (−) as the minus sign for negative GD values.
 			const statCells = cells.slice(nameIdx + 1);
 			const stats = statCells
-				.map(c => c.replace(/\u2212/g, "-").replace(/[+\u2009]/g, "").trim())
-				.filter(c => /^-?\d+$/.test(c))
-				.map(c => parseInt(c, 10));
+				.map((c) =>
+					c
+						.replace(/\u2212/g, "-")
+						.replace(/[+\u2009]/g, "")
+						.trim()
+				)
+				.filter((c) => /^-?\d+$/.test(c))
+				.map((c) => parseInt(c, 10));
 
 			// Wikipedia league table column order: Pld, W, D, L, GF, GA, GD, Pts
 			const played = stats[0] || 0;
@@ -443,10 +499,14 @@ class WikipediaParser extends BaseParser {
 			const goalsFor = stats[4] || 0;
 			const goalsAgainst = stats[5] || 0;
 			// GD may be at index 6 (if GF and GA are present) or computed if short table
-			const goalDifference = stats.length >= 8
-				? (stats[6] !== undefined ? stats[6] : goalsFor - goalsAgainst)
-				: goalsFor - goalsAgainst;
-			const points = stats.length >= 8 ? (stats[7] || 0) : (stats[stats.length - 1] || 0);
+			const goalDifference =
+				stats.length >= 8
+					? stats[6] !== undefined
+						? stats[6]
+						: goalsFor - goalsAgainst
+					: goalsFor - goalsAgainst;
+			const points =
+				stats.length >= 8 ? stats[7] || 0 : stats[stats.length - 1] || 0;
 
 			return {
 				position,

@@ -352,7 +352,7 @@ Module.register("MMM-SoccerStandings", {
 	},
 
 	// Standardize team names for comparisons and logo lookups.
-	// INTENTIONAL DUPLICATE of logo-resolver.js::normalize() — kept here because
+	// INTENTIONAL DUPLICATE of logo-resolver.js::normalize() - kept here because
 	// the frontend runs in the Electron browser context where Node.js require() is
 	// unavailable, so the logic cannot be shared via a common module at runtime.
 	// If you update the normalization logic, update logo-resolver.js::normalize() too.
@@ -448,7 +448,7 @@ Module.register("MMM-SoccerStandings", {
 			}
 		}
 
-		// MASTER TOGGLE OVERRIDES — only act when explicitly set (null = no-op, respects selectedLeagues).
+		// MASTER TOGGLE OVERRIDES - only act when explicitly set (null = no-op, respects selectedLeagues).
 		// true  → force-add to enabledLeagueCodes (convenience shortcut).
 		// false → force-remove from enabledLeagueCodes (explicit opt-out).
 		// null  → do nothing; selectedLeagues is the sole source of truth.
@@ -581,7 +581,7 @@ Module.register("MMM-SoccerStandings", {
 		if (requiresBBCSpecialFetcher) {
 			if (provider !== "auto" && provider !== "bbc") {
 				Log.warn(
-					` MMM-SoccerStandings: provider="${provider}" cannot be used for ${leagueCode} — this league requires BBC's special fetcher. Falling back to BBC.`
+					` MMM-SoccerStandings: provider="${provider}" cannot be used for ${leagueCode} - this league requires BBC's special fetcher. Falling back to BBC.`
 				);
 			}
 			const chain = buildChain(
@@ -671,7 +671,7 @@ Module.register("MMM-SoccerStandings", {
 			};
 		}
 
-		// Requested provider has no URL for this league — warn and fall through to auto.
+		// Requested provider has no URL for this league - warn and fall through to auto.
 		if (provider !== "auto" && !urls[provider]) {
 			Log.warn(
 				` MMM-SoccerStandings: provider="${provider}" has no URL for ${leagueCode}. Using auto fallback.`
@@ -1131,7 +1131,7 @@ Module.register("MMM-SoccerStandings", {
 
 		// Task: Reduce refresh time for live matches to once per 3 mins.
 		// Also increases refresh rate when today's fixtures have passed kick-off but
-		// no FT status has been detected yet — compensates for BBC Sport class-name
+		// no FT status has been detected yet - compensates for BBC Sport class-name
 		// changes that can prevent live detection from triggering correctly.
 		let hasLiveGames = false;
 		let mightHaveLiveGames = false;
@@ -1150,7 +1150,7 @@ Module.register("MMM-SoccerStandings", {
 						if (f.live) {
 							hasLiveGames = true;
 						}
-						// Today's fixture with kick-off passed but not marked finished — likely in play.
+						// Today's fixture with kick-off passed but not marked finished - likely in play.
 						const st = (f.status || "").toUpperCase();
 						const finished = st === "FT" || st === "PEN" || st === "AET";
 						if (
@@ -2094,7 +2094,7 @@ Module.register("MMM-SoccerStandings", {
 
 		// Show "Awaiting Split" badge when Phase 1 is complete but Phase 2
 		// groups have not yet been announced.  This is distinct from a data
-		// error — the data is valid; the league administrator simply has not
+		// error - the data is valid; the league administrator simply has not
 		// published the split group assignments yet.
 		if (currentData && currentData.awaitingSplit) {
 			const awaitingBadge = document.createElement("span");
@@ -2107,7 +2107,7 @@ Module.register("MMM-SoccerStandings", {
 			awaitingBadge.style.border = "1px solid #64B5F6";
 			awaitingBadge.setAttribute("aria-label", "Awaiting Phase 2 Split");
 			awaitingBadge.title =
-				"Phase 1 complete — awaiting the league split announcement for Phase 2 groups.";
+				"Phase 1 complete - awaiting the league split announcement for Phase 2 groups.";
 			awaitingBadge.appendChild(this.createIcon("fas fa-hourglass-half"));
 			awaitingBadge.appendChild(
 				document.createTextNode(` ${this.translate("AWAITING_SPLIT")}`)
@@ -2450,36 +2450,43 @@ Module.register("MMM-SoccerStandings", {
 					{ id: "SF", label: this.translate("SEMI_FINAL") },
 					{ id: "Final", label: this.translate("FINAL") }
 				];
-				uefaKnockouts.forEach((ko) => {
-					if (this.config.showUEFAnockouts.includes(ko.id)) {
-						let shouldShow = isTestMode;
-						if (!shouldShow && currentData && currentData.knockouts) {
-							const koKey = ko.id.toLowerCase();
-							if (
-								currentData.knockouts[koKey] &&
-								currentData.knockouts[koKey].length > 0
-							) {
-								shouldShow = true;
+				uefaKnockouts
+					.filter(
+						(ko) =>
+							this.currentLeague !== "UEFA_CHAMPIONS_LEAGUE" ||
+							(this.currentLeague === "UEFA_CHAMPIONS_LEAGUE" &&
+								!["Playoff", "Rd16"].includes(ko.id))
+					)
+					.forEach((ko) => {
+						if (this.config.showUEFAnockouts.includes(ko.id)) {
+							let shouldShow = isTestMode;
+							if (!shouldShow && currentData && currentData.knockouts) {
+								const koKey = ko.id.toLowerCase();
+								if (
+									currentData.knockouts[koKey] &&
+									currentData.knockouts[koKey].length > 0
+								) {
+									shouldShow = true;
+								}
+							}
+							if (shouldShow) {
+								const btn = document.createElement("button");
+								btn.className = `wc-btn ko-btn${this.currentSubTab === ko.id ? " active" : ""}`;
+								btn.textContent = ko.label;
+								btn.setAttribute("aria-label", `Show ${ko.label} fixtures`);
+								btn.setAttribute(
+									"aria-pressed",
+									this.currentSubTab === ko.id ? "true" : "false"
+								);
+								btn.setAttribute("role", "tab");
+								btn.addEventListener("click", () => {
+									this.currentSubTab = ko.id;
+									this.updateDom();
+								});
+								subTabsFragment.appendChild(btn);
 							}
 						}
-						if (shouldShow) {
-							const btn = document.createElement("button");
-							btn.className = `wc-btn ko-btn${this.currentSubTab === ko.id ? " active" : ""}`;
-							btn.textContent = ko.label;
-							btn.setAttribute("aria-label", `Show ${ko.label} fixtures`);
-							btn.setAttribute(
-								"aria-pressed",
-								this.currentSubTab === ko.id ? "true" : "false"
-							);
-							btn.setAttribute("role", "tab");
-							btn.addEventListener("click", () => {
-								this.currentSubTab = ko.id;
-								this.updateDom();
-							});
-							subTabsFragment.appendChild(btn);
-						}
-					}
-				});
+					});
 			}
 
 			subTabsContainer.appendChild(subTabsFragment);
@@ -3395,6 +3402,9 @@ Module.register("MMM-SoccerStandings", {
 		const fragment = document.createDocumentFragment();
 
 		const subTab = this.currentSubTab;
+		const tSubTab = this.translate(
+			subTab.trim().toUpperCase().replace(/\s+/g, "_")
+		);
 
 		// Handle "Table" sub-tab (for UEFA)
 		if (subTab === "Table") {
@@ -3455,7 +3465,7 @@ Module.register("MMM-SoccerStandings", {
 			) {
 				// Recompute results/today/future buckets from the raw fixture list using the
 				// ACTUAL current date.  The pre-computed uefaStages stored in the cache are
-				// built at parse time (server-side) and become stale on the following day —
+				// built at parse time (server-side) and become stale on the following day -
 				// e.g. Feb 24 fixtures remain in "today" when the cache is served on Feb 25.
 				// Re-classifying here guarantees correct bucket membership regardless of when
 				// the cache was written.
@@ -3560,10 +3570,10 @@ Module.register("MMM-SoccerStandings", {
 						const hasKnownStage = knownStages.includes(fixtureStage);
 
 						if (hasKnownStage) {
-							// Explicit stage label present — must match this tab exactly.
+							// Explicit stage label present - must match this tab exactly.
 							return fixtureStage === currentStageUpper;
 						}
-						// No recognised stage — fall back to month-based filtering.
+						// No recognised stage - fall back to month-based filtering.
 						const month = f.date.split("-")[1];
 						return allowedMonths.includes(month);
 					});
@@ -3677,7 +3687,7 @@ Module.register("MMM-SoccerStandings", {
 					msg.className = "dimmed small";
 					msg.style.textAlign = "center";
 					msg.textContent = this.translate("FIXTURES_NOT_AVAILABLE", {
-						subTab
+						subTab: tSubTab !== subTab && tSubTab !== "" ? tSubTab : subTab
 					});
 					fragment.appendChild(msg);
 				}
@@ -3685,7 +3695,9 @@ Module.register("MMM-SoccerStandings", {
 				// Standard view for other stages/leagues
 				var title = document.createElement("div");
 				title.className = "wc-title";
-				title.textContent = this.translate("SUBTAB_FIXTURES", { subTab });
+				title.textContent = this.translate("SUBTAB_FIXTURES", {
+					subTab: tSubTab !== subTab && tSubTab !== "" ? tSubTab : subTab
+				});
 				fragment.appendChild(title);
 
 				if (knockoutFixtures.length > 0) {
@@ -3700,7 +3712,7 @@ Module.register("MMM-SoccerStandings", {
 						msg.className = "bright small";
 					} else {
 						msg.textContent = this.translate("FIXTURES_NOT_AVAILABLE", {
-							subTab
+							subTab: tSubTab !== subTab && tSubTab !== "" ? tSubTab : subTab
 						});
 					}
 					fragment.appendChild(msg);
@@ -4037,7 +4049,7 @@ Module.register("MMM-SoccerStandings", {
 					status === "AET" ||
 					status === "PEN" ||
 					status === "PENS" ||
-					// BBC sometimes omits FT status — treat past-date, non-live fixtures as finished.
+					// BBC sometimes omits FT status - treat past-date, non-live fixtures as finished.
 					(!status && !fix.live && fix.date && fix.date < todayDateStr);
 				const isLive = fix.live === true || /\d+'|HT|LIVE/i.test(status);
 

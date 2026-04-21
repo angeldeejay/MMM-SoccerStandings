@@ -41,7 +41,7 @@ module.exports = NodeHelper.create({
 	categorizeError(error) {
 		const errorMsg = error.message || String(error);
 		const errorName = error.name || "Error";
-		
+
 		let category = "Unknown";
 		let userMessage = "An unexpected error occurred";
 		let suggestion = "Please try again later";
@@ -78,7 +78,7 @@ module.exports = NodeHelper.create({
 		else if (
 			errorMsg.includes("parse") ||
 			errorMsg.includes("JSON") ||
-			errorMsg.includes("No") && errorMsg.includes("data")
+			(errorMsg.includes("No") && errorMsg.includes("data"))
 		) {
 			category = "Parsing";
 			userMessage = "Data format changed - module may need update";
@@ -127,18 +127,19 @@ module.exports = NodeHelper.create({
 		const debug = config && config.debug;
 
 		if (debug)
-			console.log(
-				" MMM-SoccerStandings: Resolving logos on server-side..."
-			);
+			console.log(" MMM-SoccerStandings: Resolving logos on server-side...");
 
-		// Pre-compute once — avoids JSON.stringify(customMappings) per team lookup
-		const customMappingsKey = Object.keys(customMappings).length > 0
-			? JSON.stringify(customMappings)
-			: "";
+		// Pre-compute once - avoids JSON.stringify(customMappings) per team lookup
+		const customMappingsKey =
+			Object.keys(customMappings).length > 0
+				? JSON.stringify(customMappings)
+				: "";
 
 		// Helper to get logo with caching
 		const getCachedLogo = (teamName) => {
-			const cacheKey = customMappingsKey ? `${teamName}_${customMappingsKey}` : teamName;
+			const cacheKey = customMappingsKey
+				? `${teamName}_${customMappingsKey}`
+				: teamName;
 			if (this.resolvedLogoCache.has(cacheKey)) {
 				return this.resolvedLogoCache.get(cacheKey);
 			}
@@ -325,20 +326,22 @@ module.exports = NodeHelper.create({
 	async fetchLeagueData(url, leagueType, config, chainIndex = 0) {
 		const debug = config && config.debug;
 		const useMockData = config && config.useMockData;
-		const providerChain = (config && Array.isArray(config.providerChain))
-			? config.providerChain
-			: [];
+		const providerChain =
+			config && Array.isArray(config.providerChain) ? config.providerChain : [];
 
 		// Determine current provider from chain entry or fall back to config.provider / auto-detect.
 		const chainEntry = providerChain[chainIndex];
 		const currentProviderStr = chainEntry
 			? chainEntry.provider
-			: (config && config.provider ? config.provider : "auto");
+			: config && config.provider
+				? config.provider
+				: "auto";
 
 		if (debug) {
-			const chainInfo = providerChain.length > 0
-				? `Chain [${chainIndex + 1}/${providerChain.length}]`
-				: "Single";
+			const chainInfo =
+				providerChain.length > 0
+					? `Chain [${chainIndex + 1}/${providerChain.length}]`
+					: "Single";
 			console.log(
 				` MMM-SoccerStandings: Fetching ${leagueType} (${chainInfo}, Provider: ${currentProviderStr})...`
 			);
@@ -394,26 +397,28 @@ module.exports = NodeHelper.create({
 		}
 
 		// Handle UEFA competitions with separate table and fixture URLs.
-		// NOTE: provider config is intentionally bypassed here — UEFA competitions
+		// NOTE: provider config is intentionally bypassed here - UEFA competitions
 		// require both a standings table AND phase fixture articles, which only BBC
 		// provides in the required format. ESPN/Wikipedia cannot supply phase fixtures.
 		if (typeof url === "object" && url !== null && url.table && url.fixtures) {
-			const explicitProvider = config && config.provider && config.provider !== "auto";
+			const explicitProvider =
+				config && config.provider && config.provider !== "auto";
 			if (explicitProvider && chainIndex === 0) {
 				console.warn(
-					` MMM-SoccerStandings: [${leagueType}] provider="${config.provider}" ignored — UEFA competitions require BBC for phase fixture articles.`
+					` MMM-SoccerStandings: [${leagueType}] provider="${config.provider}" ignored - UEFA competitions require BBC for phase fixture articles.`
 				);
 			}
 			return this.fetchUEFACompetitionData(url, leagueType, config);
 		}
 
 		// Handle FIFA World Cup 2026 specifically if needed.
-		// NOTE: provider config is bypassed — WC2026 uses a dedicated FIFA scraper.
+		// NOTE: provider config is bypassed - WC2026 uses a dedicated FIFA scraper.
 		if (leagueType === "WORLD_CUP_2026") {
-			const explicitProvider = config && config.provider && config.provider !== "auto";
+			const explicitProvider =
+				config && config.provider && config.provider !== "auto";
 			if (explicitProvider && chainIndex === 0) {
 				console.warn(
-					` MMM-SoccerStandings: [WORLD_CUP_2026] provider="${config.provider}" ignored — WC2026 uses a dedicated FIFA scraper.`
+					` MMM-SoccerStandings: [WORLD_CUP_2026] provider="${config.provider}" ignored - WC2026 uses a dedicated FIFA scraper.`
 				);
 			}
 			return this.fetchFIFAWorldCup2026(url, config);
@@ -424,7 +429,11 @@ module.exports = NodeHelper.create({
 		if (chainIndex === 0) {
 			const cachedData = await this.cache.get(leagueType);
 			if (cachedData) {
-				const isValid = this.isDataComplete(cachedData, leagueType, config && config.splitConfig);
+				const isValid = this.isDataComplete(
+					cachedData,
+					leagueType,
+					config && config.splitConfig
+				);
 				if (debug) {
 					console.log(
 						` MMM-SoccerStandings: [${leagueType}] Cached data is ${isValid ? "complete" : "incomplete"}`
@@ -442,7 +451,10 @@ module.exports = NodeHelper.create({
 		}
 
 		// Select the right parser for the current URL / provider.
-		const { parser, name: providerName } = this._getParser(currentProviderStr, url);
+		const { parser, name: providerName } = this._getParser(
+			currentProviderStr,
+			url
+		);
 
 		try {
 			const html = await this.fetchWebPage(url);
@@ -452,7 +464,11 @@ module.exports = NodeHelper.create({
 				);
 			}
 
-			let leagueData = parser.parseLeagueData(html, leagueType, config.splitConfig || null);
+			let leagueData = parser.parseLeagueData(
+				html,
+				leagueType,
+				config.splitConfig || null
+			);
 
 			// For split leagues: detect when the parser returned the full pre-split table
 			// instead of the post-split championship group. This happens because the
@@ -469,13 +485,15 @@ module.exports = NodeHelper.create({
 			) {
 				const splitCfg = config.splitConfig;
 				// Use groups array sum when available (handles 3-group leagues like Belgium)
-				const fullSeasonCount = Array.isArray(splitCfg.groups) && splitCfg.groups.length > 0
-					? splitCfg.groups.reduce((sum, g) => sum + (g.size || 0), 0)
-					: (splitCfg.championshipSize || 0) + (splitCfg.relegationSize || 0);
+				const fullSeasonCount =
+					Array.isArray(splitCfg.groups) && splitCfg.groups.length > 0
+						? splitCfg.groups.reduce((sum, g) => sum + (g.size || 0), 0)
+						: (splitCfg.championshipSize || 0) + (splitCfg.relegationSize || 0);
 				// Determine how far into the season we are by taking the maximum
 				// games-played value across all returned teams.
 				const maxPlayed = leagueData.teams.reduce(
-					(max, t) => Math.max(max, t.played || 0), 0
+					(max, t) => Math.max(max, t.played || 0),
+					0
 				);
 
 				// Phase 2 is underway when at least the leading team has played
@@ -496,15 +514,19 @@ module.exports = NodeHelper.create({
 					leagueData.awaitingSplit = true;
 					if (debug) {
 						console.log(
-							` MMM-SoccerStandings: [${leagueType}] Phase 1 complete (max played: ${maxPlayed}/${splitCfg.regularSeasonGames}). Awaiting split announcement — serving Phase 1 final standings.`
+							` MMM-SoccerStandings: [${leagueType}] Phase 1 complete (max played: ${maxPlayed}/${splitCfg.regularSeasonGames}). Awaiting split announcement - serving Phase 1 final standings.`
 						);
 					}
 				} else {
-					// Phase 2 has started — check whether the returned table is correct.
-					// Case 1: Provider returned the full pre-split table (wrong — too many teams).
-					const gotPreSplitTable = phase2Started && leagueData.teams.length >= fullSeasonCount;
+					// Phase 2 has started - check whether the returned table is correct.
+					// Case 1: Provider returned the full pre-split table (wrong - too many teams).
+					const gotPreSplitTable =
+						phase2Started && leagueData.teams.length >= fullSeasonCount;
 					// Case 2: Provider returned only one group when we need all groups.
-					const gotSingleGroupOnly = phase2Started && splitCfg.showAllGroups && leagueData.teams.length < fullSeasonCount;
+					const gotSingleGroupOnly =
+						phase2Started &&
+						splitCfg.showAllGroups &&
+						leagueData.teams.length < fullSeasonCount;
 
 					if (gotPreSplitTable || gotSingleGroupOnly) {
 						const escalateReason = gotPreSplitTable
@@ -526,7 +548,11 @@ module.exports = NodeHelper.create({
 				leagueData.leagueType = leagueType;
 				leagueData.source = providerName;
 
-				const isFreshComplete = this.isDataComplete(leagueData, leagueType, config && config.splitConfig);
+				const isFreshComplete = this.isDataComplete(
+					leagueData,
+					leagueType,
+					config && config.splitConfig
+				);
 
 				if (!isFreshComplete) {
 					if (debug) {
@@ -537,7 +563,14 @@ module.exports = NodeHelper.create({
 
 					// Check if the cache holds better data before escalating the chain.
 					const existingCache = await this.cache.get(leagueType);
-					if (existingCache && this.isDataComplete(existingCache, leagueType, config && config.splitConfig)) {
+					if (
+						existingCache &&
+						this.isDataComplete(
+							existingCache,
+							leagueType,
+							config && config.splitConfig
+						)
+					) {
 						if (debug) {
 							console.log(
 								` MMM-SoccerStandings: [${leagueType}] Cache has complete data; serving that instead.`
@@ -586,7 +619,9 @@ module.exports = NodeHelper.create({
 				);
 			}
 
-			const advanced = await tryNextProvider(`${providerName} fetch/parse error`);
+			const advanced = await tryNextProvider(
+				`${providerName} fetch/parse error`
+			);
 			if (advanced !== null) return;
 
 			// All providers failed - log and fall back to cached data.
@@ -633,7 +668,7 @@ module.exports = NodeHelper.create({
 
 		// For split leagues that require all groups: cached data lacking splitGroups is stale.
 		// This prevents single-group BBC data from being served from cache for post-split leagues.
-		// EXCEPTION: awaitingSplit data (Phase 1 final standings) is valid — the split simply
+		// EXCEPTION: awaitingSplit data (Phase 1 final standings) is valid - the split simply
 		// has not been announced yet.  Treat it as complete so it can be cached and served.
 		if (splitConfig && splitConfig.showAllGroups && !data.splitGroups) {
 			if (data.awaitingSplit) {
@@ -653,9 +688,11 @@ module.exports = NodeHelper.create({
 		// This indicates a stub or transitional page (e.g. BBC during a league-split period)
 		// rather than genuine start-of-season data where the team count would be wrong too.
 		// We require >3 teams to avoid false positives on tiny cup-phase groups.
-		const allStatsZero = data.teams.length > 3 &&
+		const allStatsZero =
+			data.teams.length > 3 &&
 			data.teams.every(
-				(t) => (t.played || 0) === 0 && (t.points || 0) === 0 && (t.won || 0) === 0
+				(t) =>
+					(t.played || 0) === 0 && (t.points || 0) === 0 && (t.won || 0) === 0
 			);
 
 		if (allStatsZero) {
@@ -676,7 +713,8 @@ module.exports = NodeHelper.create({
 		if (isFallbackSource) {
 			// For fallback providers: data is complete if majority of teams have played games.
 			const teamsWhoPlayed = data.teams.filter((t) => (t.played || 0) > 0);
-			const complete = teamsWhoPlayed.length >= Math.ceil(data.teams.length * 0.5);
+			const complete =
+				teamsWhoPlayed.length >= Math.ceil(data.teams.length * 0.5);
 			if (debug) {
 				console.log(
 					` MMM-SoccerStandings: [isDataComplete] ${leagueType} (source: ${data.source}): ${teamsWhoPlayed.length}/${data.teams.length} teams played. Complete: ${complete}`
@@ -762,7 +800,9 @@ module.exports = NodeHelper.create({
 			const tablesUrl = "https://www.bbc.co.uk/sport/football/world-cup/table";
 
 			const fetchPromises = [this.fetchWebPage(tablesUrl)];
-			fixtureUrls.forEach((fUrl) => fetchPromises.push(this.fetchWebPage(fUrl)));
+			fixtureUrls.forEach((fUrl) =>
+				fetchPromises.push(this.fetchWebPage(fUrl))
+			);
 
 			const [tablesHtml, ...fixturesHtmlParts] =
 				await Promise.all(fetchPromises);
@@ -942,8 +982,6 @@ module.exports = NodeHelper.create({
 							.catch(() => "")
 					);
 				});
-
-
 			});
 
 			const results = await Promise.all([

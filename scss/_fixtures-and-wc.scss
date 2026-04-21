@@ -443,10 +443,10 @@
 	display: flex;
 	flex-direction: column;
 	height: auto;
-	border: 1px solid $white-10;
+	// border: 1px solid $white-10;
 	border-radius: 4px;
 	overflow: hidden;
-	background: rgba(34, 34, 34, 0.3);
+	// background: rgba(34, 34, 34, 0.3);
 }
 
 .uefa-section-wrapper.minimized-section {
@@ -459,13 +459,8 @@
 /* Title for each section - reduced padding and font size to maximize fixture space */
 .uefa-section-wrapper .wc-title {
 	flex: 0 0 auto;
-	padding: 4px 8px; /* Reduced from 8px 10px to save space */
-	font-size: 11px; /* Reduced font size */
-	// background: $header-surface;
-	border-bottom: 2px solid $gray-444;
+	font-size: var(--mtlt-font-size-table); /* Reduced font size */
 	text-align: center;
-	font-weight: bold;
-	letter-spacing: 1px;
 }
 
 /* Content area for each section */
@@ -580,7 +575,7 @@
 .ga-cell,
 .gd-cell,
 .points-cell {
-	width: 1.5rem;
+	width: 2rem;
 	text-align: center;
 }
 
@@ -641,6 +636,10 @@
 	text-align: var(--mtlt-fixture-date-align);
 	width: var(--mtlt-fixture-date-width);
 	overflow: hidden;
+	white-space: nowrap;
+	break-after: avoid;
+	word-break: keep-all;
+	line-break: strict;
 	text-overflow: ellipsis;
 }
 
@@ -654,7 +653,11 @@
 .fixture-header-home-team {
 	text-align: var(--mtlt-fixture-home-team-align);
 	width: var(--mtlt-fixture-team-width);
-	font-weight: 500;
+	font-weight: bold;
+	white-space: nowrap;
+	break-after: avoid;
+	word-break: keep-all;
+	line-break: strict;
 }
 
 .fixture-home-logo-v2,
@@ -674,7 +677,11 @@
 .fixture-header-away-team {
 	text-align: var(--mtlt-fixture-away-team-align);
 	width: var(--mtlt-fixture-team-width);
-	font-weight: 500;
+	font-weight: bold;
+	white-space: nowrap;
+	break-after: avoid;
+	word-break: keep-all;
+	line-break: strict;
 }
 
 .fixture-away-logo-v2,
@@ -791,23 +798,32 @@
 	}
 }
 
-.league-table-wrapper-v2[class*="WORLD_CUP"] {
-	.form-header,
-	.form-cell {
-		width: 4rem !important;
+.league-table-wrapper-v2 {
+	&:not([class*="WORLD_CUP"]) {
+		.form-header,
+		.form-cell {
+			width: 7rem;
+		}
 	}
 
-	.team-row .form-tokens {
-		span:nth-child(3) {
-			margin-right: 0px !important;
+	&[class*="WORLD_CUP"] {
+		.form-header,
+		.form-cell {
+			width: 4rem;
 		}
 
-		span:nth-child(4),
-		span:nth-child(5) {
-			width: 0px !important;
-			min-width: 0px !important;
-			max-width: 0px !important;
-			margin-right: 0px !important;
+		.team-row .form-tokens {
+			span:nth-child(3) {
+				margin-right: 0px !important;
+			}
+
+			span:nth-child(4),
+			span:nth-child(5) {
+				width: 0px !important;
+				min-width: 0px !important;
+				max-width: 0px !important;
+				margin-right: 0px !important;
+			}
 		}
 	}
 }

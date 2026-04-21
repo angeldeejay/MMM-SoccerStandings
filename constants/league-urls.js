@@ -1,17 +1,17 @@
 /**
  * MMM-SoccerStandings
- * League URL maps — one entry per provider, keyed by league code.
+ * League URL maps - one entry per provider, keyed by league code.
  *
  * MAINTENANCE NOTES:
- *   Wikipedia  — season-specific; update each July/August.
+ *   Wikipedia  - season-specific; update each July/August.
  *                Aug-May leagues: "2025%E2%80%9326" (en-dash encoded).
  *                Calendar-year leagues (Norway, Sweden): plain year e.g. "2026".
- *   Soccerway  — season IDs (r#####) change every season; update r##### values.
+ *   Soccerway  - season IDs (r#####) change every season; update r##### values.
  *                Uses heavy JS rendering; plain HTTP GET results may vary.
- *   BBC        — URLs are stable (no season IDs). UEFA entries are objects
+ *   BBC        - URLs are stable (no season IDs). UEFA entries are objects
  *                with { table, fixtures } because both endpoints are needed.
- *   ESPN       — year-independent pattern: /soccer/standings/_/league/<code>.
- *   Google     — search query strings; update season year in queries as needed.
+ *   ESPN       - year-independent pattern: /soccer/standings/_/league/<code>.
+ *   Google     - search query strings; update season year in queries as needed.
  *
  * Dual-environment: browser global + Node.js require().
  */
@@ -220,7 +220,7 @@ const LEAGUE_URL_MAPS = {
 		ISRAEL_PREMIER_LEAGUE:
 			"https://www.bbc.co.uk/sport/football/israeli-premier-league/table",
 
-		// UEFA Competitions — object with { table, fixtures } because both endpoints are needed
+		// UEFA Competitions - object with { table, fixtures } because both endpoints are needed
 		UEFA_CHAMPIONS_LEAGUE: {
 			table: "https://www.bbc.co.uk/sport/football/champions-league/table",
 			fixtures:

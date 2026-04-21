@@ -1,6 +1,6 @@
 /**
  * MMM-SoccerStandings
- * Shared team name alias map — single source of truth for both frontend and backend.
+ * Shared team name alias map - single source of truth for both frontend and backend.
  * Loaded as a global in the browser (via getScripts), required in Node.js (logo-resolver.js).
  */
 

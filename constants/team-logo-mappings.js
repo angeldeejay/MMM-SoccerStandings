@@ -17,8 +17,10 @@ const TEAM_LOGO_MAPPINGS = {
 	Austria: "crests/Austria/austria.png",
 	Belgium: "crests/Belgium/belgium.png",
 	Bolivia: "crests/Bolivia/bolivia.png",
-	"Bosnia and Herzegovina": "crests/Bosnia and Herzegovina/bosnia-and-herzegovina.png",
-	"Bosnia-Herzegovina": "crests/Bosnia and Herzegovina/bosnia-and-herzegovina.png",
+	"Bosnia and Herzegovina":
+		"crests/Bosnia and Herzegovina/bosnia-and-herzegovina.png",
+	"Bosnia-Herzegovina":
+		"crests/Bosnia and Herzegovina/bosnia-and-herzegovina.png",
 	Bosnia: "crests/Bosnia and Herzegovina/bosnia-and-herzegovina.png",
 	Brazil: "crests/Brazil/brazil.png",
 	Canada: "crests/Canada/canada.png",
@@ -32,7 +34,7 @@ const TEAM_LOGO_MAPPINGS = {
 	Curaçao: "crests/Curaçao/curaçao.png",
 	Denmark: "crests/Denmark/denmark.png",
 	"DR Congo": "crests/DR Congo/congoDR.png",
-	Ecuador: "crests/Ecuador/ecuador.jpg",
+	Ecuador: "crests/Ecuador/ecuador.png",
 	Egypt: "crests/Egypt/egypt.png",
 	England: "crests/England/england.png",
 	France: "crests/France/france.png",
@@ -1416,7 +1418,7 @@ const TEAM_LOGO_MAPPINGS = {
 	Afumați: "crests/Romania/afumați.png",
 	"Argeș Pitești": "crests/Romania/argeș-pitești.png",
 	"Asa Târgu Mureș": "crests/Romania/asa-târgu-mureș.png",
-	"ASC Otelul Galați": "crests/Romania/asc-otelul-galați.png", 
+	"ASC Otelul Galați": "crests/Romania/asc-otelul-galați.png",
 	"Bihor Oradea": "crests/Romania/bihor-oradea.png",
 	Botoșani: "crests/Romania/botoșani.png",
 	"Câmpulung Muscel": "crests/Romania/câmpulung-muscel.png",
@@ -1455,7 +1457,7 @@ const TEAM_LOGO_MAPPINGS = {
 	FCSB: "crests/Romania/fcsb.png",
 	"Steaua București": "crests/Romania/fcsb.png",
 	"Steau Bucharest": "crests/Romania/fcsb.png",
-	
+
 	// ==========================================================================
 	// Russia
 	// ==========================================================================
@@ -1733,7 +1735,12 @@ const TEAM_LOGO_MAPPINGS = {
 	Monaco: "crests/UEFA-Champions-League/monaco.png",
 	"AS Monaco": "crests/UEFA-Champions-League/monaco.png",
 	"Paris Sg": "crests/UEFA-Champions-League/paris-sg.png",
+	"Paris SG": "crests/UEFA-Champions-League/paris-sg.png",
 	"Paris Saint-Germain": "crests/UEFA-Champions-League/paris-sg.png",
+	"Paris St-Germain": "crests/UEFA-Champions-League/paris-sg.png",
+	"St-Germain": "crests/UEFA-Champions-League/paris-sg.png",
+	"St Germain": "crests/UEFA-Champions-League/paris-sg.png",
+	Germain: "crests/UEFA-Champions-League/paris-sg.png",
 	"PSV Eindhoven": "crests/UEFA-Champions-League/psv-eindhoven.png",
 	PSV: "crests/UEFA-Champions-League/psv-eindhoven.png",
 	"Rb Leipzig": "crests/UEFA-Champions-League/rb-leipzig.png",
@@ -2041,7 +2048,6 @@ const TEAM_LOGO_MAPPINGS = {
 	// ==========================================================================
 	// Wales
 	// ==========================================================================
-	
 	Wales: "crests/Wales/wales.png",
 	Cymru: "crests/Wales/wales.png",
 	"Airbus UK Broughton": "crests/Wales/airbus-uk-broughton.png",

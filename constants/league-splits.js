@@ -7,15 +7,15 @@
  * table rather than the pre-split full table.
  *
  * Fields:
- *   regularSeasonGames   — games played per team before the split occurs
- *   championshipSize     — teams in the top (championship) group
- *   relegationSize       — teams in the bottom (relegation) group
- *   pointsCarryover      — "all" | "halved" | "mixed"
- *   showAllGroups        — true = render all groups simultaneously
- *   groups[]             — ordered list of groups with label + heading keywords
- *   championshipKeywords — Wikipedia heading fragments for the top group
- *   relegationKeywords   — Wikipedia heading fragments for the bottom group
- *   preferGroup          — "championship" | "relegation" (default display)
+ *   regularSeasonGames   - games played per team before the split occurs
+ *   championshipSize     - teams in the top (championship) group
+ *   relegationSize       - teams in the bottom (relegation) group
+ *   pointsCarryover      - "all" | "halved" | "mixed"
+ *   showAllGroups        - true = render all groups simultaneously
+ *   groups[]             - ordered list of groups with label + heading keywords
+ *   championshipKeywords - Wikipedia heading fragments for the top group
+ *   relegationKeywords   - Wikipedia heading fragments for the bottom group
+ *   preferGroup          - "championship" | "relegation" (default display)
  *
  * Dual-environment: browser global + Node.js require().
  * Sources: leagueSplits_Guide.md
