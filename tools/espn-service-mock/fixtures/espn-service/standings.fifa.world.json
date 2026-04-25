@@ -1,0 +1,66 @@
+[
+	{
+		"team_espn_id": "201",
+		"team_name": "Mexico",
+		"group_name": "Group A",
+		"rank": 1,
+		"wins": 2,
+		"losses": 0,
+		"ties": 1,
+		"points": 7,
+		"stats": [
+			{ "name": "pointsFor", "value": 5 },
+			{ "name": "pointsAgainst", "value": 2 },
+			{ "name": "pointDifferential", "value": 3 }
+		],
+		"primary_logo": "https://img.example/mex.png"
+	},
+	{
+		"team_espn_id": "202",
+		"team_name": "Japan",
+		"group_name": "Group A",
+		"rank": 2,
+		"wins": 1,
+		"losses": 1,
+		"ties": 1,
+		"points": 4,
+		"stats": [
+			{ "name": "pointsFor", "value": 3 },
+			{ "name": "pointsAgainst", "value": 3 },
+			{ "name": "pointDifferential", "value": 0 }
+		],
+		"primary_logo": "https://img.example/jpn.png"
+	},
+	{
+		"team_espn_id": "203",
+		"team_name": "Senegal",
+		"group_name": "Group A",
+		"rank": 3,
+		"wins": 1,
+		"losses": 2,
+		"ties": 0,
+		"points": 3,
+		"stats": [
+			{ "name": "pointsFor", "value": 2 },
+			{ "name": "pointsAgainst", "value": 4 },
+			{ "name": "pointDifferential", "value": -2 }
+		],
+		"primary_logo": "https://img.example/sen.png"
+	},
+	{
+		"team_espn_id": "204",
+		"team_name": "Canada",
+		"group_name": "Group A",
+		"rank": 4,
+		"wins": 0,
+		"losses": 2,
+		"ties": 1,
+		"points": 1,
+		"stats": [
+			{ "name": "pointsFor", "value": 1 },
+			{ "name": "pointsAgainst", "value": 4 },
+			{ "name": "pointDifferential", "value": -3 }
+		],
+		"primary_logo": "https://img.example/can.png"
+	}
+]

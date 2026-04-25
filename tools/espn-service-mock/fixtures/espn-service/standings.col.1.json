@@ -1,0 +1,74 @@
+[
+	{
+		"team_espn_id": "101",
+		"team_name": "Atletico Nacional",
+		"rank": 1,
+		"wins": 7,
+		"losses": 1,
+		"ties": 2,
+		"points": 23,
+		"season_year": 2026,
+		"season_type": 1,
+		"stats": [
+			{ "name": "pointsFor", "value": 18 },
+			{ "name": "pointsAgainst", "value": 8 },
+			{ "name": "pointDifferential", "value": 10 }
+		],
+		"last_3_form": ["W", "D", "W"],
+		"primary_logo": "https://img.example/nal.png"
+	},
+	{
+		"team_espn_id": "102",
+		"team_name": "Millonarios",
+		"rank": 2,
+		"wins": 6,
+		"losses": 1,
+		"ties": 3,
+		"points": 21,
+		"season_year": 2026,
+		"season_type": 1,
+		"stats": [
+			{ "name": "pointsFor", "value": 16 },
+			{ "name": "pointsAgainst", "value": 9 },
+			{ "name": "pointDifferential", "value": 7 }
+		],
+		"last_3_form": ["W", "W", "D"],
+		"primary_logo": "https://img.example/millos.png"
+	},
+	{
+		"team_espn_id": "103",
+		"team_name": "America de Cali",
+		"rank": 3,
+		"wins": 5,
+		"losses": 2,
+		"ties": 3,
+		"points": 18,
+		"season_year": 2026,
+		"season_type": 1,
+		"stats": [
+			{ "name": "pointsFor", "value": 14 },
+			{ "name": "pointsAgainst", "value": 10 },
+			{ "name": "pointDifferential", "value": 4 }
+		],
+		"last_3_form": ["L", "W", "W"],
+		"primary_logo": "https://img.example/america.png"
+	},
+	{
+		"team_espn_id": "104",
+		"team_name": "Junior",
+		"rank": 4,
+		"wins": 4,
+		"losses": 3,
+		"ties": 3,
+		"points": 15,
+		"season_year": 2026,
+		"season_type": 1,
+		"stats": [
+			{ "name": "pointsFor", "value": 12 },
+			{ "name": "pointsAgainst", "value": 11 },
+			{ "name": "pointDifferential", "value": 1 }
+		],
+		"last_3_form": ["D", "W", "L"],
+		"primary_logo": "https://img.example/junior.png"
+	}
+]

@@ -1,0 +1,60 @@
+[
+	{
+		"id": "col1-1",
+		"name": "Atletico Nacional at Millonarios",
+		"date": "2026-05-02T20:00:00Z",
+		"status": "scheduled",
+		"venue_name": "El Campin",
+		"competitors": [
+			{
+				"home_away": "home",
+				"score": null,
+				"score_int": null,
+				"team": {
+					"espn_id": "102",
+					"display_name": "Millonarios",
+					"primary_logo": "https://img.example/millos.png"
+				}
+			},
+			{
+				"home_away": "away",
+				"score": null,
+				"score_int": null,
+				"team": {
+					"espn_id": "101",
+					"display_name": "Atletico Nacional",
+					"primary_logo": "https://img.example/nal.png"
+				}
+			}
+		]
+	},
+	{
+		"id": "col1-2",
+		"name": "America de Cali at Junior",
+		"date": "2026-05-03T22:00:00Z",
+		"status": "scheduled",
+		"venue_name": "Metropolitano",
+		"competitors": [
+			{
+				"home_away": "home",
+				"score": null,
+				"score_int": null,
+				"team": {
+					"espn_id": "104",
+					"display_name": "Junior",
+					"primary_logo": "https://img.example/junior.png"
+				}
+			},
+			{
+				"home_away": "away",
+				"score": null,
+				"score_int": null,
+				"team": {
+					"espn_id": "103",
+					"display_name": "America de Cali",
+					"primary_logo": "https://img.example/america.png"
+				}
+			}
+		]
+	}
+]

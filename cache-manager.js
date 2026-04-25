@@ -16,7 +16,12 @@ const Log = require("logger");
 class CacheManager {
 	constructor(modulePath) {
 		this.modulePath = modulePath;
-		this.cacheDir = path.join(modulePath, ".cache");
+		const overrideCacheDir =
+			typeof process.env.MMM_SOCCERSTANDINGS_CACHE_DIR === "string" &&
+			process.env.MMM_SOCCERSTANDINGS_CACHE_DIR.trim()
+				? process.env.MMM_SOCCERSTANDINGS_CACHE_DIR.trim()
+				: null;
+		this.cacheDir = overrideCacheDir || path.join(modulePath, ".cache");
 		this.memoryCache = new Map(); // In-memory cache for speed
 		this.maxMemoryEntries = 20; // Maximum number of entries to keep in memory (LRU)
 		this.defaultTTL = 24 * 60 * 60 * 1000; // 24 hours default

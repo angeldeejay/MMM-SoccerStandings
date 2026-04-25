@@ -1,0 +1,74 @@
+[
+	{
+		"team_espn_id": "301",
+		"team_name": "Arsenal",
+		"rank": 1,
+		"wins": 8,
+		"losses": 0,
+		"ties": 0,
+		"points": 24,
+		"season_year": 2026,
+		"season_type": 1,
+		"stats": [
+			{ "name": "pointsFor", "value": 23 },
+			{ "name": "pointsAgainst", "value": 4 },
+			{ "name": "pointDifferential", "value": 19 }
+		],
+		"last_3_form": ["W", "W", "W"],
+		"primary_logo": "https://img.example/ars.png"
+	},
+	{
+		"team_espn_id": "302",
+		"team_name": "Inter",
+		"rank": 2,
+		"wins": 6,
+		"losses": 1,
+		"ties": 1,
+		"points": 19,
+		"season_year": 2026,
+		"season_type": 1,
+		"stats": [
+			{ "name": "pointsFor", "value": 17 },
+			{ "name": "pointsAgainst", "value": 8 },
+			{ "name": "pointDifferential", "value": 9 }
+		],
+		"last_3_form": ["W", "D", "W"],
+		"primary_logo": "https://img.example/inter.png"
+	},
+	{
+		"team_espn_id": "303",
+		"team_name": "Barcelona",
+		"rank": 3,
+		"wins": 5,
+		"losses": 2,
+		"ties": 1,
+		"points": 16,
+		"season_year": 2026,
+		"season_type": 1,
+		"stats": [
+			{ "name": "pointsFor", "value": 15 },
+			{ "name": "pointsAgainst", "value": 9 },
+			{ "name": "pointDifferential", "value": 6 }
+		],
+		"last_3_form": ["W", "L", "W"],
+		"primary_logo": "https://img.example/barca.png"
+	},
+	{
+		"team_espn_id": "304",
+		"team_name": "Bayern Munich",
+		"rank": 4,
+		"wins": 5,
+		"losses": 3,
+		"ties": 0,
+		"points": 15,
+		"season_year": 2026,
+		"season_type": 1,
+		"stats": [
+			{ "name": "pointsFor", "value": 14 },
+			{ "name": "pointsAgainst", "value": 10 },
+			{ "name": "pointDifferential", "value": 4 }
+		],
+		"last_3_form": ["L", "W", "W"],
+		"primary_logo": "https://img.example/bayern.png"
+	}
+]

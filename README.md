@@ -79,6 +79,8 @@ Add the module to `~/MagicMirror/config/config.js`.
 	header: "League Standings",
 	config: {
 		provider: "espn_service",
+		espnSoccerApiBaseUrl: "http://localhost:28000",
+		espnSoccerApiTimeout: 8000,
 		providerSettings: {
 			espn_service: {
 				baseUrl: "http://localhost:28000",
@@ -136,8 +138,10 @@ Add the module to `~/MagicMirror/config/config.js`.
 | Option | Default | Description |
 | :-- | :-- | :-- |
 | `provider` | `"espn_service"` | Active provider for the current runtime. |
-| `providerSettings.espn_service.baseUrl` | `"http://localhost:28000"` | Base URL for the local API service. |
-| `providerSettings.espn_service.timeoutMs` | `8000` | Request timeout for API calls. |
+| `espnSoccerApiBaseUrl` | `"http://localhost:28000"` | Preferred base URL for the API consumed by canonical requests. |
+| `espnSoccerApiTimeout` | `8000` | Preferred request timeout for canonical requests. |
+| `providerSettings.espn_service.baseUrl` | `"http://localhost:28000"` | Compatibility fallback for older config shapes. |
+| `providerSettings.espn_service.timeoutMs` | `8000` | Compatibility fallback for older config shapes. |
 | `selectedLeagues` | `["uefa.champions"]` | Competition slugs to render. Use provider/API slugs directly. |
 | `leagueHeaders` | `{}` | Optional label overrides. API catalog names are used by default. |
 | `autoFocusRelevantSubTab` | `true` | Prefer the subtab with live or upcoming fixtures when possible. |
@@ -173,6 +177,20 @@ npm test
 npm run scss:build
 npm run format
 ```
+
+## Micro-core harness
+
+For live smoke checks, screenshots, and module-only debugging without a full MagicMirror checkout:
+
+```bash
+npm run harness:start
+npm run harness:watch
+npm run mock-api:start
+```
+
+- Edit `tools\magicmirror-harness\config\module.config.json` to change the mounted module config and the API URL it consumes.
+- The packaged sandbox runtime is intentionally narrow: it mounts only `MMM-SoccerStandings` and only the MagicMirror surface this module actually uses.
+- The fixture-backed ESPN mock now lives as a separate tool. Start it with `npm run mock-api:start`, then point `espnSoccerApiBaseUrl` at `http://127.0.0.1:3200`.
 
 ## Maintained repo references
 

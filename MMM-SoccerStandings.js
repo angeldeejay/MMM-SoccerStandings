@@ -98,10 +98,12 @@ Module.register("MMM-SoccerStandings", {
 		// Debug
 		debug: false, // Set to true to enable console logging
 		provider: "espn_service", // Default product provider for the active canonical runtime path
+		espnSoccerApiBaseUrl: "http://localhost:28000", // Preferred ESPN service base URL for canonical requests
+		espnSoccerApiTimeout: 8000, // Preferred ESPN service timeout for canonical requests
 		providerSettings: {
 			espn_service: {
-				baseUrl: "http://localhost:28000",
-				timeoutMs: 8000
+				baseUrl: "http://localhost:28000", // Compatibility fallback; prefer espnSoccerApiBaseUrl
+				timeoutMs: 8000 // Compatibility fallback; prefer espnSoccerApiTimeout
 			}
 		},
 		dateTimeOverride: null, // Override system date/time for testing. Use ISO date format (e.g., "2026-01-15" or "2026-01-15T14:30:00Z"). null = use system date
@@ -680,6 +682,8 @@ Module.register("MMM-SoccerStandings", {
 			return;
 		}
 
+		const espnApiConfig = this.getEspnServiceRequestConfig();
+
 		// Iterate through each enabled league code and request its data with staggering to avoid spikes
 		this.enabledLeagueCodes.forEach((leagueCode, index) => {
 			const slug = this.getLeagueUrl(leagueCode);
@@ -705,8 +709,8 @@ Module.register("MMM-SoccerStandings", {
 						slug,
 						debug: this.config.debug,
 						provider: this.config.provider,
-						espnSoccerApiBaseUrl: this.config.espnSoccerApiBaseUrl,
-						espnSoccerApiTimeout: this.config.espnSoccerApiTimeout,
+						espnSoccerApiBaseUrl: espnApiConfig.baseUrl,
+						espnSoccerApiTimeout: espnApiConfig.timeoutMs,
 						surfaces: {
 							standings: true,
 							fixtures: true
@@ -726,6 +730,44 @@ Module.register("MMM-SoccerStandings", {
 				}
 			}, index * 500);
 		});
+	},
+
+	/**
+	 * Resolve the API endpoint configuration sent to the backend helper.
+	 * Top-level options are the preferred public config surface; nested
+	 * providerSettings remain as compatibility fallback while old configs fade
+	 * out.
+	 *
+	 * @returns {{ baseUrl: string, timeoutMs: number }}
+	 */
+	getEspnServiceRequestConfig() {
+		const providerSettings =
+			this.config &&
+			this.config.providerSettings &&
+			this.config.providerSettings.espn_service
+				? this.config.providerSettings.espn_service
+				: {};
+		const baseUrl =
+			typeof this.config.espnSoccerApiBaseUrl === "string" &&
+			this.config.espnSoccerApiBaseUrl.trim()
+				? this.config.espnSoccerApiBaseUrl.trim()
+				: typeof providerSettings.baseUrl === "string" &&
+					providerSettings.baseUrl.trim()
+					? providerSettings.baseUrl.trim()
+					: "http://localhost:28000";
+		const timeoutMs =
+			Number.isFinite(this.config.espnSoccerApiTimeout) &&
+			this.config.espnSoccerApiTimeout > 0
+				? Number(this.config.espnSoccerApiTimeout)
+				: Number.isFinite(providerSettings.timeoutMs) &&
+					providerSettings.timeoutMs > 0
+					? Number(providerSettings.timeoutMs)
+					: 8000;
+
+		return {
+			baseUrl: baseUrl.replace(/\/+$/, ""),
+			timeoutMs
+		};
 	},
 
 	/**

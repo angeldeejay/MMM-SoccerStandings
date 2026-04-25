@@ -75,14 +75,27 @@ function resolveEspnSoccerApiConfig(config) {
 			config.providerSettings.espn_service) ||
 		(config && config.providers && config.providers.espn_service) ||
 		{};
+	const directBaseUrl =
+		config &&
+		typeof config.espnSoccerApiBaseUrl === "string" &&
+		config.espnSoccerApiBaseUrl.trim()
+			? config.espnSoccerApiBaseUrl.trim()
+			: "";
+	const directTimeout =
+		config && Number.isFinite(config.espnSoccerApiTimeout)
+			? Number(config.espnSoccerApiTimeout)
+			: null;
 
-	const baseUrl =
-		typeof providerSettings.baseUrl === "string" &&
-		providerSettings.baseUrl.trim()
+	const baseUrl = directBaseUrl
+		? directBaseUrl.replace(/\/+$/, "")
+		: typeof providerSettings.baseUrl === "string" &&
+			providerSettings.baseUrl.trim()
 			? providerSettings.baseUrl.replace(/\/+$/, "")
 			: "http://localhost:28000";
 	const timeoutMs =
-		Number.isFinite(providerSettings.timeoutMs) && providerSettings.timeoutMs > 0
+		Number.isFinite(directTimeout) && directTimeout > 0
+			? directTimeout
+			: Number.isFinite(providerSettings.timeoutMs) && providerSettings.timeoutMs > 0
 			? providerSettings.timeoutMs
 			: 8000;
 

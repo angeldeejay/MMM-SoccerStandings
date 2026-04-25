@@ -1,0 +1,60 @@
+[
+	{
+		"id": "wc-1",
+		"name": "Mexico at Japan",
+		"date": "2026-06-11T20:00:00Z",
+		"status": "scheduled",
+		"venue_name": "Azteca",
+		"competitors": [
+			{
+				"home_away": "home",
+				"score": null,
+				"score_int": null,
+				"team": {
+					"espn_id": "201",
+					"display_name": "Mexico",
+					"primary_logo": "https://img.example/mex.png"
+				}
+			},
+			{
+				"home_away": "away",
+				"score": null,
+				"score_int": null,
+				"team": {
+					"espn_id": "202",
+					"display_name": "Japan",
+					"primary_logo": "https://img.example/jpn.png"
+				}
+			}
+		]
+	},
+	{
+		"id": "wc-2",
+		"name": "Round of 32 1 Winner at Round of 32 2 Winner",
+		"date": "2026-06-28T20:00:00Z",
+		"status": "scheduled",
+		"venue_name": "Dallas",
+		"competitors": [
+			{
+				"home_away": "home",
+				"score": null,
+				"score_int": null,
+				"team": {
+					"espn_id": "201",
+					"display_name": "Mexico",
+					"primary_logo": "https://img.example/mex.png"
+				}
+			},
+			{
+				"home_away": "away",
+				"score": null,
+				"score_int": null,
+				"team": {
+					"espn_id": "999",
+					"display_name": "TBD",
+					"primary_logo": ""
+				}
+			}
+		]
+	}
+]

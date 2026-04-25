@@ -9,7 +9,8 @@ const {
 	buildCanonicalGroupedStandingsPayload,
 	buildCanonicalStandingsPayload,
 	getDefaultSlug,
-	isSupportedCanonicalCompetition
+	isSupportedCanonicalCompetition,
+	resolveEspnSoccerApiConfig
 } = require("../backend/slice1-flat-standings.js");
 const {
 	buildCompetitionCatalogIndex,
@@ -117,6 +118,19 @@ describe("API-first functional scope", () => {
 			abbreviation: "FIFA World Cup",
 			hasLegs: false
 		});
+	});
+
+	it("resolves the ESPN service config from top-level request fields", () => {
+		assert.deepStrictEqual(
+			resolveEspnSoccerApiConfig({
+				espnSoccerApiBaseUrl: "http://127.0.0.1:3200/",
+				espnSoccerApiTimeout: 4321
+			}),
+			{
+				baseUrl: "http://127.0.0.1:3200",
+				timeoutMs: 4321
+			}
+		);
 	});
 
 	it("builds flat canonical standings payloads for col.1", () => {

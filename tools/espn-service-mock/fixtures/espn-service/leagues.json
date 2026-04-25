@@ -1,0 +1,20 @@
+[
+	{
+		"slug": "uefa.champions",
+		"name": "UEFA Champions League",
+		"abbreviation": "UCL",
+		"has_legs": false
+	},
+	{
+		"slug": "col.1",
+		"name": "Colombian Primera A",
+		"abbreviation": "Liga BetPlay",
+		"has_legs": false
+	},
+	{
+		"slug": "fifa.world",
+		"name": "FIFA World Cup",
+		"abbreviation": "FIFA World Cup",
+		"has_legs": false
+	}
+]

@@ -1,0 +1,60 @@
+[
+	{
+		"id": "ucl-1",
+		"name": "Playoff 1 Winner at Playoff 2 Winner",
+		"date": "2026-02-11T20:00:00Z",
+		"status": "scheduled",
+		"venue_name": "San Siro",
+		"competitors": [
+			{
+				"home_away": "home",
+				"score": null,
+				"score_int": null,
+				"team": {
+					"espn_id": "302",
+					"display_name": "Inter",
+					"primary_logo": "https://img.example/inter.png"
+				}
+			},
+			{
+				"home_away": "away",
+				"score": null,
+				"score_int": null,
+				"team": {
+					"espn_id": "301",
+					"display_name": "Arsenal",
+					"primary_logo": "https://img.example/ars.png"
+				}
+			}
+		]
+	},
+	{
+		"id": "ucl-2",
+		"name": "Round of 16 1 Winner at Round of 16 2 Winner",
+		"date": "2026-03-13T20:00:00Z",
+		"status": "scheduled",
+		"venue_name": "Olympic Stadium",
+		"competitors": [
+			{
+				"home_away": "home",
+				"score": null,
+				"score_int": null,
+				"team": {
+					"espn_id": "303",
+					"display_name": "Barcelona",
+					"primary_logo": "https://img.example/barca.png"
+				}
+			},
+			{
+				"home_away": "away",
+				"score": null,
+				"score_int": null,
+				"team": {
+					"espn_id": "304",
+					"display_name": "Bayern Munich",
+					"primary_logo": "https://img.example/bayern.png"
+				}
+			}
+		]
+	}
+]

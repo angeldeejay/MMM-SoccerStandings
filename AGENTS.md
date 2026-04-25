@@ -14,7 +14,7 @@ npm install
 npm run scss:build
 ```
 
-This repo is a MagicMirror module, not a standalone web app. Runtime verification normally happens by loading the module in MagicMirror with `provider: "espn_service"` and a reachable `providerSettings.espn_service.baseUrl`.
+This repo is a MagicMirror module, not a standalone web app. Runtime verification normally happens by loading the module in MagicMirror with `provider: "espn_service"` and a reachable `espnSoccerApiBaseUrl` (with `providerSettings.espn_service.baseUrl` only as compatibility fallback).
 
 ### Tests
 

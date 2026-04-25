@@ -16,8 +16,8 @@
 		"Celtic"
 	],
 	"author": {
-		"name": "gitgitaway",
-		"email": " "
+		"name": "Andrés Vanegas Jiménez",
+		"url": "https://github.com/angeldeejay"
 	},
 	"license": "MIT",
 	"homepage": "https://github.com/angeldeejay/MMM-SoccerStandings",
@@ -35,10 +35,16 @@
 		"node-fetch": "^3.3.2"
 	},
 	"devDependencies": {
+		"@fortawesome/fontawesome-free": "^7.2.0",
+		"chokidar": "^5.0.0",
 		"eslint": "^10.2.1",
+		"express": "^5.2.1",
 		"mocha": "^11.7.5",
+		"moment": "^2.30.1",
+		"moment-timezone": "^0.6.1",
 		"prettier": "^3.8.3",
-		"sass": "^1.99.0"
+		"sass": "^1.99.0",
+		"socket.io": "^4.8.3"
 	},
 	"scripts": {
 		"test": "npm run test:security",
@@ -49,7 +55,12 @@
 		"audit:fix": "npm audit fix",
 		"postinstall": "sass --style=compressed scss/entrypoint.scss MMM-SoccerStandings.css",
 		"scss:build": "sass --style=compressed scss/entrypoint.scss MMM-SoccerStandings.css",
-		"scss:watch": "sass --watch scss/entrypoint.scss:MMM-SoccerStandings.css"
+		"scss:watch": "sass --watch scss/entrypoint.scss:MMM-SoccerStandings.css",
+		"harness:start": "node tools/magicmirror-harness/server/index.js",
+		"harness:start:live": "npm run harness:start",
+		"harness:watch": "node tools/magicmirror-harness/server/index.js --watch",
+		"harness:watch:live": "npm run harness:watch",
+		"mock-api:start": "node tools/espn-service-mock/server/index.js"
 	},
 	"magicmirror": {
 		"moduleName": "MMM-SoccerStandings",
