@@ -1,0 +1,32 @@
+# Default to LF for repository text files.
+* text=auto eol=lf
+
+# Explicit text surfaces used by this project.
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.scss text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.map text eol=lf
+*.txt text eol=lf
+*.svg text eol=lf
+
+# Common root files without normal extensions.
+.gitattributes text eol=lf
+.gitignore text eol=lf
+.prettierrc text eol=lf
+package-lock.json text eol=lf
+LICENSE text eol=lf
+
+# Binary assets must never be line-normalized.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary

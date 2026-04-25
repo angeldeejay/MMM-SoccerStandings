@@ -8,4 +8,7 @@ CLAUDE.*
 *.css
 *.map
 *.html
+*.yaml
 package-lock.json
+TODO.md
+screenshots/

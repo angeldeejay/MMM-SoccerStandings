@@ -1,337 +1,187 @@
 # MMM-SoccerStandings
 
-A comprehensive **MagicMirror²** module that displays football league standings from multiple competitions including the FIFA 2026 World Cup , UEFA Champions League (UCL), UEFA Europa League (UEL), UEFA Europa Conference League (ECL), English Premier League (EPL), German Bundesliga,French La Ligue , Italian Serie A , Spanish Primera División, Portuguese Liga, SPFL (Scottish Professional Football League) and Scottish Championship (SPFLC) as well as most other European and World wide leagues, with data sourced from the official website of the BBC Sport with robust fallback data and detailed error handling.
+A **MagicMirror²** module for football standings and fixture views.
 
-Inspired from [MMM-MMM-MyTeams-LeagueTable](https://github.com/gitgitaway/MMM-MMM-MyTeams-LeagueTable)
+The active product path is **API-first** and currently targets the local `espn-soccer-api` service through `provider: "espn_service"`.
+
+Inspired by [MMM-MMM-MyTeams-LeagueTable](https://github.com/gitgitaway/MMM-MMM-MyTeams-LeagueTable).
 
 - **Author**: ![Profile Image](https://avatars.githubusercontent.com/u/142350?s=16&v=4) [Andrés Vanegas <angeldeejay>](https://github.com/angeldeejay)
 
 [![MagicMirror²](https://img.shields.io/badge/MagicMirror%C2%B2-v2.1.0+-blue.svg)](https://magicmirror.builders)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Updates
+## Current product scope
 
-See [CHANGELOG.md](./CHANGELOG.md) for complete details.
+The active runtime is intentionally narrowed to these competition slugs:
 
-## 🏆 Key Features
+- `uefa.champions`
+- `col.1`
+- `fifa.world`
 
-- **Multi-Provider Support**: Fetch data from **BBC Sport**, **Google Search**, **ESPN**, **Soccerway**, or **Wikipedia** for maximum global coverage.
-- **Multi-League Support**: Track 100+ national and international leagues across Europe, the Americas, Asia, and Oceania.
-- **Tournament Modes**: Dedicated views for UEFA Champions League and FIFA World Cup 2026.
-- **Intelligent Logo Mapping**: Automatic team crest resolution for over 1,700 teams.
-- **Performance Optimized**: Server-side processing, async caching, virtual scrolling, and smooth CSS transitions.
-- **🔒 Security Hardened**: Zero XSS vulnerabilities with safe DOM manipulation and input validation.
-- **♿ Fully Accessible**: WCAG 2.1 Level AAA compliant with screen readers, keyboard navigation, and high contrast mode.
-- **🎨 Advanced Customization**: Light/dark themes, table density options, custom team colors, and date filtering.
-- **📊 Enhanced UX**: Skeleton loading states, stale data indicators, and categorized error messages.
-- **Auto-Cycling**: Automatically rotate between different leagues or tournament groups.
-- ✨ **Configurable table density** - Choose compact, normal, or comfortable spacing
-- 🎨 **Full light/dark mode** - Auto, light, or dark themes with complete CSS variable system
-- 📅 **Fixture date filtering** - Show only today's, this week's, or custom date ranges
-- 🎨 **Team color customization** - Apply custom hex colors to specific team rows
-- ⚡ **Virtual scrolling** - Performance optimizations for tables with 30+ rows
-- 🔧 **Team name normalization** - Fixes BBC Sport truncations ("Atletico" → "Atletico Madrid")
+Current behavior:
 
-## ⚽ Available Leagues
+- Canonical payloads come from the backend provider path, not from scraping.
+- UEFA Champions League and FIFA World Cup use tournament-oriented views.
+- Colombian Primera A uses the flat league standings/fixtures path.
+- Team logos come from provider payloads. If the provider does not return a logo, the gap stays visible.
+- League visibility is controlled only by `selectedLeagues`.
 
-Use these codes in your `selectedLeagues` array:
+## Requirements
 
-- **UK**: `SCOTLAND_PREMIERSHIP`, `SCOTLAND_CHAMPIONSHIP`, `ENGLAND_PREMIER_LEAGUE`
-- **Major Europe**: `GERMANY_BUNDESLIGA`, `SPAIN_LA_LIGA`, `ITALY_SERIE_A`, `FRANCE_LIGUE1`, `NETHERLANDS_EREDIVISIE`
-- **Other Europe**: `PORTUGAL_PRIMEIRA_LIGA`, `BELGIUM_PRO_LEAGUE`, `TURKEY_SUPER_LIG`, `GREECE_SUPER_LEAGUE`, `AUSTRIA_BUNDESLIGA`, `CZECH_LIGA`, `DENMARK_SUPERLIGAEN`, `NORWAY_ELITESERIEN`, `SWEDEN_ALLSVENSKAN`, `SWITZERLAND_SUPER_LEAGUE`, `UKRAINE_PREMIER_LEAGUE`, `ROMANIA_LIGA_I`, `CROATIA_HNL`, `SERBIA_SUPER_LIGA`, `HUNGARY_NBI`, `POLAND_EKSTRAKLASA`
-- **International/UEFA**: `UEFA_CHAMPIONS_LEAGUE`, `UEFA_EUROPA_LEAGUE`, `UEFA_EUROPA_CONFERENCE_LEAGUE`, `WORLD_CUP_2026`
+- **MagicMirror²** `v2.1.0+`
+- **Node.js** `v14+`
+- A reachable local `espn-soccer-api` instance, usually at `http://localhost:28000`
 
-## 🛡️ Security: Content Security Policy (CSP)
+## Installation
 
-For MagicMirror deployments running in security-restricted environments (enterprise kiosks, embedded displays), add these CSP directives:
-
-| Directive | Value |
-| :-------- | :---- |
-| `script-src` | `'self'` |
-| `img-src` | `'self' data:` |
-| `connect-src` | `'self' https://www.bbc.co.uk https://www.fifa.com` |
-| `style-src` | `'self' 'unsafe-inline'` |
-
-```
-Content-Security-Policy: default-src 'self'; script-src 'self'; img-src 'self' data:; connect-src 'self' https://www.bbc.co.uk https://www.fifa.com; style-src 'self' 'unsafe-inline';
-```
-
-> **Note**: All network requests are made server-side by `node_helper.js`. No external scripts or fonts are loaded by this module. See [Advanced Customization](./documentation/Advanced_Customization.md) for full CSP details.
-
-
-## Documentation
-
-### Requirements & Dependencies
-
-- **MagicMirror²**: v2.1.0 or newer (tested on 2.32.0)
-- **Node.js**: v14+ (tested on v22.14.0)
-- **Network access**: HTTPS egress to `www.bbc.co.uk`
-- **Runtime NPM dependencies**: None (uses Node core modules and MagicMirror core only)
-- **Optional Dev Tools** (for local lint/format only; not required to run):
-  - `eslint` ^8
-  - `prettier` ^2
-
-### Installation
-
-1. Navigate to your MagicMirror's modules folder:
+From your MagicMirror modules directory:
 
 ```bash
-cd ~/MagicMirror/modules/
-```
-
-2. Clone this repository:
-
-```bash
-git clone https://github.com/gitgitaway/MMM-SoccerStandings.git
-```
-
-3. Install dependencies:
-```bash
-cd modules/MMM-SoccerStandings
+git clone https://github.com/angeldeejay/MMM-SoccerStandings.git
+cd MMM-SoccerStandings
 npm install
+npm run scss:build
 ```
 
-### Update
+## Update
 
 ```bash
 cd ~/MagicMirror/modules/MMM-SoccerStandings
 git pull
+npm install
+npm run scss:build
 ```
 
-### Configuration
+## Configuration
 
-To use this module, add it to the modules array in the `~/MagicMirror/config/config.js` file:
+Add the module to `~/MagicMirror/config/config.js`.
 
-#### Minimum Configuration
+### Minimum configuration
 
 ```javascript
 {
-  module: "MMM-SoccerStandings",
-  position: "top_right",
-  config: {
-    selectedLeagues: ["SPAIN_LA_LIGA"]
-  }
+	module: "MMM-SoccerStandings",
+	position: "top_right",
+	config: {
+		provider: "espn_service",
+		selectedLeagues: ["uefa.champions"]
+	}
 },
 ```
 
-#### Full Configuration
+### Expanded example
 
 ```javascript
 {
-  module: "MMM-SoccerStandings",
-  position: "top_left",
-  header: "League Standings", // Set to null  or  "League Standings",
-  config: {
-    updateInterval: 30 * 60 * 1000, // How often to refresh (ms) – default: 30 min
-    retryDelay: 15000, // Delay between retry attempts after an error (ms)
-    maxRetries: 3, // Stop retrying after this many failures
-    animationSpeed: 2000, // DOM update animation speed (ms)
-    fadeSpeed: 4000, // Fade animation speed (ms)
-    colored: true, // Color rows by standing (top/UEFA/relegation)
-    maxTeams: 36, // 0 = show all teams
-    highlightTeams: ["Celtic", "Hearts"], // Emphasize teams by exact name e.g. ["Celtic", "Hearts"],
-    // ===== League Selection =====
-    // List league codes to display. All leagues in this array will be shown.
-    selectedLeagues: [
-      "SCOTLAND_PREMIERSHIP",
-      "ENGLAND_PREMIER_LEAGUE",
-      "GERMANY_BUNDESLIGA",
-      "FRANCE_LIGUE1",
-      "SPAIN_LA_LIGA",
-      "ITALY_SERIE_A",
-      "PORTUGAL_PRIMEIRA_LIGA",
-      "BELGIUM_PRO_LEAGUE",
-      "NETHERLANDS_EREDIVISIE",
-      "UEFA_EUROPA_CONFERENCE_LEAGUE",
-      "UEFA_EUROPA_LEAGUE",
-      "UEFA_CHAMPIONS_LEAGUE",
-      "WORLD_CUP_2026", // Include to show World Cup 2026
-    ],
-    // ===== Automatic button generation from selectedLeagues =====
-    autoGenerateButtons: true, // Auto-create buttons for all leagues in selectedLeagues
-    showLeagueButtons: true, // Show/hide league selector buttons in header
-    autoFocusRelevantSubTab: true, // Automatically focus on the sub-tab with live or upcoming matches
-    // ===== UEFA League Competitions Specific Options =====
-    // showUEFAleagues: null means no override — respects selectedLeagues
-    // true = force-add UEFA competitions; false = force-remove even if in selectedLeagues
-    showUEFAleagues: null,
-    showUEFAnockouts: ["Playoff", "Rd16", "QF", "SF", "Final"], // UEFA knockout stages to show
-    // ===== FIFA World Cup 2026 Specific Options =====
-    // showWC2026: null means no override — use "WORLD_CUP_2026" in selectedLeagues to enable
-    // true = force-add; false = force-remove even if in selectedLeagues
-    showWC2026: null, // Prefer: add "WORLD_CUP_2026" to selectedLeagues instead
-    onlyShowWorldCup2026: false, // If true, only shows World Cup 2026 view
-    showWC2026Groups: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"], // Groups to show
-    showWC2026Knockouts: ["Rd32", "Rd16", "QF", "SF", "TP", "Final"], // Knockout rounds to show
-    defaultWCSubTab: "C", // Default tab to focus on start-up (e.g., "C", "Final", etc.)
-    displayAllTabs: true, // Override to show all tabs regardless of stage completion
-    useMockData: false, // For testing use only (only for World Cup 2026) for when data not available - Swet to false before competion begins
-    // ===== Display Options =====
-    showPosition: true, // Show table position
-    showTeamLogos: true, // Show team logos
-    showPlayedGames: true, // Show games played
-    showWon: true, // Show wins
-    showDrawn: true, // Show draws
-    showLost: true, // Show losses
-    showGoalsFor: true, // Show goals for
-    showGoalsAgainst: true, // Show goals against
-    showGoalDifference: true, // Show goal difference
-    showPoints: true, // Show points
-    showForm: true, // Show recent form tokens (W/D/L)
-    formMaxGames: 6, // Max number of form games to display
-    enhancedIndicatorShapes: true, // true = shape-coded tokens (circle/square/triangle); false = colored text only, no background
-    firstPlaceColor: "rgb(190, 245, 190)", // Color for the team in first position
-    highlightedColor: "rgba(255, 255, 255, 0.1)", // Color for highlighted teams
-    // ===== UX Options (Phase 4) =====
-    tableDensity: "normal", // Table row density: "compact", "normal", "comfortable"
-    fixtureDateFilter: null, // Filter fixtures by date range: null (show all), "today", "week", "month", or {start: "YYYY-MM-DD", end: "YYYY-MM-DD"}
-    // ===== Auto-cycling options =====
-    autoCycle: true, // Enable auto-cycling between leagues
-    cycleInterval: 15 * 1000, // Time to display each league (15 seconds)
-    wcSubtabCycleInterval: 20 * 1000, // Time to display each WC sub-tab (groups/knockouts)
-    autoCycleWcSubtabs: true, // Allow auto-cycling of World Cup sub-tabs
-    // Theme overrides
-    darkMode: true, // null=auto, true=force dark, false=force light
-    fontColorOverride: "#FFFFFF", // Set to "null" for your existing css colour scheme or override all font colors "#FFFFFF" to force white text
-    opacityOverride: null, // null=auto,  set to  1.0 to force full opacity
-    // ===== Theme Options (Phase 4) =====
-    theme: "auto", // Color theme: "auto" (follows system), "light", "dark"
-    customTeamColors: { Celtic: "#018749", Hearts: "#ea00ff86" }, // Custom colors for specific teams: {"Team Name": "#HEXCOLOR"}
-    // Debug
-    debug: false, // Set to true to enable console logging
-    dateTimeOverride: null, // Override system date/time for testing. Use ISO date format (e.g., "2026-01-15" or "2026-01-15T14:30:00Z"). null = use system date
-    // Cache controls
-    clearCacheButton: true, // Allows user to clear cache from the display
-    clearCacheOnStart: false, // Set to true to force-clear ALL caches (disk, fixture, logo) on every module start - useful for development and troubleshooting
-  },
+	module: "MMM-SoccerStandings",
+	position: "top_left",
+	header: "League Standings",
+	config: {
+		provider: "espn_service",
+		providerSettings: {
+			espn_service: {
+				baseUrl: "http://localhost:28000",
+				timeoutMs: 8000
+			}
+		},
+		selectedLeagues: ["uefa.champions", "col.1", "fifa.world"],
+		updateInterval: 30 * 60 * 1000,
+		retryDelay: 15000,
+		maxRetries: 3,
+		animationSpeed: 0,
+		fadeSpeed: 0,
+		colored: true,
+		maxTeams: 36,
+		highlightTeams: ["Celtic", "Hearts"],
+		autoFocusRelevantSubTab: true,
+		showPosition: true,
+		showTeamLogos: true,
+		showPlayedGames: true,
+		showWon: true,
+		showDrawn: true,
+		showLost: true,
+		showGoalsFor: true,
+		showGoalsAgainst: true,
+		showGoalDifference: true,
+		showPoints: true,
+		showForm: true,
+		formMaxGames: 5,
+		enhancedIndicatorShapes: true,
+		highlightedColor: "rgba(255, 255, 255, 0.1)",
+		tableDensity: "normal",
+		fixtureDateFilter: null,
+		maxLeaguePastFixtures: null,
+		maxLeagueUpcomingFixtures: null,
+		theme: "auto",
+		customTeamColors: {},
+		autoCycle: false,
+		cycleInterval: 15 * 1000,
+		wcSubtabCycleInterval: 15 * 1000,
+		autoCycleWcSubtabs: true,
+		leagueHeaders: {},
+		darkMode: null,
+		fontColorOverride: "#FFFFFF",
+		opacityOverride: null,
+		debug: false,
+		dateTimeOverride: null,
+		clearCacheButton: true,
+		clearCacheOnStart: false
+	}
 },
 ```
 
-See - **[Configuration User Guide](./documentation/Configuration_User_Guide.md)**: for further detailed configuration options.
+### Common options
 
-#### Configuration Options
+| Option | Default | Description |
+| :-- | :-- | :-- |
+| `provider` | `"espn_service"` | Active provider for the current runtime. |
+| `providerSettings.espn_service.baseUrl` | `"http://localhost:28000"` | Base URL for the local API service. |
+| `providerSettings.espn_service.timeoutMs` | `8000` | Request timeout for API calls. |
+| `selectedLeagues` | `["uefa.champions"]` | Competition slugs to render. Use provider/API slugs directly. |
+| `leagueHeaders` | `{}` | Optional label overrides. API catalog names are used by default. |
+| `autoFocusRelevantSubTab` | `true` | Prefer the subtab with live or upcoming fixtures when possible. |
+| `tableDensity` | `"normal"` | `compact`, `normal`, or `comfortable`. |
+| `fixtureDateFilter` | `null` | `null`, `"today"`, `"week"`, `"month"`, or a `{ start, end }` range. |
+| `maxLeaguePastFixtures` | `null` | Optional cap for recent flat-league fixtures after windowing. |
+| `maxLeagueUpcomingFixtures` | `null` | Optional cap for upcoming flat-league fixtures after windowing. |
+| `theme` | `"auto"` | `auto`, `light`, or `dark`. |
+| `darkMode` | `null` | Legacy force override: `null`, `true`, or `false`. |
+| `customTeamColors` | `{}` | Per-team row color overrides. |
+| `autoCycle` | `false` | Rotate between configured leagues automatically. |
+| `cycleInterval` | `15000` | League auto-cycle interval in milliseconds. |
+| `autoCycleWcSubtabs` | `true` | Rotate World Cup subtabs automatically. |
+| `wcSubtabCycleInterval` | `15000` | World Cup subtab auto-cycle interval in milliseconds. |
+| `clearCacheButton` | `true` | Show the clear-cache control in the UI. |
+| `clearCacheOnStart` | `false` | Clear caches during startup. |
+| `debug` | `false` | Enable verbose logging. |
+| `dateTimeOverride` | `null` | Override the current time for testing. |
 
-##### Core Options
+## Runtime notes
 
-| Option                    | Default                    | Description                                                                                    |
-| :------------------------ | :------------------------- | :--------------------------------------------------------------------------------------------- |
-| `updateInterval`          | `1800000` (30m)            | How often to refresh data (milliseconds).                                                      |
-| `retryDelay`              | `15000`                    | Delay between retry attempts after a fetch error (ms).                                         |
-| `maxRetries`              | `3`                        | Maximum fetch retry attempts before giving up.                                                 |
-| `provider`                | `"auto"`                   | Data source: `"auto"`, `"bbc"`, `"google"`, `"espn"`, `"soccerway"`, or `"wikipedia"`.                    |
-| `animationSpeed`          | `2000`                     | DOM update animation speed (ms).                                                               |
-| `fadeSpeed`               | `4000`                     | Fade transition speed (ms).                                                                    |
-| `selectedLeagues`         | `["SCOTLAND_PREMIERSHIP"]` | Array of league codes to display.                                                              |
-| `highlightTeams`          | `["Celtic", "Hearts"]`     | Team names to visually emphasize.                                                              |
-| `maxTeams`                | `36`                       | Maximum teams per table (0 = all).                                                             |
-| `autoGenerateButtons`     | `true`                     | Auto-create league switcher buttons from `selectedLeagues`.                                    |
-| `showLeagueButtons`       | `true`                     | Show or hide league switcher tabs in the header.                                               |
-| `autoFocusRelevantSubTab` | `true`                     | Automatically focus the tab showing live or upcoming matches.                                  |
-| `clearCacheButton`        | `true`                     | Display the Clear Cache button on the module.                                                  |
-| `clearCacheOnStart`       | `false`                    | Force-clear all caches on every module start (useful for troubleshooting).                     |
-| `debug`                   | `false`                    | Enable verbose console logging. Disable in production on Raspberry Pi.                         |
-| `dateTimeOverride`        | `null`                     | Override system date/time for testing. ISO format e.g. `"2026-06-15T14:00:00Z"`.              |
+- `node_helper.js` performs provider I/O server-side for the canonical data path.
+- The frontend still renders team logos with provider image URLs. If your deployment enforces a strict CSP, allow the relevant image hosts or disable logos with `showTeamLogos: false`.
+- This repo is a MagicMirror module, not a standalone web app.
 
-##### Display Toggles & Display Options
+## Development commands
 
-| Option               | Default                     | Description                                                         |
-| :------------------- | :-------------------------- | :------------------------------------------------------------------ |
-| `showPosition`       | `true`                      | Show league rank column.                                            |
-| `showTeamLogos`      | `true`                      | Show team crest images.                                             |
-| `showPlayedGames`    | `true`                      | Show games played column.                                           |
-| `showWon`            | `true`                      | Show wins column.                                                   |
-| `showDrawn`          | `true`                      | Show draws column.                                                  |
-| `showLost`           | `true`                      | Show losses column.                                                 |
-| `showGoalsFor`       | `true`                      | Show goals for column.                                              |
-| `showGoalsAgainst`   | `true`                      | Show goals against column.                                          |
-| `showGoalDifference` | `true`                      | Show goal difference column.                                        |
-| `showPoints`         | `true`                      | Show points column.                                                 |
-| `showForm`           | `true`                      | Show recent form tokens (W/D/L).                                    |
-| `formMaxGames`       | `6`                         | Number of recent games shown in the form column.                    |
-| `colored`            | `true`                      | Color-code rows by zone (promotion / UEFA / relegation).            |
-| `highlightedColor`   | `"rgba(255,255,255,0.1)"`   | Background color applied to highlighted team rows.                  |
-| `fontColorOverride`  | `"#FFFFFF"`                 | Override all font colors. Set to `null` to use existing CSS scheme. |
-| `darkMode`           | `null`                      | `null` = auto, `true` = force dark, `false` = force light.          |
-| `opacityOverride`    | `null`                      | Override table opacity. Set to `1.0` for full opacity.              |
+Run from the repository root:
 
-##### Cycling Options
+```bash
+npm run lint
+npm test
+npm run scss:build
+npm run format
+```
 
-| Option                  | Default       | Description                                                     |
-| :---------------------- | :------------ | :-------------------------------------------------------------- |
-| `autoCycle`             | `false`       | Automatically rotate through selected leagues.                  |
-| `cycleInterval`         | `15000` (15s) | Time (ms) to display each league when cycling.                  |
-| `autoCycleWcSubtabs`    | `true`        | Auto-cycle through World Cup sub-tabs (groups / knockouts).     |
-| `wcSubtabCycleInterval` | `15000`       | Time (ms) to display each World Cup sub-tab.                    |
+## Maintained repo references
 
-##### Tournament Specific (UEFA European League Competitions)
+- `README.md`: setup and configuration guide
+- `AGENTS.md`: repository workflow and engineering rules
+- `TODO.md`: operational notes and current findings
+- `tests/security.test.js`: active canonical/provider/helper coverage
+- `LICENSE`: MIT license text
 
-| Option            | Default                                   | Description                                         |
-| :---------------- | :---------------------------------------- | :-------------------------------------------------- |
-| `showUEFAleagues` | `null`                                    | Override UEFA league visibility. `null` = respect `selectedLeagues`; `true` = force-add; `false` = force-remove. |
-| `showUEFAnockouts`| `["Playoff","Rd16","QF","SF","Final"]`    | UEFA knockout stages to display.                    |
-
-##### Tournament Specific (World Cup 2026)
-
-| Option                 | Default                                      | Description                                                     |
-| :--------------------- | :------------------------------------------- | :-------------------------------------------------------------- |
-| `showWC2026`           | `null`                                       | Override WC2026 visibility. `null` = respect `selectedLeagues` (preferred); `true` = force-add; `false` = force-remove. |
-| `onlyShowWorldCup2026` | `false`                                      | Force the module into dedicated World Cup-only mode.            |
-| `showWC2026Groups`     | `["A","B","C","D","E","F","G","H","I","J","K","L"]` | Array of group letters to display.                       |
-| `showWC2026Knockouts`  | `["Rd32","Rd16","QF","SF","TP","Final"]`     | Knockout rounds to show.                                        |
-| `defaultWCSubTab`      | `"A"`                                        | Tab to focus on at start-up (e.g. `"A"`, `"Final"`).           |
-| `displayAllTabs`       | `false`                                      | Show all tabs regardless of stage completion.                   |
-| `useMockData`          | `false`                                      | Use built-in mock data for testing (World Cup 2026 only).       |
-
-##### Accessibility Options
-
-| Option                    | Default | Description                                                                                                                                   |
-| :------------------------ | :------ | :-------------------------------------------------------------------------------------------------------------------------------------------- |
-| `enhancedIndicatorShapes` | `true`  | `true` = shape-coded form tokens (circle = W, square = D, triangle = L). `false` = no background; colored text only (W = green, D = grey, L = red). |
-
-##### Advanced Customization Options
-
-| Option                   | Default    | Description                                                                                                         |
-| :----------------------- | :--------- | :------------------------------------------------------------------------------------------------------------------ |
-| `tableDensity`           | `"normal"` | Row spacing: `"compact"` (dense), `"normal"` (balanced), or `"comfortable"` (spacious).                            |
-| `theme`                  | `"auto"`   | Color theme: `"auto"` (system preference), `"light"`, or `"dark"`.                                                 |
-| `fixtureDateFilter`      | `null`     | Filter fixtures by date: `null` (all), `"today"`, `"week"`, `"month"`, or `{start: "YYYY-MM-DD", end: "YYYY-MM-DD"}`. |
-| `customTeamColors`       | `{}`       | Custom row background colors per team: `{"Celtic": "#00A650"}`.                                                     |
-
-## 📚 Detailed Documentation
-
-### Core Documentation
-
-- **[How This Module Works](./documentation/How_This_Module_Works.md)**: Architectural overview.
-- **[Configuration User Guide](./documentation/Configuration_User_Guide.md)**: Detailed configuration options.
-- **[Advanced Customization](./documentation/Advanced_Customization.md)**: CSS variables and manual logo mapping.
-- **[Troubleshooting](./documentation/Troubleshooting_User_Guide.md)**: Common issues and solutions.
-- **[Translation Guide](./documentation/Translation-Guide.md)**: Language support and localization.
-- **[Accessibility Features](./documentation/Accessibility_Features.md)**: Screen reader and visual aid details.
-
-### Tournament & League Guides
-
-- **[World Cup 2026 Guide](./documentation/WorldCup2026-UserGuide.md)**: Tournament specific details.
-- **[European Leagues Config](./documentation/EUROPEAN_LEAGUES_CONFIG.md)**: Details on European league setup.
-- **[BBC League Pages](./documentation/bbcLeaguesPages.md)**: Reference list of supported league pages.
-
-### Technical References
-
-- **[Cache Quickstart](./documentation/CACHE_QUICKSTART.md)**: Guide to the module's caching system.
-- **[Mock Data Guide](./documentation/MOCK_DATA_GUIDE.md)**: How to use mock data for testing.
-- **[Shared Request Manager](./documentation/SHARED_REQUEST_MANAGER.md)**: Technical details of the data fetching system.
-- **[Code of Conduct](./documentation/Code_Of_Conduct.md)**: Contributor guidelines.
-
-### Project Files
-
-- **[Changelog](./CHANGELOG.md)**: History of changes and versions.
-- **[Final Review](./Final_Review.md)**: Final implementation review. ( Not yet compliled)
-- **[License](./LICENSE)**: MIT License details.
-
-### Acknowledgments
-
-Thanks to the MagicMirror community for inspiration and guidance!
-Thanks to the BBC for providing free access to their sports pages.
-
-### License
+## License
 
 MIT

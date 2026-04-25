@@ -4,15 +4,12 @@
  * Author: gitgitaway with assistance from Zencoder AI Assistant
  * MIT Licensed.
  *
- * This module displays football league standings from multiple European competitions
- * sourced from BBC Sport, Google Search, Soccerway, and Wikipedia, including top-tier
- * and second-tier European football leagues, UEFA Champions League, UEFA Europa League,
- * UEFA Europa Conference League, and FIFA World Cup 2026.
- *
- * Enhanced with multi-provider parsing and configurable league selection for 30+ nations.
+ * This module displays API-first football standings and tournament views for the
+ * active product baseline around UEFA Champions League, Colombian Primera A, and
+ * FIFA World Cup 2026 via canonical competition payloads.
  */
 
-// LEAGUE_SPLITS and LEAGUE_URL_MAPS are loaded via getScripts() below.
+// COMPETITION_KEYS are loaded via getScripts() below.
 
 Module.register("MMM-SoccerStandings", {
 	// Load external scripts
@@ -20,10 +17,10 @@ Module.register("MMM-SoccerStandings", {
 		return [
 			"moment.js",
 			"moment-timezone.js",
-			`modules/${this.name}/constants/european-leagues.js`,
-			`modules/${this.name}/constants/team-aliases.js`,
-			`modules/${this.name}/constants/league-splits.js`,
-			`modules/${this.name}/constants/league-urls.js`
+			`modules/${this.name}/constants/competition-keys.js`,
+			`modules/${this.name}/competition-provider.js`,
+			`modules/${this.name}/providers/competition-provider-espn-service.js`,
+			`modules/${this.name}/canonical-view-adapter.js`
 		];
 	},
 
@@ -34,11 +31,8 @@ Module.register("MMM-SoccerStandings", {
 			this.config.header === null ||
 			this.config.header === false
 		) {
-			return false;
-		}
-
-		if (this.config.onlyShowWorldCup2026 === true) {
-			return "FIFA World Cup 2026";
+			// MagicMirror 2.34 renders boolean false as visible text in the header.
+			return "";
 		}
 
 		return this.data.header || "League Standings";
@@ -55,41 +49,11 @@ Module.register("MMM-SoccerStandings", {
 		maxTeams: 36, // 0 = show all teams
 		highlightTeams: ["Celtic", "Hearts"], // Emphasize teams by exact name
 		// ===== League Selection =====
-		// Use selectedLeagues to choose leagues by code.
-		// Example: selectedLeagues: ["SCOTLAND_PREMIERSHIP", "ENGLAND_PREMIER_LEAGUE"]
-		selectedLeagues: ["SCOTLAND_PREMIERSHIP"],
+		// Use selectedLeagues to choose leagues by espn_service slug.
+		// Example: selectedLeagues: ["uefa.champions", "fifa.world"]
+		selectedLeagues: ["uefa.champions"],
 
-		// ===== Automatic button generation from selectedLeagues =====
-		autoGenerateButtons: true, // Auto-create buttons for all leagues in selectedLeagues
-		showLeagueButtons: true, // Show/hide league selector buttons in header
 		autoFocusRelevantSubTab: true, // Automatically focus on the sub-tab with live or upcoming matches
-
-		// ===== World Cup 2026 & UEFA convenience toggles =====
-		// null  = no override; WORLD_CUP_2026 / UEFA codes appear only if in selectedLeagues
-		// true  = add to enabledLeagues regardless of selectedLeagues
-		// false = remove from enabledLeagues even if in selectedLeagues
-		showWC2026: null,
-		showUEFAleagues: null,
-		onlyShowWorldCup2026: false, // If true, only shows World Cup 2026 view
-		showWC2026Groups: [
-			"A",
-			"B",
-			"C",
-			"D",
-			"E",
-			"F",
-			"G",
-			"H",
-			"I",
-			"J",
-			"K",
-			"L"
-		], // Groups to show
-		showWC2026Knockouts: ["Rd32", "Rd16", "QF", "SF", "TP", "Final"], // Knockout rounds to show
-		showUEFAnockouts: ["Playoff", "Rd16", "QF", "SF", "Final"], // UEFA knockout stages to show
-		defaultWCSubTab: "A", // Default tab to focus on start-up (e.g., "A", "Final", etc.)
-		displayAllTabs: false, // Override to show all tabs regardless of completion
-		useMockData: false, // For testing: use mock data instead of scraping
 
 		// ===== Display Options =====
 		showPosition: true, // Show table position
@@ -110,6 +74,8 @@ Module.register("MMM-SoccerStandings", {
 		// ===== UX Options (Phase 4) =====
 		tableDensity: "normal", // Table row density: "compact", "normal", "comfortable"
 		fixtureDateFilter: null, // Filter fixtures by date range: null (show all), "today", "week", "month", or {start: "YYYY-MM-DD", end: "YYYY-MM-DD"}
+		maxLeaguePastFixtures: null, // Optional cap for flat-league recent results after windowing
+		maxLeagueUpcomingFixtures: null, // Optional cap for flat-league upcoming fixtures after windowing
 		// ===== Theme Options (Phase 4) =====
 		theme: "auto", // Color theme: "auto" (follows system), "light", "dark"
 		customTeamColors: {}, // Custom colors for specific teams: {"Team Name": "#HEXCOLOR"}
@@ -121,44 +87,8 @@ Module.register("MMM-SoccerStandings", {
 		autoCycleWcSubtabs: true, // Allow auto-cycling of World Cup sub-tabs
 
 		// ===== League Headers =====
-		// Maps league codes to their display names
-		// Dynamically extended at runtime with all configured European leagues
-		leagueHeaders: {
-			// Domestic Leagues
-			SCOTLAND_PREMIERSHIP: "Scottish Premiership",
-			SCOTLAND_CHAMPIONSHIP: "Scottish Championship",
-			ENGLAND_PREMIER_LEAGUE: "English Premier League",
-			CYMRU_PREMIER_LEAGUE: "Cymru Premier",
-			GERMANY_BUNDESLIGA: "Bundesliga",
-			FRANCE_LIGUE1: "Ligue 1",
-			SPAIN_LA_LIGA: "La Liga",
-			ITALY_SERIE_A: "Serie A",
-			NETHERLANDS_EREDIVISIE: "Eredivisie",
-			BELGIUM_PRO_LEAGUE: "Belgian Pro League",
-			PORTUGAL_PRIMEIRA_LIGA: "Primeira Liga",
-			TURKEY_SUPER_LIG: "Turkish Super Lig",
-			GREECE_SUPER_LEAGUE: "Greek Super League",
-			AUSTRIA_BUNDESLIGA: "Austrian Bundesliga",
-			CZECH_LIGA: "Czech Liga",
-			DENMARK_SUPERLIGAEN: "Superligaen",
-			NORWAY_ELITESERIEN: "Eliteserien",
-			SWEDEN_ALLSVENSKAN: "Allsvenskan",
-			SWITZERLAND_SUPER_LEAGUE: "Swiss Super League",
-			UKRAINE_PREMIER_LEAGUE: "Ukrainian Premier League",
-			ROMANIA_LIGA_I: "Romanian Liga I",
-			CROATIA_HNL: "Croatian HNL",
-			SERBIA_SUPER_LIGA: "Serbian Super Liga",
-			HUNGARY_NBI: "Hungarian NB I",
-			POLAND_EKSTRAKLASA: "Ekstraklasa",
-			BOLIVIA_LIGA_2: "Bolivia Simón Bolívar",
-			// European Competitions
-			UEFA_EUROPA_CONFERENCE_LEAGUE: "UEFA Europa Conference League",
-			UEFA_EUROPA_LEAGUE: "UEFA Europa League",
-			UEFA_CHAMPIONS_LEAGUE: "UEFA Champions League",
-
-			// World Cup
-			WORLD_CUP_2026: "WC26"
-		},
+		// Optional user overrides only; active runtime names come from the API catalog.
+		leagueHeaders: {},
 
 		// Theme overrides
 		darkMode: null, // null=auto, true=force dark, false=force light
@@ -167,7 +97,13 @@ Module.register("MMM-SoccerStandings", {
 
 		// Debug
 		debug: false, // Set to true to enable console logging
-		provider: "auto", // Data provider: "auto", "bbc", "soccerway", "wikipedia", "espn", "google"
+		provider: "espn_service", // Default product provider for the active canonical runtime path
+		providerSettings: {
+			espn_service: {
+				baseUrl: "http://localhost:28000",
+				timeoutMs: 8000
+			}
+		},
 		dateTimeOverride: null, // Override system date/time for testing. Use ISO date format (e.g., "2026-01-15" or "2026-01-15T14:30:00Z"). null = use system date
 
 		// Cache controls
@@ -181,32 +117,26 @@ Module.register("MMM-SoccerStandings", {
 	// Module startup
 	start() {
 		Log.info(`Starting module: ${this.name}`);
-
-		// Country name synonyms and variations (handles FIFA vs BBC vs other source differences)
-		this.teamAliases = typeof TEAM_ALIASES !== "undefined" ? TEAM_ALIASES : {};
+		this.competitionProvider = null;
+		if (typeof CompetitionProvider !== "undefined") {
+			this.competitionProvider = CompetitionProvider.initialize(
+				this.config.provider || "espn_service",
+				this
+			);
+		}
 
 		// ===== INITIALIZE LEAGUE SYSTEM =====
 		// Determine which leagues are enabled based on config
 		this.determineEnabledLeagues();
 
-		// Auto-populate leagueHeaders from EUROPEAN_LEAGUES for any missing codes
-		if (typeof EUROPEAN_LEAGUES !== "undefined") {
-			Object.keys(EUROPEAN_LEAGUES).forEach((code) => {
-				if (!this.config.leagueHeaders[code]) {
-					this.config.leagueHeaders[code] = EUROPEAN_LEAGUES[code].name;
-				}
-			});
-		}
-
-		// Initialize data storage - dynamically create entries for each enabled league
-		this.leagueData = {};
+		// Track loaded state per enabled league while canonical payloads populate the UI.
 		this.loaded = {};
 
-		// Populate data structures for each enabled league
+		// Populate load tracking for each enabled league
 		this.enabledLeagueCodes.forEach((leagueCode) => {
-			this.leagueData[leagueCode] = null;
 			this.loaded[leagueCode] = false;
 		});
+		this.canonicalData = {};
 
 		this.error = null;
 		this.retryCount = 0;
@@ -227,24 +157,13 @@ Module.register("MMM-SoccerStandings", {
 		this.currentLeague =
 			this.enabledLeagueCodes.length > 0
 				? this.enabledLeagueCodes[0]
-				: "SCOTLAND_PREMIERSHIP";
+				: this.resolveCompetitionValue(
+						COMPETITION_KEYS.UEFA_CHAMPIONS,
+						"espn_service"
+					) ||
+					this.normalizeLeagueCode(this.defaults.selectedLeagues[0]);
 
-		const uefaLeagues = [
-			"UEFA_CHAMPIONS_LEAGUE",
-			"UEFA_EUROPA_LEAGUE",
-			"UEFA_EUROPA_CONFERENCE_LEAGUE",
-			"UCL",
-			"UEL",
-			"ECL"
-		];
-
-		if (this.currentLeague === "WORLD_CUP_2026") {
-			this.currentSubTab = this.config.defaultWCSubTab || "A";
-		} else if (uefaLeagues.includes(this.currentLeague)) {
-			this.currentSubTab = "Table";
-		} else {
-			this.currentSubTab = null;
-		}
+		this.currentSubTab = this.getDefaultCompetitionSubTab(this.currentLeague);
 
 		this.isScrolling = false;
 		this.isContentHidden = false; // Add state for content visibility
@@ -272,13 +191,8 @@ Module.register("MMM-SoccerStandings", {
 		// Set up periodic updates
 		this.scheduleUpdate();
 
-		// Set up auto-cycling if enabled (also enable if onlyShowWorldCup2026 is true for 20s rotation)
-		if (this.config.autoCycle || this.config.onlyShowWorldCup2026) {
-			// Force cycle interval to 30 seconds and formMaxGames to 3 if onlyShowWorldCup2026 is true
-			if (this.config.onlyShowWorldCup2026) {
-				this.config.cycleInterval = 30 * 1000;
-				this.config.formMaxGames = 3;
-			}
+		// Set up auto-cycling if enabled
+		if (this.config.autoCycle) {
 			this.scheduleCycling();
 			this.scheduleWorldCupSubtabCycling();
 		}
@@ -351,25 +265,15 @@ Module.register("MMM-SoccerStandings", {
 		return this.getCurrentDate().toLocaleDateString("en-CA");
 	},
 
-	// Standardize team names for comparisons and logo lookups.
-	// INTENTIONAL DUPLICATE of logo-resolver.js::normalize() - kept here because
-	// the frontend runs in the Electron browser context where Node.js require() is
-	// unavailable, so the logic cannot be shared via a common module at runtime.
-	// If you update the normalization logic, update logo-resolver.js::normalize() too.
+	// Standardize team names for comparisons using provider-native names only.
 	normalizeTeamName(str) {
 		if (!str) return "";
 
-		// 1. Resolve aliases if defined (use the raw name first, trimmed and lowercase)
-		const lookupKey = str.trim().toLowerCase();
-		if (this.teamAliases && this.teamAliases[lookupKey]) {
-			str = this.teamAliases[lookupKey];
-		}
-
-		// 2. Remove diacritics
+		// 1. Remove diacritics
 		let result = str.replace(/ß/g, "ss").replace(/ø/g, "o").replace(/æ/g, "ae");
 		result = result.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-		// 3. Lowercase and strip common tournament suffixes/words
+		// 2. Lowercase and strip common tournament suffixes/words
 		return result
 			.toLowerCase()
 			.replace(/\([^)]*\)/g, "") // Strip anything in parentheses like (Host) or (Title Holder)
@@ -397,31 +301,11 @@ Module.register("MMM-SoccerStandings", {
 		});
 	},
 
-	// Logo lookup: backend resolves all logos via logo-resolver.js before sending data.
-	// This is a frontend-only last-resort fallback for config.teamLogoMap custom entries
-	// in case a code path receives unresolved data.
-	getTeamLogoMapping(teamName) {
-		if (!teamName) return null;
-		const custom = this.config.teamLogoMap;
-		return (custom && custom[teamName]) || null;
-	},
-
 	// ===== NEW: Determine which leagues are enabled =====
-	// Handles both new selectedLeagues config and legacy showXXX toggles for backward compatibility
+	// Uses selectedLeagues as the source of truth for league visibility.
 	// Populates this.enabledLeagueCodes array with league codes to fetch
 	determineEnabledLeagues() {
 		this.enabledLeagueCodes = [];
-
-		// PRIORITY 0: If onlyShowWorldCup2026 is true, ONLY show World Cup 2026
-		if (this.config.onlyShowWorldCup2026 === true) {
-			this.enabledLeagueCodes = ["WORLD_CUP_2026"];
-			if (this.config.debug) {
-				Log.info(
-					" MMM-SoccerStandings: onlyShowWorldCup2026 is enabled. ONLY World Cup 2026 will be shown."
-				);
-			}
-			return; // Skip other league detection
-		}
 
 		// PRIORITY 1: Use selectedLeagues if provided and not empty
 		if (
@@ -431,13 +315,20 @@ Module.register("MMM-SoccerStandings", {
 		) {
 			// Filter and validate league codes from selectedLeagues
 			this.config.selectedLeagues.forEach((leagueCode) => {
-				// Map old codes to new codes for backward compatibility
 				const normalizedCode = this.normalizeLeagueCode(leagueCode);
+				const resolvedLeagueCode =
+					this.resolveCompetitionValue(normalizedCode) ||
+					this.resolveCompetitionKey(normalizedCode);
 				if (
-					normalizedCode &&
-					!this.enabledLeagueCodes.includes(normalizedCode)
+					resolvedLeagueCode &&
+					this.isRecognizedCompetitionSelection(normalizedCode) &&
+					!this.enabledLeagueCodes.includes(resolvedLeagueCode)
 				) {
-					this.enabledLeagueCodes.push(normalizedCode);
+					this.enabledLeagueCodes.push(resolvedLeagueCode);
+				} else if (normalizedCode && this.config.debug) {
+					Log.warn(
+						` MMM-SoccerStandings: Ignoring unsupported selectedLeagues entry "${normalizedCode}". Use espn_service slugs or active competition keys.`
+					);
 				}
 			});
 
@@ -448,46 +339,17 @@ Module.register("MMM-SoccerStandings", {
 			}
 		}
 
-		// MASTER TOGGLE OVERRIDES - only act when explicitly set (null = no-op, respects selectedLeagues).
-		// true  → force-add to enabledLeagueCodes (convenience shortcut).
-		// false → force-remove from enabledLeagueCodes (explicit opt-out).
-		// null  → do nothing; selectedLeagues is the sole source of truth.
-
-		// World Cup 2026
-		if (this.config.showWC2026 === true) {
-			if (!this.enabledLeagueCodes.includes("WORLD_CUP_2026")) {
-				this.enabledLeagueCodes.push("WORLD_CUP_2026");
-			}
-		} else if (this.config.showWC2026 === false) {
-			this.enabledLeagueCodes = this.enabledLeagueCodes.filter(
-				(code) => code !== "WORLD_CUP_2026"
-			);
-		}
-
-		// UEFA Leagues
-		const uefaLeagues = [
-			"UEFA_EUROPA_CONFERENCE_LEAGUE",
-			"UEFA_EUROPA_LEAGUE",
-			"UEFA_CHAMPIONS_LEAGUE"
-		];
-		if (this.config.showUEFAleagues === true) {
-			uefaLeagues.forEach((code) => {
-				if (!this.enabledLeagueCodes.includes(code)) {
-					this.enabledLeagueCodes.push(code);
-				}
-			});
-		} else if (this.config.showUEFAleagues === false) {
-			this.enabledLeagueCodes = this.enabledLeagueCodes.filter(
-				(code) => !uefaLeagues.includes(code)
-			);
-		}
-
-		// Fallback: If after all logic no leagues are enabled, default to Scottish Premiership
+		// Fallback: If after all logic no leagues are enabled, default to uefa.champions
 		if (this.enabledLeagueCodes.length === 0) {
-			this.enabledLeagueCodes = ["SCOTLAND_PREMIERSHIP"];
+			this.enabledLeagueCodes = [
+				this.resolveCompetitionValue(
+					COMPETITION_KEYS.UEFA_CHAMPIONS,
+					"espn_service"
+				) || this.normalizeLeagueCode(this.defaults.selectedLeagues[0])
+			];
 			if (this.config.debug) {
 				Log.warn(
-					" MMM-SoccerStandings: No leagues enabled after filtering, defaulting to SCOTLAND_PREMIERSHIP"
+					" MMM-SoccerStandings: No leagues enabled after filtering, defaulting to uefa.champions"
 				);
 			}
 		}
@@ -501,193 +363,310 @@ Module.register("MMM-SoccerStandings", {
 			if (this.enabledLeagueCodes.length > 0) {
 				this.currentLeague = this.enabledLeagueCodes[0];
 			} else {
-				this.currentLeague = "SCOTLAND_PREMIERSHIP";
+				this.currentLeague =
+					this.resolveCompetitionValue(
+						COMPETITION_KEYS.UEFA_CHAMPIONS,
+						"espn_service"
+					) ||
+					this.normalizeLeagueCode(this.defaults.selectedLeagues[0]);
 			}
 		}
 	},
 
-	// ===== NEW: Normalize league codes =====
-	// Converts old league codes to new format for backward compatibility
-	// Returns null if code is invalid
+	// Normalize configured competition identifiers.
+	// The active path accepts canonical keys and provider slugs directly, while the
+	// slug remains the live identifier used by the frontend shell.
 	normalizeLeagueCode(code) {
 		if (!code || typeof code !== "string") return null;
-
-		// Legacy code mappings for backward compatibility
-		const legacyCodeMap = {
-			SPFL: "SCOTLAND_PREMIERSHIP",
-			SPFLC: "SCOTLAND_CHAMPIONSHIP",
-			EPL: "ENGLAND_PREMIER_LEAGUE",
-			UCL: "UEFA_CHAMPIONS_LEAGUE",
-			UEL: "UEFA_EUROPA_LEAGUE",
-			ECL: "UEFA_EUROPA_CONFERENCE_LEAGUE",
-			CHAMPIONS_LEAGUE: "UEFA_CHAMPIONS_LEAGUE",
-			EUROPA_LEAGUE: "UEFA_EUROPA_LEAGUE",
-			EUROPA_CONFERENCE_LEAGUE: "UEFA_EUROPA_CONFERENCE_LEAGUE"
-		};
-
-		return legacyCodeMap[code] || code;
+		const normalized = code.trim();
+		if (!normalized) return null;
+		return normalized;
 	},
 
-	// ===== NEW: Get league URL by code =====
-	// Returns the BBC Sport URL for a given league code
+	resolveCompetitionKey(
+		competitionValue,
+		providerId = DEFAULT_COMPETITION_PROVIDER || "espn_service"
+	) {
+		const normalizedValue = this.normalizeLeagueCode(competitionValue);
+		if (!normalizedValue) {
+			return null;
+		}
+
+		if (typeof getCompetitionKey !== "function") {
+			return normalizedValue;
+		}
+
+		return getCompetitionKey(normalizedValue, providerId) || normalizedValue;
+	},
+
+	resolveCompetitionValue(
+		competitionValue,
+		providerId = DEFAULT_COMPETITION_PROVIDER || "espn_service"
+	) {
+		const normalizedValue = this.normalizeLeagueCode(competitionValue);
+		if (!normalizedValue) {
+			return null;
+		}
+
+		if (
+			typeof getCompetitionValue !== "function" ||
+			typeof isCompetitionKey !== "function"
+		) {
+			return normalizedValue.includes(".") ? normalizedValue.toLowerCase() : null;
+		}
+
+		const competitionKey = this.resolveCompetitionKey(normalizedValue, providerId);
+		if (isCompetitionKey(competitionKey)) {
+			return getCompetitionValue(competitionKey, providerId);
+		}
+
+		return normalizedValue.includes(".") ? normalizedValue.toLowerCase() : null;
+	},
+
+	isRecognizedCompetitionSelection(
+		competitionValue,
+		providerId = DEFAULT_COMPETITION_PROVIDER || "espn_service"
+	) {
+		const normalizedValue = this.normalizeLeagueCode(competitionValue);
+		if (!normalizedValue) {
+			return false;
+		}
+
+		const competitionKey = this.resolveCompetitionKey(normalizedValue, providerId);
+		if (
+			typeof isCompetitionKey === "function" &&
+			isCompetitionKey(competitionKey)
+		) {
+			return true;
+		}
+
+		return Boolean(this.resolveCompetitionValue(normalizedValue, providerId));
+	},
+
+	getCanonicalDataKey(leagueCode) {
+		return this.resolveCompetitionKey(leagueCode);
+	},
+
+	getLeagueMapKey(leagueCode) {
+		return this.resolveCompetitionKey(leagueCode);
+	},
+
+	getCanonicalCompetitionPayload(leagueCode) {
+		const canonicalDataKey = this.getCanonicalDataKey(leagueCode);
+		return canonicalDataKey && this.canonicalData
+			? this.canonicalData[canonicalDataKey] || null
+			: null;
+	},
+
+	humanizeLeagueIdentifier(leagueCode) {
+		const rawValue =
+			this.getResolvedLeagueSlug(leagueCode) ||
+			this.normalizeLeagueCode(leagueCode) ||
+			(typeof leagueCode === "string" ? leagueCode.trim() : "");
+		if (!rawValue) {
+			return "";
+		}
+
+		return rawValue
+			.split(".")
+			.filter(Boolean)
+			.map((segment) =>
+				segment
+					.replace(/[_-]+/g, " ")
+					.replace(/\b\w/g, (char) => char.toUpperCase())
+			)
+			.join(" ");
+	},
+
+	buildLeagueAbbreviation(leagueName) {
+		if (typeof leagueName !== "string" || !leagueName.trim()) {
+			return "";
+		}
+
+		const tokens = leagueName
+			.trim()
+			.split(/\s+/)
+			.filter(Boolean);
+		if (tokens.length === 1) {
+			return tokens[0].slice(0, 3).toUpperCase();
+		}
+
+		const abbreviation = tokens
+			.slice(0, 4)
+			.map((token) => token.charAt(0).toUpperCase())
+			.join("");
+		return abbreviation || leagueName.slice(0, 3).toUpperCase();
+	},
+
+	getActiveCompetitionProvider() {
+		if (this.competitionProvider) {
+			return this.competitionProvider;
+		}
+
+		this.competitionProvider = CompetitionProvider.initialize(
+			this.config.provider || "espn_service",
+			this
+		);
+		return this.competitionProvider;
+	},
+
 	getLeagueUrl(leagueCode) {
-		const provider = (this.config.provider || "auto").toLowerCase();
+		return this.getResolvedLeagueSlug(leagueCode);
+	},
 
-		// URL maps loaded from league-urls.js (via getScripts)
-		const {
-			bbc: bbcUrlMap,
-			wikipedia: wikipediaUrlMap,
-			soccerway: soccerwayUrlMap,
-			google: googleUrlMap,
-			espn: espnUrlMap
-		} = LEAGUE_URL_MAPS;
+	getResolvedLeagueSlug(leagueCode) {
+		return this.getActiveCompetitionProvider().resolveLeagueSlug(leagueCode);
+	},
 
-		// Fall back to european-leagues.js for BBC URL if not in the explicit map
-		const europeanLeagueUrl =
-			typeof EUROPEAN_LEAGUES !== "undefined" &&
-			EUROPEAN_LEAGUES[leagueCode] &&
-			EUROPEAN_LEAGUES[leagueCode].url
-				? EUROPEAN_LEAGUES[leagueCode].url
-				: undefined;
+	isWorldCupLeague(leagueCode, urls = null) {
+		return this.getActiveCompetitionProvider().isWorldCupCompetition(
+			leagueCode,
+			urls
+		);
+	},
 
-		const urls = {
-			bbc: bbcUrlMap[leagueCode] || europeanLeagueUrl,
-			google: googleUrlMap[leagueCode],
-			wikipedia: wikipediaUrlMap[leagueCode],
-			espn: espnUrlMap[leagueCode],
-			soccerway: soccerwayUrlMap[leagueCode]
+	getPreferredWorldCupLeagueCode(codes = null) {
+		return this.getActiveCompetitionProvider().getPreferredWorldCupLeagueCode(
+			Array.isArray(codes) ? codes : this.enabledLeagueCodes
+		);
+	},
+
+	isUEFATournamentLeague(leagueCode) {
+		return this.getActiveCompetitionProvider().isUefaTournamentCompetition(
+			leagueCode
+		);
+	},
+
+	usesCompetitionSubTabs(leagueCode, urls = null) {
+		return (
+			this.isWorldCupLeague(leagueCode, urls) ||
+			this.isUEFATournamentLeague(leagueCode, urls) ||
+			this.shouldUseCanonicalFlatSlice(leagueCode, urls)
+		);
+	},
+
+	usesTournamentView(leagueCode, urls = null) {
+		return (
+			this.isWorldCupLeague(leagueCode, urls) ||
+			this.isUEFATournamentLeague(leagueCode, urls)
+		);
+	},
+
+	getWorldCupGroupSubTabs() {
+		return ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
+	},
+
+	getWorldCupKnockoutSubTabs() {
+		return ["Rd32", "Rd16", "QF", "SF", "TP", "Final"];
+	},
+
+	getUefaKnockoutSubTabs(leagueCode) {
+		const competitionKey = this.resolveCompetitionKey(leagueCode, "espn_service");
+		const stageOrder = ["Playoff", "Rd16", "QF", "SF", "Final"];
+
+		return stageOrder.filter(
+			(stageId) =>
+				competitionKey !== COMPETITION_KEYS.UEFA_CHAMPIONS ||
+				!["Playoff", "Rd16"].includes(stageId)
+		);
+	},
+
+	getCompetitionSubTabs(leagueCode) {
+		if (this.isWorldCupLeague(leagueCode)) {
+			return [
+				...this.getWorldCupGroupSubTabs(),
+				...this.getWorldCupKnockoutSubTabs()
+			];
+		}
+
+		if (this.isUEFATournamentLeague(leagueCode)) {
+			return ["Table", ...this.getUefaKnockoutSubTabs(leagueCode)];
+		}
+
+		if (this.shouldUseCanonicalFlatSlice(leagueCode)) {
+			return ["Table", "Fixtures"];
+		}
+
+		return [];
+	},
+
+	getCompetitionSubTabLabel(leagueCode, subTabId) {
+		if (subTabId === "Table") {
+			return this.translate("TABLE");
+		}
+
+		if (subTabId === "Fixtures") {
+			return this.getFlatLeagueFixturesTabLabel();
+		}
+
+		if (this.isWorldCupLeague(leagueCode) && /^[A-L]$/.test(subTabId)) {
+			return subTabId;
+		}
+
+		const labelMap = {
+			Playoff: this.translate("PLAYOFF"),
+			Rd32: this.translate("ROUND_OF_32"),
+			Rd16: this.translate("ROUND_OF_16"),
+			QF: this.translate("QUARTER_FINAL"),
+			SF: this.translate("SEMI_FINAL"),
+			TP: this.translate("THIRD_PLACE"),
+			Final: this.translate("FINAL")
 		};
 
-		// Helper: build a provider chain starting with the given priority order,
-		// filtering out any entries where the URL is missing.
-		const buildChain = (...providerOrder) =>
-			providerOrder
-				.map((p) => (urls[p] ? { url: urls[p], provider: p } : null))
-				.filter(Boolean);
+		return labelMap[subTabId] || subTabId;
+	},
 
-		// Guard: UEFA competitions require BBC's {table, fixtures} object so that
-		// fetchUEFACompetitionData can retrieve phase fixture articles.
-		// WC2026 requires BBC's array of month URLs so fetchFIFAWorldCup2026 works.
-		// If any other provider was requested, warn and force BBC-first chain.
-		const bbcUrl = urls.bbc;
-		const requiresBBCSpecialFetcher =
-			(typeof bbcUrl === "object" &&
-				bbcUrl !== null &&
-				!Array.isArray(bbcUrl) &&
-				bbcUrl.table &&
-				bbcUrl.fixtures) ||
-			(Array.isArray(bbcUrl) && leagueCode === "WORLD_CUP_2026");
-
-		if (requiresBBCSpecialFetcher) {
-			if (provider !== "auto" && provider !== "bbc") {
-				Log.warn(
-					` MMM-SoccerStandings: provider="${provider}" cannot be used for ${leagueCode} - this league requires BBC's special fetcher. Falling back to BBC.`
-				);
-			}
-			const chain = buildChain(
-				"bbc",
-				"wikipedia",
-				"espn",
-				"soccerway",
-				"google"
-			);
-			if (chain.length === 0)
-				return { primary: null, fallback: null, providerChain: [] };
-			return {
-				primary: chain[0].url,
-				fallback: chain[1]?.url,
-				providerChain: chain
-			};
+	getCompetitionSubTabAriaLabel(leagueCode, subTabId) {
+		if (this.isWorldCupLeague(leagueCode) && /^[A-L]$/.test(subTabId)) {
+			return `Show Group ${subTabId} standings`;
 		}
 
-		// Explicit provider selection: put the requested provider first, then
-		// fall back through the remaining ordered chain.
-		if (provider === "wikipedia" && urls.wikipedia) {
-			const chain = buildChain(
-				"wikipedia",
-				"google",
-				"espn",
-				"bbc",
-				"soccerway"
-			);
-			return {
-				primary: chain[0].url,
-				fallback: chain[1]?.url,
-				providerChain: chain
-			};
+		const label = this.getCompetitionSubTabLabel(leagueCode, subTabId);
+		if (subTabId === "Table" || subTabId === "Fixtures") {
+			return `Show ${label}`;
 		}
 
-		if (provider === "espn" && urls.espn) {
-			const chain = buildChain(
-				"espn",
-				"google",
-				"wikipedia",
-				"bbc",
-				"soccerway"
-			);
-			return {
-				primary: chain[0].url,
-				fallback: chain[1]?.url,
-				providerChain: chain
-			};
+		return `Show ${label} fixtures`;
+	},
+
+	ensureCurrentSubTab(leagueCode) {
+		const availableSubTabs = this.getCompetitionSubTabs(leagueCode);
+		if (!availableSubTabs.length) {
+			this.currentSubTab = null;
+			return;
 		}
 
-		if (provider === "soccerway" && urls.soccerway) {
-			const chain = buildChain(
-				"soccerway",
-				"google",
-				"wikipedia",
-				"espn",
-				"bbc"
-			);
-			return {
-				primary: chain[0].url,
-				fallback: chain[1]?.url,
-				providerChain: chain
-			};
+		if (!availableSubTabs.includes(this.currentSubTab)) {
+			this.currentSubTab = availableSubTabs[0];
+		}
+	},
+
+	shouldShowLeagueButtons() {
+		return Array.isArray(this.enabledLeagueCodes) && this.enabledLeagueCodes.length > 1;
+	},
+
+	getKnockoutFixturesForSubTab(currentData, subTab) {
+		if (!currentData || !subTab) {
+			return [];
 		}
 
-		if (provider === "google" && urls.google) {
-			const chain = buildChain("google", "wikipedia", "espn", "bbc");
-			return {
-				primary: chain[0].url,
-				fallback: chain[1]?.url,
-				providerChain: chain
-			};
+		const koKey = String(subTab).toLowerCase();
+		const structuredKnockouts =
+			currentData.knockouts && Array.isArray(currentData.knockouts[koKey])
+				? currentData.knockouts[koKey]
+				: [];
+		if (structuredKnockouts.length > 0) {
+			return structuredKnockouts;
 		}
 
-		if (provider === "bbc" && urls.bbc) {
-			const chain = buildChain(
-				"bbc",
-				"google",
-				"wikipedia",
-				"espn",
-				"soccerway"
-			);
-			return {
-				primary: chain[0].url,
-				fallback: chain[1]?.url,
-				providerChain: chain
-			};
-		}
+		return Array.isArray(currentData.fixtures)
+			? currentData.fixtures.filter((fixture) => fixture && fixture.stage === subTab)
+			: [];
+	},
 
-		// Requested provider has no URL for this league - warn and fall through to auto.
-		if (provider !== "auto" && !urls[provider]) {
-			Log.warn(
-				` MMM-SoccerStandings: provider="${provider}" has no URL for ${leagueCode}. Using auto fallback.`
-			);
-		}
-
-		// "auto" mode: BBC first, then Wikipedia (most reliable static HTML for split leagues),
-		// then ESPN, then Soccerway, then Google as last resort.
-		const chain = buildChain("bbc", "google", "wikipedia", "espn", "soccerway");
-		if (chain.length === 0)
-			return { primary: null, fallback: null, providerChain: [] };
-		return {
-			primary: chain[0].url,
-			fallback: chain[1]?.url,
-			providerChain: chain
-		};
+	getDefaultCompetitionSubTab(leagueCode) {
+		const subTabs = this.getCompetitionSubTabs(leagueCode);
+		return subTabs.length > 0 ? subTabs[0] : null;
 	},
 
 	// ===== NEW: Request data for all enabled leagues (dynamic) =====
@@ -703,37 +682,48 @@ Module.register("MMM-SoccerStandings", {
 
 		// Iterate through each enabled league code and request its data with staggering to avoid spikes
 		this.enabledLeagueCodes.forEach((leagueCode, index) => {
-			const urls = this.getLeagueUrl(leagueCode);
+			const slug = this.getLeagueUrl(leagueCode);
 
-			if (!urls || (!urls.primary && !urls.fallback)) {
+			if (!slug) {
 				Log.error(
-					` MMM-SoccerStandings: Could not find URL for league code: ${leagueCode}`
+					` MMM-SoccerStandings: Could not resolve ESPN slug for league code: ${leagueCode}`
 				);
 				return; // Skip this league if no URL found
 			}
-
-			// Look up split config for this league (null for non-split leagues)
-			const splitConfig = LEAGUE_SPLITS[leagueCode] || null;
 
 			// Stagger requests by 500ms to prevent network/CPU spikes
 			setTimeout(() => {
 				if (this.config.debug) {
 					Log.info(
-						` MMM-SoccerStandings: Requesting data for ${leagueCode} from ${urls.primary || urls.fallback}${splitConfig ? " (split-league)" : ""}`
+						` MMM-SoccerStandings: Requesting canonical data for ${leagueCode} from ${slug}`
 					);
 				}
 
-				// Send request to node helper, including the full provider chain
-				// so the backend can automatically try fallback providers when primary returns bad data.
-				// splitConfig tells parsers how to handle post-split group table selection.
-				this.sendSocketNotification("GET_LEAGUE_DATA", {
-					...this.config,
-					leagueType: leagueCode,
-					url: urls.primary,
-					fallbackUrl: urls.fallback,
-					providerChain: urls.providerChain || [],
-					splitConfig: splitConfig
-				});
+				if (this.shouldRequestCanonicalCompetitionPayload(leagueCode, slug)) {
+					this.sendSocketNotification("GET_COMPETITION_PAYLOAD", {
+						leagueType: leagueCode,
+						slug,
+						debug: this.config.debug,
+						provider: this.config.provider,
+						espnSoccerApiBaseUrl: this.config.espnSoccerApiBaseUrl,
+						espnSoccerApiTimeout: this.config.espnSoccerApiTimeout,
+						surfaces: {
+							standings: true,
+							fixtures: true
+						},
+						requestMeta: {
+							requestId: `${leagueCode}-${Date.now()}`,
+							forceRefresh: false
+						}
+					});
+					return;
+				}
+
+				if (this.config.debug) {
+					Log.warn(
+						` MMM-SoccerStandings: Skipping unsupported non-canonical league "${leagueCode}" in API-first mode.`
+					);
+				}
 			}, index * 500);
 		});
 	},
@@ -997,25 +987,12 @@ Module.register("MMM-SoccerStandings", {
 
 	// Utility: determine if a WC stage is complete based on available data
 	isWorldCupStageComplete(stageId) {
-		const data = this.leagueData && this.leagueData.WORLD_CUP_2026;
+		const data = this.getRenderLeagueData(this.getPreferredWorldCupLeagueCode());
 		if (!data) return false;
 
 		// For groups: consider complete if every group A-L exists and each team has played all group matches
 		if (stageId === "GROUPS") {
-			const groups = this.config.showWC2026Groups || [
-				"A",
-				"B",
-				"C",
-				"D",
-				"E",
-				"F",
-				"G",
-				"H",
-				"I",
-				"J",
-				"K",
-				"L"
-			];
+			const groups = this.getWorldCupGroupSubTabs();
 			if (!data.groups) return false;
 			for (const g of groups) {
 				const teams = data.groups[g];
@@ -1051,9 +1028,8 @@ Module.register("MMM-SoccerStandings", {
 			this.cycleTimer = null;
 		}
 
-		// ===== NEW: Use dynamically determined enabledLeagueCodes =====
-		// Instead of creating from legacy config, we use the already-populated enabledLeagueCodes array
-		// This allows cycling through any configured European league
+		// Cycle through the resolved active league list instead of rebuilding it on
+		// each tick from raw config state.
 
 		// Only set up cycling if we have more than one league
 		if (this.enabledLeagueCodes && this.enabledLeagueCodes.length > 1) {
@@ -1083,11 +1059,7 @@ Module.register("MMM-SoccerStandings", {
 				// Update current league
 				self.currentLeague = nextLeague;
 
-				// Reset WC sub-tab to the configured default when auto-cycling enters WC,
-				// matching the same behaviour as the manual league-button click handler.
-				if (nextLeague === "WORLD_CUP_2026") {
-					self.currentSubTab = self.config.defaultWCSubTab || "A";
-				}
+				self.currentSubTab = self.getDefaultCompetitionSubTab(nextLeague);
 
 				// Reconfigure WC subtab cycling if needed (when entering/leaving WC)
 				self.scheduleWorldCupSubtabCycling();
@@ -1129,10 +1101,8 @@ Module.register("MMM-SoccerStandings", {
 		// Schedule next update
 		let nextUpdate = this.config.updateInterval;
 
-		// Task: Reduce refresh time for live matches to once per 3 mins.
-		// Also increases refresh rate when today's fixtures have passed kick-off but
-		// no FT status has been detected yet - compensates for BBC Sport class-name
-		// changes that can prevent live detection from triggering correctly.
+		// Reduce refresh time for matches that are live or likely live based on
+		// kickoff time and missing final state, even if provider status lags.
 		let hasLiveGames = false;
 		let mightHaveLiveGames = false;
 		const nowMs = Date.now();
@@ -1143,8 +1113,9 @@ Module.register("MMM-SoccerStandings", {
 			return `${d.getFullYear()}-${mm}-${dd}`;
 		})();
 
-		if (this.leagueData) {
-			Object.values(this.leagueData).forEach((data) => {
+		(this.enabledLeagueCodes || [])
+			.map((leagueCode) => this.getRenderLeagueData(leagueCode))
+			.forEach((data) => {
 				if (data && data.fixtures && Array.isArray(data.fixtures)) {
 					data.fixtures.forEach((f) => {
 						if (f.live) {
@@ -1164,7 +1135,6 @@ Module.register("MMM-SoccerStandings", {
 					});
 				}
 			});
-		}
 
 		if (hasLiveGames || mightHaveLiveGames) {
 			nextUpdate = 3 * 60 * 1000; // 3 minutes
@@ -1194,8 +1164,8 @@ Module.register("MMM-SoccerStandings", {
 		}
 
 		switch (notification) {
-			case "LEAGUE_DATA":
-				this.processLeagueData(payload);
+			case "COMPETITION_PAYLOAD":
+				this.processCompetitionPayload(payload);
 				break;
 			case "FETCH_ERROR":
 				this.processError(payload);
@@ -1206,51 +1176,367 @@ Module.register("MMM-SoccerStandings", {
 		}
 	},
 
-	// Process successful league data
-	processLeagueData(data) {
-		if (this.config.debug) {
-			Log.info(
-				` MMM-SoccerStandings: Processing league data for ${data.leagueType}: ${JSON.stringify(data && data.meta ? data.meta : {})}`
-			);
-		}
+	shouldUseCanonicalFlatSlice(leagueCode) {
+		return this.getActiveCompetitionProvider().isFlatCompetition(leagueCode);
+	},
 
-		// Store data for the specific league
-		const leagueType = data.leagueType || data.league || "UNKNOWN";
+	shouldUseCanonicalGroupedSlice(leagueCode) {
+		return this.getActiveCompetitionProvider().isGroupedCompetition(leagueCode);
+	},
 
-		// Skip redundant re-render when the fresh fetch returns the same data as the
-		// proactive cache notification (same lastUpdated timestamp → no new information).
-		const existing = this.leagueData[leagueType];
+	shouldUseCanonicalCompetitionSlice(leagueCode, urls = null) {
+		return (
+			this.shouldUseCanonicalFlatSlice(leagueCode, urls) ||
+			this.shouldUseCanonicalGroupedSlice(leagueCode, urls)
+		);
+	},
+
+	shouldRequestCanonicalCompetitionPayload(leagueCode, urls = null) {
+		return this.shouldUseCanonicalCompetitionSlice(leagueCode, urls);
+	},
+
+	processCompetitionPayload(payload) {
+		const competitionCode =
+			payload && payload.competition ? payload.competition.code : null;
+		const competitionSlug =
+			payload && payload.competition ? payload.competition.slug : null;
+		const canonicalDataKey = this.getCanonicalDataKey(
+			competitionCode || competitionSlug
+		);
+		const loadedKeys = new Set(
+			[
+				this.normalizeLeagueCode(competitionSlug),
+				this.normalizeLeagueCode(competitionCode),
+				this.normalizeLeagueCode(canonicalDataKey)
+			].filter(Boolean)
+		);
+		if (!canonicalDataKey) return;
+
+		const existing = this.canonicalData[canonicalDataKey];
 		if (
 			existing &&
-			data.meta &&
-			existing.meta &&
-			data.meta.lastUpdated === existing.meta.lastUpdated
+			existing.generatedAt &&
+			payload.generatedAt &&
+			existing.generatedAt === payload.generatedAt
 		) {
 			return;
 		}
 
-		this.leagueData[leagueType] = data;
-		this.loaded[leagueType] = true;
-
-		// If this is the first data we've received, set it as current
-		if (!this.currentLeague || this.currentLeague === leagueType) {
-			this.currentLeague = leagueType;
-		}
-
-		// Automatically focus on relevant sub-tab if enabled
-		if (this.config.autoFocusRelevantSubTab) {
-			this._autoFocusRelevantSubTab(leagueType);
-		}
-
+		this.canonicalData[canonicalDataKey] = payload;
+		loadedKeys.forEach((loadedKey) => {
+			this.loaded[loadedKey] = true;
+		});
 		this.error = null;
 		this.retryCount = 0;
 
-		// Announce data update to screen readers (A11Y-04)
-		const leagueName = this.config.leagueHeaders[leagueType] || leagueType;
+		const leagueName = this.getLeagueDisplayName(competitionSlug || competitionCode);
 		this.announceDataUpdate(leagueName);
-
-		// Use debounced DOM update to batch multiple league updates together
 		this.debouncedUpdateDom();
+	},
+
+	buildCanonicalStandingsViewModel(payload) {
+		return CanonicalViewAdapter.buildStandingsViewModel(
+			payload,
+			this.currentLeague
+		);
+	},
+
+	buildCanonicalGroupedStandingsViewModel(payload) {
+		return CanonicalViewAdapter.buildGroupedStandingsViewModel(
+			payload,
+			this.currentLeague
+		);
+	},
+
+	getRenderLeagueData(leagueCode) {
+		const canonicalDataKey = this.getCanonicalDataKey(leagueCode);
+		if (this.shouldUseCanonicalCompetitionSlice(leagueCode)) {
+			const canonicalPayload = canonicalDataKey
+				? this.canonicalData[canonicalDataKey]
+				: null;
+			if (!canonicalPayload || !canonicalPayload.standings) {
+				return null;
+			}
+
+			if (canonicalPayload.standings.kind === "flat") {
+				return this.buildCanonicalStandingsViewModel(canonicalPayload);
+			}
+
+			if (canonicalPayload.standings.kind === "grouped") {
+				return this.buildCanonicalGroupedStandingsViewModel(canonicalPayload);
+			}
+		}
+
+		return null;
+	},
+
+	getFixtureStateFlags(fix) {
+		const status = (fix.status || "").toUpperCase();
+		const todayDateStr = this.getCurrentDateString();
+		const isFinished =
+			status === "FT" ||
+			status === "AET" ||
+			status === "PEN" ||
+			status === "PENS" ||
+			status === "PST" ||
+			status === "CANC" ||
+			(!status && !fix.live && fix.date && fix.date < todayDateStr);
+		const isLive = fix.live === true || /\d+'|HT|LIVE/i.test(status);
+		const isUpcoming = !isLive && !isFinished;
+
+		return { isFinished, isLive, isUpcoming };
+	},
+
+	getFixtureDateTimeValue(fix) {
+		if (!fix || !fix.date) {
+			return null;
+		}
+
+		const hasKickoffTime =
+			typeof fix.time === "string" && /^\d{1,2}:\d{2}$/.test(fix.time.trim());
+		const rawValue = hasKickoffTime ? `${fix.date}T${fix.time.trim()}:00` : fix.date;
+		const parsed = new Date(rawValue);
+
+		if (isNaN(parsed.getTime())) {
+			return null;
+		}
+
+		return parsed;
+	},
+
+	getLeagueDataLastUpdatedValue(data) {
+		if (!data || typeof data !== "object") {
+			return null;
+		}
+
+		return (data.meta && data.meta.lastUpdated) || data.lastUpdated || null;
+	},
+
+	createLastUpdatedLabel(data, className = "last-updated xsmall dimmed") {
+		const tsValue = this.getLeagueDataLastUpdatedValue(data);
+		if (!tsValue) {
+			return null;
+		}
+
+		const lastUpdated = document.createElement("span");
+		lastUpdated.className = className;
+		lastUpdated.textContent = `${this.translate("LAST_UPDATED")}: ${moment(tsValue).format("HH:mm")}`;
+		return lastUpdated;
+	},
+
+	createSourceInfoElement(data) {
+		if (!data) {
+			return null;
+		}
+
+		const sourceContainer = document.createElement("div");
+		sourceContainer.className = "footer-source-info";
+		sourceContainer.style.flex = "1";
+		sourceContainer.style.textAlign = "center";
+		sourceContainer.style.margin = "0 10px";
+
+		const sourceSpan = document.createElement("span");
+		sourceSpan.className = "dimmed xsmall";
+		sourceSpan.textContent = `${this.translate("SOURCE")}: ${data.source || this.translate("SOURCE_UNAVAILABLE")}`;
+		sourceContainer.appendChild(sourceSpan);
+
+		const updatedSpan = this.createLastUpdatedLabel(
+			data,
+			"dimmed xsmall last-updated"
+		);
+		if (updatedSpan) {
+			sourceContainer.appendChild(document.createTextNode(" • "));
+			sourceContainer.appendChild(updatedSpan);
+		}
+
+		return sourceContainer;
+	},
+
+	selectFlatLeagueFixtureWindow(fixtures, mode) {
+		if (!Array.isArray(fixtures) || fixtures.length === 0) {
+			return [];
+		}
+
+		const maxWindowSize = 12;
+		const maxDayGap = 2;
+		const datedFixtures = fixtures
+			.map((fix, index) => ({
+				fix,
+				index,
+				dateValue: this.getFixtureDateTimeValue(fix)
+			}))
+			.filter((entry) => entry.dateValue instanceof Date);
+
+		if (datedFixtures.length === 0) {
+			return fixtures.slice(0, maxWindowSize);
+		}
+
+		datedFixtures.sort((a, b) => {
+			const delta = a.dateValue - b.dateValue;
+			return mode === "upcoming" ? delta : -delta;
+		});
+
+		const anchor = datedFixtures[0].dateValue;
+		const windowed = datedFixtures
+			.filter((entry) => {
+				const dayGap = Math.abs(entry.dateValue - anchor) / (1000 * 60 * 60 * 24);
+				return dayGap <= maxDayGap;
+			})
+			.slice(0, maxWindowSize)
+			.sort((a, b) => a.index - b.index)
+			.map((entry) => entry.fix);
+
+		if (this.config.debug) {
+			Log.info(
+				`[FLAT-FIXTURES] ${mode} window reduced ${fixtures.length} fixtures to ${windowed.length} around ${anchor.toISOString()}`
+			);
+		}
+
+		return windowed;
+	},
+
+	getFlatLeagueFixturesTabLabel() {
+		const localized = this.translate("SUBTAB_FIXTURES", { subTab: "" });
+		return localized
+			.replace(/^\s*[-:]\s*/, "")
+			.replace(/\s*[-:]\s*$/, "")
+			.trim();
+	},
+
+	getConfiguredFlatLeagueFixtureLimit(configKey) {
+		const rawValue = this.config[configKey];
+		if (rawValue == null || rawValue === "") {
+			return null;
+		}
+
+		const limit = Number(rawValue);
+		if (Number.isInteger(limit) && limit > 0) {
+			return limit;
+		}
+
+		Log.warn(
+			`[FLAT-FIXTURES] Invalid ${configKey} value "${rawValue}". Expected a positive integer.`
+		);
+		return null;
+	},
+
+	createFlatLeagueFixturesView(currentData) {
+		const container = document.createElement("div");
+		const fragment = document.createDocumentFragment();
+		const fixtures = Array.isArray(currentData.fixtures)
+			? currentData.fixtures.slice()
+			: [];
+
+		if (fixtures.length > 0) {
+			const highlightedFixtures = fixtures.filter(
+				(fix) =>
+					this._isHighlightedTeam(fix.homeTeam) ||
+					this._isHighlightedTeam(fix.awayTeam)
+			);
+			const sourceFixtures =
+				highlightedFixtures.length > 0 ? highlightedFixtures : fixtures;
+
+			if (this.config.debug && highlightedFixtures.length > 0) {
+				Log.info(
+					`[FLAT-FIXTURES] Highlight filter reduced fixture pool from ${fixtures.length} to ${highlightedFixtures.length}`
+				);
+			}
+
+			const results = this.selectFlatLeagueFixtureWindow(
+				sourceFixtures.filter((fix) => {
+					const { isFinished, isLive } = this.getFixtureStateFlags(fix);
+					return isFinished || isLive;
+				}),
+				"results"
+			);
+			const upcoming = this.selectFlatLeagueFixtureWindow(
+				sourceFixtures.filter((fix) => {
+					const { isUpcoming } = this.getFixtureStateFlags(fix);
+					return isUpcoming;
+				}),
+				"upcoming"
+			);
+			const pastLimit = this.getConfiguredFlatLeagueFixtureLimit(
+				"maxLeaguePastFixtures"
+			);
+			const upcomingLimit = this.getConfiguredFlatLeagueFixtureLimit(
+				"maxLeagueUpcomingFixtures"
+			);
+			const visibleResults = pastLimit ? results.slice(-pastLimit) : results;
+			const visibleUpcoming = upcomingLimit
+				? upcoming.slice(0, upcomingLimit)
+				: upcoming;
+
+			const splitViewContainer = document.createElement("div");
+			splitViewContainer.className = "uefa-split-view-container";
+			if (visibleResults.length > 0 && visibleUpcoming.length > 0) {
+				splitViewContainer.classList.add("dual-sections");
+			} else if (visibleResults.length > 0) {
+				splitViewContainer.classList.add("only-results");
+			} else if (visibleUpcoming.length > 0) {
+				splitViewContainer.classList.add("only-upcoming");
+			}
+
+			if (visibleResults.length > 0) {
+				const resultsWrapper = document.createElement("div");
+				resultsWrapper.className = "uefa-section-wrapper results-section";
+
+				const resultsTitle = document.createElement("div");
+				resultsTitle.className = "wc-title";
+				resultsTitle.textContent = this.translate("RESULTS");
+				resultsWrapper.appendChild(resultsTitle);
+
+				const resultsScroll = document.createElement("div");
+				resultsScroll.className = "uefa-section-scroll";
+				resultsScroll.appendChild(
+					this.createFixturesTable(visibleResults, false)
+				);
+				resultsWrapper.appendChild(resultsScroll);
+				splitViewContainer.appendChild(resultsWrapper);
+			}
+
+			if (visibleUpcoming.length > 0) {
+				const upcomingWrapper = document.createElement("div");
+				upcomingWrapper.className = "uefa-section-wrapper future-section";
+
+				const upcomingTitle = document.createElement("div");
+				upcomingTitle.className = "wc-title";
+				upcomingTitle.textContent = this.translate("UPCOMING_FIXTURES");
+				upcomingWrapper.appendChild(upcomingTitle);
+
+				const upcomingScroll = document.createElement("div");
+				upcomingScroll.className = "uefa-section-scroll";
+				upcomingScroll.appendChild(
+					this.createFixturesTable(visibleUpcoming, false)
+				);
+				upcomingWrapper.appendChild(upcomingScroll);
+				splitViewContainer.appendChild(upcomingWrapper);
+			}
+
+			if (visibleResults.length > 0 || visibleUpcoming.length > 0) {
+				fragment.appendChild(splitViewContainer);
+			}
+		}
+
+		container.appendChild(fragment);
+		return container;
+	},
+
+	createFlatLeagueView(currentData) {
+		const container = document.createElement("div");
+		const fragment = document.createDocumentFragment();
+		const activeSubTab = this.currentSubTab || "Table";
+
+		if (activeSubTab === "Table" && currentData.teams && currentData.teams.length > 0) {
+			fragment.appendChild(this.createTable(currentData, this.currentLeague));
+		}
+
+		if (activeSubTab === "Fixtures") {
+			fragment.appendChild(this.createFlatLeagueFixturesView(currentData));
+		}
+
+		container.appendChild(fragment);
+		return container;
 	},
 
 	// ===== NEW: Debounced DOM Update =====
@@ -1305,119 +1591,33 @@ Module.register("MMM-SoccerStandings", {
 		}
 	},
 
-	// Get league information. Primary source: EUROPEAN_LEAGUES (loaded via getScripts).
-	// Overrides only for entries that need data not in EUROPEAN_LEAGUES (logos, WC).
 	getLeagueInfo(leagueCode) {
-		// Resolve legacy short codes to canonical codes first
-		const canonical = this.normalizeLeagueCode(leagueCode);
+		return this.getActiveCompetitionProvider().getCompetitionInfo(
+			leagueCode,
+			this.getCanonicalCompetitionPayload(leagueCode)
+		);
+	},
 
-		// Entries that need extra data (logo paths) not carried by EUROPEAN_LEAGUES
-		const overrides = {
-			WORLD_CUP_2026: {
-				name: "FIFA WC 2026",
-				countryFolder: "FIFA-WC26",
-				countryCode: "WC",
-				logo: `modules/${this.name}/images/WC_Trophy.png`
-			},
-			UEFA_CHAMPIONS_LEAGUE: {
-				name: "UEFA Champions League",
-				countryFolder: null,
-				countryCode: "EU",
-				logo: `modules/${this.name}/images/crests/UEFA-Champions-League/UCL_Trophy.png`
-			},
-			UCL: {
-				name: "UEFA Champions League",
-				countryFolder: null,
-				countryCode: "EU",
-				logo: `modules/${this.name}/images/crests/UEFA-Champions-League/UCL_Trophy.png`
-			},
-			UEFA_EUROPA_LEAGUE: {
-				name: "UEFA Europa League",
-				countryFolder: null,
-				countryCode: "EU",
-				logo: `modules/${this.name}/images/crests/UEFA-Europa-League/UEL_Trophy.png`
-			},
-			UEL: {
-				name: "UEFA Europa League",
-				countryFolder: null,
-				countryCode: "EU",
-				logo: `modules/${this.name}/images/crests/UEFA-Europa-League/UEL_Trophy.png`
-			},
-			UEFA_EUROPA_CONFERENCE_LEAGUE: {
-				name: "UEFA Conference League",
-				countryFolder: null,
-				countryCode: "EU",
-				logo: `modules/${this.name}/images/crests/UEFA-Conference-League/UECL_Trophy.png`
-			},
-			ECL: {
-				name: "UEFA Conference League",
-				countryFolder: null,
-				countryCode: "EU",
-				logo: `modules/${this.name}/images/crests/UEFA-Conference-League/UECL_Trophy.png`
-			}
-		};
+	getLeagueDisplayName(leagueCode) {
+		const normalizedLeagueCode = this.normalizeLeagueCode(leagueCode);
+		const mapKey = this.getLeagueMapKey(leagueCode);
+		const info = this.getLeagueInfo(leagueCode);
 
-		if (overrides[canonical]) return overrides[canonical];
-		if (overrides[leagueCode]) return overrides[leagueCode];
-
-		// Primary: derive from EUROPEAN_LEAGUES
-		const src =
-			typeof EUROPEAN_LEAGUES !== "undefined" &&
-			(EUROPEAN_LEAGUES[canonical] || EUROPEAN_LEAGUES[leagueCode]);
-		if (src) {
-			return {
-				name: src.name,
-				country: src.country,
-				countryCode: src.countryCode,
-				countryFolder: src.countryFolder,
-				flag: src.countryCode?.toLowerCase()
-			};
-		}
-
-		return null;
+		return (
+			this.config.leagueHeaders[normalizedLeagueCode] ||
+			this.config.leagueHeaders[mapKey] ||
+			(info && info.name) ||
+			this.humanizeLeagueIdentifier(leagueCode) ||
+			normalizedLeagueCode
+		);
 	},
 
 	// Get league abbreviation from league code
 	getLeagueAbbreviation(leagueCode) {
-		// Map codes to abbreviations
-		const abbreviations = {
-			SPFL: "SPFL",
-			SPFLC: "SPFLC",
-			EPL: "EPL",
-			UCL: "UCL",
-			UEL: "UEL",
-			ECL: "ECL",
-			UEFA_CHAMPIONS_LEAGUE: "UCL",
-			UEFA_EUROPA_LEAGUE: "UEL",
-			UEFA_EUROPA_CONFERENCE_LEAGUE: "UECL",
-			SCOTLAND_PREMIERSHIP: "SPL",
-			SCOTLAND_CHAMPIONSHIP: "SLC",
-			ENGLAND_PREMIER_LEAGUE: "EPL",
-			GERMANY_BUNDESLIGA: "BL",
-			FRANCE_LIGUE1: "L1",
-			SPAIN_LA_LIGA: "LL",
-			ITALY_SERIE_A: "SA",
-			NETHERLANDS_EREDIVISIE: "ED",
-			BELGIUM_PRO_LEAGUE: "PL",
-			PORTUGAL_PRIMEIRA_LIGA: "PL",
-			GREECE_SUPER_LEAGUE: "SL",
-			TURKEY_SUPER_LIG: "SL",
-			UKRAINE_PREMIER_LEAGUE: "UPL",
-			ROMANIA_LIGA_I: "LI",
-			CROATIA_HNL: "HNL",
-			SERBIA_SUPER_LIGA: "SL",
-			AUSTRIA_BUNDESLIGA: "AB",
-			CZECH_LIGA: "CL",
-			HUNGARY_NBI: "NBI",
-			POLAND_EKSTRAKLASA: "EK",
-			SWITZERLAND_SUPER_LEAGUE: "SL",
-			SWEDEN_ALLSVENSKAN: "AS",
-			NORWAY_ELITESERIEN: "ES",
-			DENMARK_SUPERLIGAEN: "SL"
-		};
-
+		const info = this.getLeagueInfo(leagueCode);
 		return (
-			abbreviations[leagueCode] || leagueCode.substring(0, 3).toUpperCase()
+			(info && info.abbreviation) ||
+			this.buildLeagueAbbreviation(this.getLeagueDisplayName(leagueCode))
 		);
 	},
 
@@ -1484,59 +1684,7 @@ Module.register("MMM-SoccerStandings", {
 				this.currentLeague = league;
 
 				// Reset sub-tab for the new league
-				const uefaLeagues = [
-					"UEFA_CHAMPIONS_LEAGUE",
-					"UEFA_EUROPA_LEAGUE",
-					"UEFA_EUROPA_CONFERENCE_LEAGUE",
-					"UCL",
-					"UEL",
-					"ECL"
-				];
-				if (league === "WORLD_CUP_2026") {
-					this.currentSubTab = this.config.defaultWCSubTab || "A";
-				} else if (uefaLeagues.includes(league)) {
-					// Pick the most relevant active knockout stage based on data, falling back
-					// to month-based defaults.  This prevents landing on an empty tab when the
-					// season schedule doesn't align with the hardcoded month assumption
-					// (e.g. Rd16 first legs in late February).
-					const leagueData = this.leagueData && this.leagueData[league];
-					const fixtures = (leagueData && leagueData.fixtures) || [];
-					const todayStr = this.getCurrentDate().toISOString().split("T")[0];
-					const nearWindow = 14 * 24 * 60 * 60 * 1000; // 14-day look-ahead
-					const nearMs = this.getCurrentDate().getTime() + nearWindow;
-					const nearDate = new Date(nearMs).toISOString().split("T")[0];
-
-					const stageOrder = ["Playoff", "Rd16", "QF", "SF", "Final"];
-					let detectedStage = null;
-					for (const s of stageOrder) {
-						const sLower = s.toLowerCase();
-						const hasNear = fixtures.some((f) => {
-							if (!f.date || !f.stage) return false;
-							return (
-								f.stage.toLowerCase() === sLower &&
-								f.date >= todayStr &&
-								f.date <= nearDate
-							);
-						});
-						if (hasNear) {
-							detectedStage = s;
-							break;
-						}
-					}
-
-					if (!detectedStage) {
-						// Month-based fallback
-						const month = this.getCurrentDate().getMonth();
-						if (month === 1) detectedStage = "Playoff";
-						else if (month === 2) detectedStage = "Rd16";
-						else if (month === 3) detectedStage = "QF";
-						else if (month === 4) detectedStage = "SF";
-					}
-
-					this.currentSubTab = detectedStage || "Table";
-				} else {
-					this.currentSubTab = null;
-				}
+				this.currentSubTab = this.getDefaultCompetitionSubTab(league);
 
 				// Use MagicMirror's built-in animation for a reliable transition
 				this.updateDom();
@@ -1840,7 +1988,7 @@ Module.register("MMM-SoccerStandings", {
 	// Resume cycling timers if config allows
 	_resumeCyclingIfNeeded() {
 		if (this.isScrolling || this._pinned) return;
-		if (this.config.autoCycle || this.config.onlyShowWorldCup2026) {
+		if (this.config.autoCycle) {
 			this.scheduleCycling();
 			this.scheduleWorldCupSubtabCycling();
 			this._startHeaderCountdown();
@@ -1870,7 +2018,6 @@ Module.register("MMM-SoccerStandings", {
 
 	// Generate the DOM content
 	getDom() {
-		var self = this; // Preserve 'this' context for nested functions/callbacks
 		var wrapper = document.createElement("div");
 		wrapper.className = "soccer-standings";
 		wrapper.id = `mtlt-${this.identifier}`;
@@ -1901,7 +2048,7 @@ Module.register("MMM-SoccerStandings", {
 			wrapper.appendChild(offlineIndicator);
 		}
 
-		const currentData = this.leagueData[this.currentLeague];
+		const currentData = this.getRenderLeagueData(this.currentLeague);
 
 		// If content is hidden, return wrapper with toggle icon and source in footer
 		if (this.isContentHidden) {
@@ -1922,31 +2069,10 @@ Module.register("MMM-SoccerStandings", {
 
 			// Center: Source info
 			if (currentData) {
-				const sourceContainer = document.createElement("div");
-				sourceContainer.className = "footer-source-info";
-				sourceContainer.style.flex = "1";
-				sourceContainer.style.textAlign = "center";
-				sourceContainer.style.margin = "0 10px";
-
-				const src = currentData.source || "BBC Sport";
-				const tsDate =
-					currentData.meta && currentData.meta.lastUpdated
-						? currentData.meta.lastUpdated
-						: Date.now();
-				const ts = moment(tsDate).format("HH:mm");
-
-				const sourceSpan = document.createElement("span");
-				sourceSpan.className = "dimmed xsmall";
-				sourceSpan.textContent = `${this.translate("SOURCE")}: ${src}`;
-				sourceContainer.appendChild(sourceSpan);
-
-				sourceContainer.appendChild(document.createTextNode(" • "));
-
-				const updatedSpan = document.createElement("span");
-				updatedSpan.className = "dimmed xsmall last-updated";
-				updatedSpan.textContent = `${this.translate("LAST_UPDATED")}: ${ts}`;
-				sourceContainer.appendChild(updatedSpan);
-				footer.appendChild(sourceContainer);
+				const sourceContainer = this.createSourceInfoElement(currentData);
+				if (sourceContainer) {
+					footer.appendChild(sourceContainer);
+				}
 			}
 
 			// Right: Spacer to keep source centered
@@ -1959,17 +2085,9 @@ Module.register("MMM-SoccerStandings", {
 		}
 
 		// Apply league-specific mode classes for selective CSS styling
-		const uefaLeagues = [
-			"UEFA_CHAMPIONS_LEAGUE",
-			"UEFA_EUROPA_LEAGUE",
-			"UEFA_EUROPA_CONFERENCE_LEAGUE",
-			"UCL",
-			"UEL",
-			"ECL"
-		];
-		if (this.currentLeague === "WORLD_CUP_2026") {
+		if (this.isWorldCupLeague(this.currentLeague)) {
 			wrapper.classList.add("league-mode-wc");
-		} else if (uefaLeagues.includes(this.currentLeague)) {
+		} else if (this.isUEFATournamentLeague(this.currentLeague)) {
 			wrapper.classList.add("league-mode-uefa");
 		} else {
 			wrapper.classList.add("league-mode-national");
@@ -1987,28 +2105,24 @@ Module.register("MMM-SoccerStandings", {
 		var leagueTitle = document.createElement("div");
 		leagueTitle.className = "league-title";
 
-		// Use "FIFA World Cup 2026" as header if onlyShowWorldCup2026 is true
-		if (this.config.onlyShowWorldCup2026) {
-			leagueTitle.textContent = null; // "FIFA World Cup 2026";
-		} else {
-			let baseTitle =
-				this.config.leagueHeaders[this.currentLeague] || this.currentLeague;
-			if (this.currentLeague === "WORLD_CUP_2026" && this.currentSubTab) {
-				const sub = this.currentSubTab;
-				const stageMap = {
-					Rd32: this.translate("ROUND_OF_32"),
-					Rd16: this.translate("ROUND_OF_16"),
-					QF: this.translate("QUARTER_FINAL"),
-					SF: this.translate("SEMI_FINAL"),
-					TP: this.translate("THIRD_PLACE"),
-					Final: this.translate("FINAL")
-				};
-				if (/^[A-L]$/.test(sub))
-					baseTitle += ` • ${this.translate("GROUP")} ${sub}`;
-				else if (stageMap[sub]) baseTitle += ` • ${stageMap[sub]}`;
+		let baseTitle = this.getLeagueDisplayName(this.currentLeague);
+		if (this.isWorldCupLeague(this.currentLeague) && this.currentSubTab) {
+			const sub = this.currentSubTab;
+			const stageMap = {
+				Rd32: this.translate("ROUND_OF_32"),
+				Rd16: this.translate("ROUND_OF_16"),
+				QF: this.translate("QUARTER_FINAL"),
+				SF: this.translate("SEMI_FINAL"),
+				TP: this.translate("THIRD_PLACE"),
+				Final: this.translate("FINAL")
+			};
+			if (/^[A-L]$/.test(sub)) {
+				baseTitle += ` • ${this.translate("GROUP")} ${sub}`;
+			} else if (stageMap[sub]) {
+				baseTitle += ` • ${stageMap[sub]}`;
 			}
-			leagueTitle.textContent = baseTitle;
 		}
+		leagueTitle.textContent = baseTitle;
 
 		headerContainer.appendChild(leagueTitle);
 
@@ -2016,14 +2130,11 @@ Module.register("MMM-SoccerStandings", {
 		const metaInfo = document.createElement("div");
 		metaInfo.className = "league-meta-info";
 
-		if (currentData && currentData.meta && currentData.meta.lastUpdated) {
-			const lastUpdated = document.createElement("span");
-			lastUpdated.className = "last-updated xsmall dimmed";
-
-			// Format timestamp (e.g., "18:35")
-			const timeStr = moment(currentData.meta.lastUpdated).format("HH:mm");
-			lastUpdated.textContent = `${this.translate("LAST_UPDATED")}: ${timeStr}`;
-			metaInfo.appendChild(lastUpdated);
+		if (currentData) {
+			const lastUpdated = this.createLastUpdatedLabel(currentData);
+			if (lastUpdated) {
+				metaInfo.appendChild(lastUpdated);
+			}
 		}
 
 		// Add Enhanced Stale Data warning with timestamps (UX-03)
@@ -2208,123 +2319,30 @@ Module.register("MMM-SoccerStandings", {
 		var buttonsContainer = document.createElement("div");
 		buttonsContainer.className = "league-buttons-container";
 
-		// Hide buttons if showLeagueButtons is false
-		if (this.config.showLeagueButtons === false) {
-			buttonsContainer.style.display = "none";
-		}
-
-		// Auto-generate buttons from selectedLeagues if autoGenerateButtons is enabled
-		if (
-			this.config.autoGenerateButtons &&
-			this.enabledLeagueCodes &&
-			this.enabledLeagueCodes.length > 0
-		) {
+		if (this.shouldShowLeagueButtons()) {
 			const buttonsFragment = document.createDocumentFragment();
-			// Move WORLD_CUP_2026 to the end if present
 			const displayOrder = [...this.enabledLeagueCodes].sort((a, b) => {
-				if (a === "WORLD_CUP_2026") return 1;
-				if (b === "WORLD_CUP_2026") return -1;
-				return 0; // Maintain original relative order for other leagues
+				if (this.isWorldCupLeague(a)) return 1;
+				if (this.isWorldCupLeague(b)) return -1;
+				return 0;
 			});
 
 			displayOrder.forEach((leagueCode) => {
-				// If onlyShowWorldCup2026 is true, we don't show the league tab buttons at all
-				// as the header title already indicates the league and it's the only one shown.
-				if (
-					this.config.onlyShowWorldCup2026 === true &&
-					leagueCode === "WORLD_CUP_2026"
-				) {
-					return;
-				}
-
 				const leagueInfo = this.getLeagueInfo(leagueCode);
 				if (leagueInfo) {
 					const btn = document.createElement("button");
-					// Normalize codes for reliable active state comparison
 					const normalizedCode = this.normalizeLeagueCode(leagueCode);
 					const isCurrentlyActive = this.currentLeague === normalizedCode;
 
 					btn.className = `league-btn${isCurrentlyActive ? " active" : ""}`;
-					btn.title = leagueInfo.name; // Tooltip for full league name
+					btn.title = leagueInfo.name;
 					btn.setAttribute("aria-label", `Switch to ${leagueInfo.name} table`);
-
-					// Set data attributes using setAttribute for maximum compatibility
 					btn.setAttribute("data-league", leagueCode);
-					btn.setAttribute("data-country", leagueInfo.countryCode || "");
 
-					// Add fallback text (league abbreviation)
 					const fallbackText = document.createElement("span");
 					fallbackText.className = "league-abbr";
 					fallbackText.textContent = this.getLeagueAbbreviation(leagueCode);
 					btn.appendChild(fallbackText);
-
-					// Create button content: Priority 1: Specific logo path (e.g. for World Cup)
-					if (leagueInfo.logo) {
-						const logoImg = document.createElement("img");
-						logoImg.className = "flag-image"; // Reuse existing class for consistent sizing
-						logoImg.alt = leagueInfo.name;
-						this.setupImageLazyLoading(logoImg, leagueInfo.logo);
-						logoImg.onload = function () {
-							fallbackText.style.display = "none";
-						};
-						logoImg.onerror = function () {
-							this.style.display = "none";
-							fallbackText.style.display = "inline";
-						};
-						btn.appendChild(logoImg);
-					}
-					// Priority 2: Standard country flag image
-					else if (leagueInfo.countryFolder) {
-						const flagImg = document.createElement("img");
-						flagImg.className = "flag-image";
-						flagImg.alt = leagueInfo.name;
-						// Construct path to flag image (e.g., "modules/MMM-SoccerStandings/images/crests/Scotland/scotland.png")
-						const countryName = leagueInfo.countryFolder
-							.toLowerCase()
-							.replace(/\s+/g, "-");
-						const flagSrc = `modules/MMM-SoccerStandings/images/crests/${leagueInfo.countryFolder}/${countryName}.png`;
-						this.setupImageLazyLoading(flagImg, flagSrc);
-
-						// Enhanced fallback handling with multiple filename attempts
-						let fallbackAttempts = 0;
-						const flagFallbacks = [
-							// Try with underscores instead of hyphens for spaces
-							`modules/MMM-SoccerStandings/images/crests/${leagueInfo.countryFolder}/${leagueInfo.countryFolder.toLowerCase().replace(/\s+/g, "_")}.png`,
-							// Try just the country folder name without subfolder (in case flag is in root)
-							`modules/MMM-SoccerStandings/images/crests/${countryName}.png`,
-							// Try country folder with underscores in root
-							`modules/MMM-SoccerStandings/images/crests/${leagueInfo.countryFolder.toLowerCase().replace(/\s+/g, "_")}.png`
-						];
-
-						flagImg.onload = function () {
-							fallbackText.style.display = "none";
-						};
-
-						flagImg.onerror = function () {
-							if (fallbackAttempts < flagFallbacks.length) {
-								this.src = flagFallbacks[fallbackAttempts];
-								fallbackAttempts++;
-								if (self.config.debug) {
-									Log.info(
-										` MMM-SoccerStandings: Flag fallback attempt ${fallbackAttempts} for ${leagueInfo.name}: ${this.src}`
-									);
-								}
-							} else {
-								// If all attempts fail, hide the image and show text
-								this.style.display = "none";
-								fallbackText.style.display = "inline";
-								if (self.config.debug) {
-									Log.warn(
-										` MMM-SoccerStandings: Flag image not found for ${leagueInfo.name} (country: ${leagueInfo.countryFolder})`
-									);
-								}
-							}
-						};
-						btn.appendChild(flagImg);
-					} else {
-						// No logo or country folder, just show text
-						fallbackText.style.display = "inline";
-					}
 
 					btn.addEventListener("click", (e) => {
 						this.handleLeagueButtonClick(e);
@@ -2337,157 +2355,38 @@ Module.register("MMM-SoccerStandings", {
 
 		this._addHorizontalScrollIndicators(buttonsContainer, wrapperFragment);
 
-		// ===== NEW: Sub-tabs (World Cup & UEFA Competitions) =====
-		if (
-			this.currentLeague === "WORLD_CUP_2026" ||
-			uefaLeagues.includes(this.currentLeague)
-		) {
+		// ===== NEW: Sub-tabs (World Cup, UEFA and canonical flat competitions) =====
+		if (this.usesCompetitionSubTabs(this.currentLeague)) {
+			this.ensureCurrentSubTab(this.currentLeague);
 			var subTabsContainer = document.createElement("div");
 			subTabsContainer.className = "wc-subtabs-container single-line";
 			const subTabsFragment = document.createDocumentFragment();
-
-			const currentData = this.leagueData[this.currentLeague];
-			const isTestMode = this.config.displayAllTabs;
-
-			if (this.currentLeague === "WORLD_CUP_2026") {
-				// Generate Group Tabs (A-L) for World Cup
-				const groupsToShow = this.config.showWC2026Groups || [
-					"A",
-					"B",
-					"C",
-					"D",
-					"E",
-					"F",
-					"G",
-					"H",
-					"I",
-					"J",
-					"K",
-					"L"
-				];
-				groupsToShow.forEach((groupLetter) => {
-					if (
-						isTestMode ||
-						(currentData &&
-							currentData.groups &&
-							currentData.groups[groupLetter])
-					) {
-						const btn = document.createElement("button");
-						btn.className = `wc-btn${this.currentSubTab === groupLetter ? " active" : ""}`;
-						btn.textContent = groupLetter;
-						btn.setAttribute(
-							"aria-label",
-							`Show Group ${groupLetter} standings`
-						);
-						btn.setAttribute(
-							"aria-pressed",
-							this.currentSubTab === groupLetter ? "true" : "false"
-						);
-						btn.setAttribute("role", "tab");
-						btn.addEventListener("click", () => {
-							this.currentSubTab = groupLetter;
-							this.updateDom();
-						});
-						subTabsFragment.appendChild(btn);
-					}
-				});
-
-				// Generate World Cup Knockout Tabs
-				const knockouts = [
-					{ id: "Rd32", label: this.translate("ROUND_OF_32") },
-					{ id: "Rd16", label: this.translate("ROUND_OF_16") },
-					{ id: "QF", label: this.translate("QUARTER_FINAL") },
-					{ id: "SF", label: this.translate("SEMI_FINAL") },
-					{ id: "TP", label: this.translate("THIRD_PLACE") },
-					{ id: "Final", label: this.translate("FINAL") }
-				];
-				knockouts.forEach((ko) => {
-					if (this.config.showWC2026Knockouts.includes(ko.id)) {
-						let shouldShow = isTestMode;
-						if (!shouldShow && currentData && currentData.knockouts) {
-							const koKey = ko.id.toLowerCase();
-							if (
-								currentData.knockouts[koKey] &&
-								currentData.knockouts[koKey].length > 0
-							) {
-								shouldShow = true;
-							}
-						}
-						if (shouldShow) {
-							const btn = document.createElement("button");
-							btn.className = `wc-btn ko-btn${this.currentSubTab === ko.id ? " active" : ""}`;
-							btn.textContent = ko.label;
-							btn.setAttribute("aria-label", `Show ${ko.label} fixtures`);
-							btn.setAttribute(
-								"aria-pressed",
-								this.currentSubTab === ko.id ? "true" : "false"
-							);
-							btn.setAttribute("role", "tab");
-							btn.addEventListener("click", () => {
-								this.currentSubTab = ko.id;
-								this.updateDom();
-							});
-							subTabsFragment.appendChild(btn);
-						}
-					}
-				});
-			} else {
-				// Generate UEFA League/Table Tab
-				const tableBtn = document.createElement("button");
-				tableBtn.className = `wc-btn${!this.currentSubTab || this.currentSubTab === "Table" ? " active" : ""}`;
-				tableBtn.textContent = this.translate("TABLE");
-				tableBtn.addEventListener("click", () => {
-					this.currentSubTab = "Table";
+			this.getCompetitionSubTabs(this.currentLeague).forEach((subTabId) => {
+				const btn = document.createElement("button");
+				const isKnockoutStage =
+					!["Table", "Fixtures"].includes(subTabId) && !/^[A-L]$/.test(subTabId);
+				btn.className = `wc-btn${isKnockoutStage ? " ko-btn" : ""}${
+					this.currentSubTab === subTabId ? " active" : ""
+				}`;
+				btn.textContent = this.getCompetitionSubTabLabel(
+					this.currentLeague,
+					subTabId
+				);
+				btn.setAttribute(
+					"aria-label",
+					this.getCompetitionSubTabAriaLabel(this.currentLeague, subTabId)
+				);
+				btn.setAttribute(
+					"aria-pressed",
+					this.currentSubTab === subTabId ? "true" : "false"
+				);
+				btn.setAttribute("role", "tab");
+				btn.addEventListener("click", () => {
+					this.currentSubTab = subTabId;
 					this.updateDom();
 				});
-				subTabsFragment.appendChild(tableBtn);
-
-				// Generate UEFA Knockout Tabs
-				const uefaKnockouts = [
-					{ id: "Playoff", label: this.translate("PLAYOFF") },
-					{ id: "Rd16", label: this.translate("ROUND_OF_16") },
-					{ id: "QF", label: this.translate("QUARTER_FINAL") },
-					{ id: "SF", label: this.translate("SEMI_FINAL") },
-					{ id: "Final", label: this.translate("FINAL") }
-				];
-				uefaKnockouts
-					.filter(
-						(ko) =>
-							this.currentLeague !== "UEFA_CHAMPIONS_LEAGUE" ||
-							(this.currentLeague === "UEFA_CHAMPIONS_LEAGUE" &&
-								!["Playoff", "Rd16"].includes(ko.id))
-					)
-					.forEach((ko) => {
-						if (this.config.showUEFAnockouts.includes(ko.id)) {
-							let shouldShow = isTestMode;
-							if (!shouldShow && currentData && currentData.knockouts) {
-								const koKey = ko.id.toLowerCase();
-								if (
-									currentData.knockouts[koKey] &&
-									currentData.knockouts[koKey].length > 0
-								) {
-									shouldShow = true;
-								}
-							}
-							if (shouldShow) {
-								const btn = document.createElement("button");
-								btn.className = `wc-btn ko-btn${this.currentSubTab === ko.id ? " active" : ""}`;
-								btn.textContent = ko.label;
-								btn.setAttribute("aria-label", `Show ${ko.label} fixtures`);
-								btn.setAttribute(
-									"aria-pressed",
-									this.currentSubTab === ko.id ? "true" : "false"
-								);
-								btn.setAttribute("role", "tab");
-								btn.addEventListener("click", () => {
-									this.currentSubTab = ko.id;
-									this.updateDom();
-								});
-								subTabsFragment.appendChild(btn);
-							}
-						}
-					});
-			}
+				subTabsFragment.appendChild(btn);
+			});
 
 			subTabsContainer.appendChild(subTabsFragment);
 			this._addHorizontalScrollIndicators(subTabsContainer, wrapperFragment);
@@ -2515,17 +2414,8 @@ Module.register("MMM-SoccerStandings", {
 				this.requestAllLeagueData();
 			}
 
-			// Get readable league name for loading message
-			let leagueDisplayName = this.currentLeague;
-			if (
-				typeof EUROPEAN_LEAGUES !== "undefined" &&
-				EUROPEAN_LEAGUES[this.currentLeague]
-			) {
-				leagueDisplayName =
-					EUROPEAN_LEAGUES[this.currentLeague].name || this.currentLeague;
-			} else if (this.currentLeague === "WORLD_CUP_2026") {
-				leagueDisplayName = "FIFA World Cup 2026";
-			}
+			const leagueDisplayName =
+				this.getLeagueDisplayName(this.currentLeague) || this.currentLeague;
 
 			// Show skeleton loading state for better perceived performance (DES-05)
 			const skeletonLoader = document.createElement("div");
@@ -2693,11 +2583,14 @@ Module.register("MMM-SoccerStandings", {
 
 		// Create the table
 		if (currentData) {
-			if (
-				this.currentLeague === "WORLD_CUP_2026" ||
-				uefaLeagues.includes(this.currentLeague)
-			) {
+			if (this.usesTournamentView(this.currentLeague)) {
 				contentContainer.appendChild(this.createWorldCupView(currentData));
+			} else if (
+				this.shouldUseCanonicalFlatSlice(this.currentLeague) &&
+				currentData.teams &&
+				currentData.fixtures
+			) {
+				contentContainer.appendChild(this.createFlatLeagueView(currentData));
 			} else if (currentData.teams) {
 				if (this.config.debug) {
 					Log.info(
@@ -2734,31 +2627,10 @@ Module.register("MMM-SoccerStandings", {
 
 		// Center: Source information
 		if (currentData) {
-			const sourceContainer = document.createElement("div");
-			sourceContainer.className = "footer-source-info";
-			sourceContainer.style.flex = "1";
-			sourceContainer.style.textAlign = "center";
-			sourceContainer.style.margin = "0 10px";
-
-			const src = currentData.source || "BBC Sport";
-			const tsDate =
-				currentData.meta && currentData.meta.lastUpdated
-					? currentData.meta.lastUpdated
-					: Date.now();
-			const ts = moment(tsDate).format("HH:mm");
-
-			const sourceSpan = document.createElement("span");
-			sourceSpan.className = "dimmed xsmall";
-			sourceSpan.textContent = `Source: ${src}`;
-			sourceContainer.appendChild(sourceSpan);
-
-			sourceContainer.appendChild(document.createTextNode(" • "));
-
-			const updatedSpan = document.createElement("span");
-			updatedSpan.className = "dimmed xsmall last-updated";
-			updatedSpan.textContent = `${this.translate("LAST_UPDATED")}: ${ts}`;
-			sourceContainer.appendChild(updatedSpan);
-			backToTopControls.appendChild(sourceContainer);
+			const sourceContainer = this.createSourceInfoElement(currentData);
+			if (sourceContainer) {
+				backToTopControls.appendChild(sourceContainer);
+			}
 		}
 
 		contentContainer.appendChild(backToTopControls);
@@ -2803,15 +2675,6 @@ Module.register("MMM-SoccerStandings", {
 		outerWrapper.className = "league-table-wrapper-v2";
 		if (leagueKey) outerWrapper.classList.add(leagueKey);
 
-		// Get the country folder from league configuration for use in team logo fallbacks
-		var countryFolder = "";
-		if (
-			typeof EUROPEAN_LEAGUES !== "undefined" &&
-			EUROPEAN_LEAGUES[leagueKey]
-		) {
-			countryFolder = EUROPEAN_LEAGUES[leagueKey].countryFolder || "";
-		}
-
 		// --- 1. Header Table (Sticky) ---
 		const headerContainer = document.createElement("div");
 		headerContainer.className = "league-header-sticky";
@@ -2820,7 +2683,7 @@ Module.register("MMM-SoccerStandings", {
 		headerTable.setAttribute("role", "table");
 		headerTable.setAttribute(
 			"aria-label",
-			`${this.config.leagueHeaders[this.currentLeague] || this.currentLeague} Standings Table`
+			`${this.getLeagueDisplayName(this.currentLeague)} Standings Table`
 		);
 
 		const thead = document.createElement("thead");
@@ -2902,7 +2765,7 @@ Module.register("MMM-SoccerStandings", {
 		bodyTable.setAttribute("role", "table");
 		bodyTable.setAttribute(
 			"aria-label",
-			`${this.config.leagueHeaders[this.currentLeague] || this.currentLeague} Standings Data`
+			`${this.getLeagueDisplayName(this.currentLeague)} Standings Data`
 		);
 		const tbody = document.createElement("tbody");
 
@@ -2977,15 +2840,7 @@ Module.register("MMM-SoccerStandings", {
 				);
 
 				if (this.config.colored) {
-					const uefaLeagues = [
-						"UEFA_CHAMPIONS_LEAGUE",
-						"UEFA_EUROPA_LEAGUE",
-						"UEFA_EUROPA_CONFERENCE_LEAGUE",
-						"UCL",
-						"UEL",
-						"ECL"
-					];
-					const isUEFA = uefaLeagues.includes(leagueKey);
+					const isUEFA = this.isUEFATournamentLeague(leagueKey);
 
 					if (isUEFA) {
 						// UEFA League Phase: 1-8 Promotion, 25-36 Elimination
@@ -2994,7 +2849,7 @@ Module.register("MMM-SoccerStandings", {
 						} else if (team.position >= 25 && team.position <= 36) {
 							row.classList.add("uefa-elimination-zone");
 						}
-					} else if (leagueKey !== "WORLD_CUP_2026") {
+					} else if (!this.isWorldCupLeague(leagueKey)) {
 						// For split-league groups, colour based on position within the group
 						if (groupIndex === 0) {
 							// Championship / top group: top positions highlighted
@@ -3048,50 +2903,15 @@ Module.register("MMM-SoccerStandings", {
 				var teamCell = document.createElement("td");
 				teamCell.className = "team-cell";
 
-				if (this.config.showTeamLogos) {
+				if (this.config.showTeamLogos && team.logo) {
 					var img = document.createElement("img");
 					img.className = "team-logo";
-					img.width = 18;
-					img.height = 18;
-
-					var resolvedLogo = team.logo || this.getTeamLogoMapping(team.name);
-					var slug = (team.name || "")
-						.toLowerCase()
-						.replace(/[^a-z0-9]+/g, "-")
-						.replace(/^-+|-+$/g, "");
-					var candidates = [];
-
-					if (resolvedLogo) candidates.push(resolvedLogo);
-					if (team.name && team.name !== "undefined") {
-						if (countryFolder) {
-							candidates.push(`crests/${countryFolder}/${slug}.svg`);
-							candidates.push(`crests/${countryFolder}/${slug}.png`);
-						}
-						candidates.push(`crests/${slug}.svg`);
-						candidates.push(`crests/${slug}.png`);
-					}
-					candidates.push("placeholder.svg");
-
-					var basePath = "modules/MMM-SoccerStandings/images/";
-					var tryIndex = 0;
-					const moduleInstance = this;
-					const tryNext = (imgEl) => {
-						if (tryIndex >= candidates.length) {
-							imgEl.remove();
-							return;
-						}
-						const logoSrc = basePath + candidates[tryIndex];
-						if (tryIndex === 0) {
-							moduleInstance.setupImageLazyLoading(imgEl, logoSrc);
-						} else {
-							imgEl.src = logoSrc;
-						}
-						tryIndex++;
-					};
+					img.alt = "";
+					img.setAttribute("aria-hidden", "true");
 					img.onerror = function () {
-						tryNext(this);
+						this.remove();
 					};
-					tryNext(img);
+					this.setupImageLazyLoading(img, team.logo);
 					teamCell.appendChild(img);
 				}
 
@@ -3213,7 +3033,7 @@ Module.register("MMM-SoccerStandings", {
 		return outerWrapper;
 	},
 
-	// Set up sub-tab cycling for World Cup
+	// Set up sub-tab cycling for World Cup and canonical flat competitions
 	scheduleWorldCupSubtabCycling() {
 		// If paused due to scroll or pinned, do not schedule
 		if (this.isScrolling || this._pinned) return;
@@ -3227,15 +3047,46 @@ Module.register("MMM-SoccerStandings", {
 			this.wcInitialDelayTimer = null;
 		}
 
-		// Respect user toggle for WC sub-tab cycling
+		// Respect user toggle for sub-tab cycling
 		if (this.config && this.config.autoCycleWcSubtabs === false) {
 			return;
 		}
 
-		// Only run when WC league is active and autoCycle is enabled
+		if (!this.config.autoCycle) {
+			return;
+		}
+
 		if (
-			this.currentLeague !== "WORLD_CUP_2026" ||
-			!(this.config.autoCycle || this.config.onlyShowWorldCup2026)
+			this.shouldUseCanonicalFlatSlice(this.currentLeague) &&
+			!this.isUEFATournamentLeague(this.currentLeague)
+		) {
+			const currentData = this.getRenderLeagueData(this.currentLeague);
+			if (!currentData || !Array.isArray(currentData.fixtures) || !currentData.fixtures.length) {
+				this.currentSubTab = "Table";
+				return;
+			}
+
+			const interval = this.config.wcSubtabCycleInterval || 15000;
+			const order = ["Table", "Fixtures"];
+			if (!order.includes(this.currentSubTab)) {
+				this.currentSubTab = "Table";
+			}
+
+			this.wcInitialDelayTimer = setTimeout(() => {
+				let idx = order.indexOf(this.currentSubTab);
+				this.wcSubtabTimer = setInterval(() => {
+					idx = (idx + 1) % order.length;
+					this.currentSubTab = order[idx];
+					this.updateDom();
+				}, interval);
+			}, interval);
+			return;
+		}
+
+		// Only run WC-specific logic when WC league is active
+		if (
+			!this.isWorldCupLeague(this.currentLeague) ||
+			!this.config.autoCycle
 		) {
 			return;
 		}
@@ -3261,20 +3112,7 @@ Module.register("MMM-SoccerStandings", {
 			}
 		};
 
-		const groupsToShow = this.config.showWC2026Groups || [
-			"A",
-			"B",
-			"C",
-			"D",
-			"E",
-			"F",
-			"G",
-			"H",
-			"I",
-			"J",
-			"K",
-			"L"
-		];
+		const groupsToShow = this.getWorldCupGroupSubTabs();
 
 		// If current subtab is a group, set up cycling through A-L
 		const isCurrentGroup = groupsToShow.includes(this.currentSubTab);
@@ -3308,16 +3146,7 @@ Module.register("MMM-SoccerStandings", {
 
 	// Check if we are in the UEFA off-season (July to late August)
 	isUEFAOffSeason() {
-		const uefaLeagues = [
-			"UEFA_CHAMPIONS_LEAGUE",
-			"UEFA_EUROPA_LEAGUE",
-			"UEFA_EUROPA_CONFERENCE_LEAGUE",
-			"UCL",
-			"UEL",
-			"ECL"
-		];
-
-		if (!uefaLeagues.includes(this.currentLeague)) return false;
+		if (!this.isUEFATournamentLeague(this.currentLeague)) return false;
 
 		const now = new Date();
 		const month = now.getMonth(); // 0 = Jan, 6 = July, 7 = Aug
@@ -3325,7 +3154,7 @@ Module.register("MMM-SoccerStandings", {
 		// Window starts July 1st (roughly 30 days after late May finals)
 		// Window ends when draw is made (usually late August)
 		if (month === 6 || month === 7) {
-			const currentData = this.leagueData[this.currentLeague];
+			const currentData = this.getRenderLeagueData(this.currentLeague);
 			const hasData =
 				currentData &&
 				((currentData.teams && currentData.teams.length > 0) ||
@@ -3361,17 +3190,21 @@ Module.register("MMM-SoccerStandings", {
 			this._countdownEl.textContent = this.translate("CYCLE_PAUSED");
 			return;
 		}
-		const base =
-			this.currentLeague === "WORLD_CUP_2026"
-				? this.config.wcSubtabCycleInterval || 15000
-				: this.config.cycleInterval || 15000;
+		const base = this.isWorldCupLeague(this.currentLeague)
+			? this.config.wcSubtabCycleInterval || 15000
+			: this.config.cycleInterval || 15000;
 		if (!base || base <= 0) {
 			this._countdownEl.textContent = "";
 			return;
 		}
+		if (base >= 60 * 60 * 1000) {
+			this._countdownEl.textContent = "";
+			return;
+		}
 		let remaining = Math.ceil(base / 1000);
-		const label =
-			this.currentLeague === "WORLD_CUP_2026" ? "SUB_TAB" : "LEAGUE";
+		const label = this.isWorldCupLeague(this.currentLeague)
+			? "SUB_TAB"
+			: "LEAGUE";
 		const tick = () => {
 			if (!this._countdownEl) return;
 			this._countdownEl.textContent = this.translate("NEXT_CYCLE_IN", {
@@ -3442,20 +3275,14 @@ Module.register("MMM-SoccerStandings", {
 			"Playoff"
 		];
 		if (allKnockoutStages.includes(subTab)) {
-			const koKey = subTab.toLowerCase();
-			const knockoutFixtures =
-				(currentData.knockouts && currentData.knockouts[koKey]) || [];
+			const knockoutFixtures = this.getKnockoutFixturesForSubTab(
+				currentData,
+				subTab
+			);
 
 			// STAGED APPROACH (Task: UEFA 3-stage display for ALL knockout rounds)
 			// FIX: Apply to ALL UEFA knockout stages (Playoff, Rd16, QF, SF), not just Playoff
-			const isUEFA = [
-				"UEFA_CHAMPIONS_LEAGUE",
-				"UEFA_EUROPA_LEAGUE",
-				"UEFA_EUROPA_CONFERENCE_LEAGUE",
-				"UCL",
-				"UEL",
-				"ECL"
-			].includes(this.currentLeague);
+			const isUEFA = this.isUEFATournamentLeague(this.currentLeague);
 			const uefaTwoLeggedStages = ["Playoff", "Rd16", "QF", "SF"];
 
 			if (
@@ -3741,7 +3568,7 @@ Module.register("MMM-SoccerStandings", {
 			};
 			// We append the table to the sticky wrapper
 			stickyWrapper.appendChild(
-				this.createTable(mockLeagueData, "WORLD_CUP_2026")
+				this.createTable(mockLeagueData, this.currentLeague)
 			);
 
 			// Add subtitles to the sticky wrapper too
@@ -3755,7 +3582,7 @@ Module.register("MMM-SoccerStandings", {
 			fragment.appendChild(stickyWrapper);
 
 			// Add fixtures for this group (outside the sticky wrapper so they scroll)
-			const groupFixtures = currentData.fixtures.filter((f) => {
+			const groupFixtures = (currentData.fixtures || []).filter((f) => {
 				// Stage must be either 'GS' or match the specific group letter (subTab)
 				const isValidStage = f.stage === "GS" || f.stage === subTab;
 				if (!isValidStage) return false;
@@ -3796,17 +3623,7 @@ Module.register("MMM-SoccerStandings", {
 		fixtures = this.filterFixturesByDate(fixtures);
 
 		// Check if we should use the enhanced scrollable view (World Cup or UEFA)
-		const uefaLeagues = [
-			"UEFA_CHAMPIONS_LEAGUE",
-			"UEFA_EUROPA_LEAGUE",
-			"UEFA_EUROPA_CONFERENCE_LEAGUE",
-			"UCL",
-			"UEL",
-			"ECL"
-		];
-		const useEnhancedView =
-			this.currentLeague === "WORLD_CUP_2026" ||
-			uefaLeagues.includes(this.currentLeague);
+		const useEnhancedView = this.usesCompetitionSubTabs(this.currentLeague);
 		let columnNames = [
 			"Date",
 			"Time",
@@ -4023,12 +3840,11 @@ Module.register("MMM-SoccerStandings", {
 				cell.textContent = this.translateTeamName(fix.homeTeam);
 			} else if (col === "Home Logo") {
 				cell.className = "fixture-home-logo-v2";
-				const logoPath = fix.homeLogo || this.getTeamLogoMapping(fix.homeTeam);
+				const logoPath = fix.homeLogo;
 				if (logoPath) {
 					const img = document.createElement("img");
 					img.className = "fixture-logo-v2";
-					const logoSrc = `modules/MMM-SoccerStandings/images/${logoPath}`;
-					this.setupImageLazyLoading(img, logoSrc);
+					this.setupImageLazyLoading(img, logoPath);
 					img.onerror = () => (img.style.display = "none");
 					cell.appendChild(img);
 				}
@@ -4202,12 +4018,11 @@ Module.register("MMM-SoccerStandings", {
 				cell.textContent = this.translateTeamName(fix.awayTeam);
 			} else if (col === "Away Logo") {
 				cell.className = "fixture-away-logo-v2";
-				const logoPath = fix.awayLogo || this.getTeamLogoMapping(fix.awayTeam);
+				const logoPath = fix.awayLogo;
 				if (logoPath) {
 					const img = document.createElement("img");
 					img.className = "fixture-logo-v2";
-					const logoSrc = `modules/MMM-SoccerStandings/images/${logoPath}`;
-					this.setupImageLazyLoading(img, logoSrc);
+					this.setupImageLazyLoading(img, logoPath);
 					img.onerror = () => (img.style.display = "none");
 					cell.appendChild(img);
 				}
@@ -4238,8 +4053,7 @@ Module.register("MMM-SoccerStandings", {
 		const flagSpan = document.createElement("span");
 		flagSpan.className = "country-flag";
 
-		// Use provided logoPath or fall back to mapping
-		const finalLogoPath = logoPath || this.getTeamLogoMapping(teamName);
+		const finalLogoPath = logoPath;
 
 		if (finalLogoPath) {
 			const img = document.createElement("img");
@@ -4247,8 +4061,7 @@ Module.register("MMM-SoccerStandings", {
 			img.decoding = "async";
 			img.width = 14; // stabilize layout
 			img.height = 10;
-			const logoSrc = `modules/MMM-SoccerStandings/images/${finalLogoPath}`;
-			this.setupImageLazyLoading(img, logoSrc);
+			this.setupImageLazyLoading(img, finalLogoPath);
 			img.onerror = () => (img.style.display = "none");
 			flagSpan.appendChild(img);
 		}
@@ -4270,20 +4083,11 @@ Module.register("MMM-SoccerStandings", {
 
 	// Automatically focus on the most relevant sub-tab (live or upcoming matches)
 	_autoFocusRelevantSubTab(leagueCode) {
-		const data = this.leagueData[leagueCode];
+		const data = this.getRenderLeagueData(leagueCode);
 		if (!data) return;
 
 		// Only apply to World Cup and UEFA competitions
-		const uefaLeagues = [
-			"UEFA_CHAMPIONS_LEAGUE",
-			"UEFA_EUROPA_LEAGUE",
-			"UEFA_EUROPA_CONFERENCE_LEAGUE",
-			"UCL",
-			"UEL",
-			"ECL"
-		];
-		const isTournament =
-			leagueCode === "WORLD_CUP_2026" || uefaLeagues.includes(leagueCode);
+		const isTournament = this.usesTournamentView(leagueCode);
 		if (!isTournament) return;
 
 		// 1. Check for LIVE matches across all knockout stages
@@ -4314,7 +4118,7 @@ Module.register("MMM-SoccerStandings", {
 		}
 
 		// 2. Check for LIVE matches in World Cup Groups
-		if (leagueCode === "WORLD_CUP_2026" && data.fixtures) {
+		if (this.isWorldCupLeague(leagueCode) && data.fixtures) {
 			const liveGroupMatch = data.fixtures.find(
 				(f) => f.stage === "GS" && f.live && f.group
 			);
@@ -4331,8 +4135,7 @@ Module.register("MMM-SoccerStandings", {
 			}
 		}
 
-		// Step 3 (upcoming fallback) intentionally removed: it overrides config.defaultWCSubTab
-		// without a good reason. Only LIVE matches should trigger auto-focus.
+		// Only LIVE matches should trigger auto-focus; otherwise keep the first tab.
 	},
 
 	// Adds horizontal scroll indicators (arrows) to a container

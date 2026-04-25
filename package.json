@@ -1,7 +1,7 @@
 {
 	"name": "MMM-SoccerStandings",
 	"version": "3.0.0",
-	"description": "A MagicMirror² module to display football league standings from multiple European competitions",
+	"description": "A MagicMirror² module for API-first football standings and tournament views",
 	"main": "MMM-SoccerStandings.js",
 	"keywords": [
 		"MagicMirror",
@@ -20,13 +20,13 @@
 		"email": " "
 	},
 	"license": "MIT",
-	"homepage": "https://github.com/gitgitaway/MMM-SoccerStandings",
+	"homepage": "https://github.com/angeldeejay/MMM-SoccerStandings",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/gitgitaway/MMM-SoccerStandings.git"
+		"url": "https://github.com/angeldeejay/MMM-SoccerStandings.git"
 	},
 	"bugs": {
-		"url": "https://github.com/gitgitaway/MMM-SoccerStandings/issues"
+		"url": "https://github.com/angeldeejay/MMM-SoccerStandings/issues"
 	},
 	"engines": {
 		"node": ">=14.0.0"
@@ -43,8 +43,8 @@
 	"scripts": {
 		"test": "npm run test:security",
 		"test:security": "mocha tests/security.test.js --timeout 10000",
-		"lint": "eslint *.js parsers/*.js constants/*.js",
-		"format": "prettier --write *.js parsers/*.js constants/*.js *.json *.md",
+		"lint": "eslint *.js constants/*.js providers/*.js backend/*.js backend/providers/*.js",
+		"format": "prettier --write *.js constants/*.js providers/*.js backend/*.js backend/providers/*.js tests/*.js *.json *.md",
 		"audit": "npm audit --audit-level=moderate",
 		"audit:fix": "npm audit fix",
 		"postinstall": "sass --style=compressed scss/entrypoint.scss MMM-SoccerStandings.css",

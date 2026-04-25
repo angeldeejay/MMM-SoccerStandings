@@ -12,12 +12,18 @@ export default [
 				...globals.node,
 				Log: "readonly",
 				Module: "readonly",
+				CanonicalViewAdapter: "readonly",
+				CompetitionProvider: "readonly",
 				config: "readonly",
 				moment: "readonly",
-				TEAM_ALIASES: "readonly",
-				EUROPEAN_LEAGUES: "readonly",
-				LEAGUE_SPLITS: "readonly",
-				LEAGUE_URL_MAPS: "readonly"
+				COMPETITION_KEYS: "readonly",
+				COMPETITION_PROVIDER_KEYS: "readonly",
+				DEFAULT_COMPETITION_PROVIDER: "readonly",
+				getCompetitionProviderKeys: "readonly",
+				getCompetitionKey: "readonly",
+				getCompetitionValue: "readonly",
+				isCompetitionKey: "readonly",
+				isProviderCompetitionValue: "readonly"
 			}
 		},
 		rules: {

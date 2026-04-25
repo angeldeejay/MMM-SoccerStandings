@@ -389,11 +389,12 @@
 
 /* Team logo styling */
 .team-logo {
-	width: 18px;
-	height: 18px;
-	margin-right: 4px;
-	vertical-align: middle;
+	width: 1em;
+	height: 1em;
+	margin-right: 3px;
+	vertical-align: -0.125em;
 	object-fit: contain;
+	display: inline-block;
 }
 
 /* Stats columns */

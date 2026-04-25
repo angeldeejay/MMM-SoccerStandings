@@ -11,6 +11,7 @@
 const fs = require("fs");
 const fsPromises = require("fs").promises;
 const path = require("path");
+const Log = require("logger");
 
 class CacheManager {
 	constructor(modulePath) {
@@ -34,14 +35,13 @@ class CacheManager {
 			try {
 				fs.mkdirSync(this.cacheDir, { recursive: true });
 				if (this.debug) {
-					console.log(
+					Log.info(
 						` CacheManager: Created cache directory at ${this.cacheDir}`
 					);
 				}
 			} catch (error) {
-				console.error(
-					" CacheManager: Failed to create cache directory:",
-					error
+				Log.error(
+					` CacheManager: Failed to create cache directory: ${error.message || error}`
 				);
 			}
 		}
@@ -67,7 +67,7 @@ class CacheManager {
 		const memCacheEntry = this.memoryCache.get(leagueType);
 		if (memCacheEntry && !this.isExpired(memCacheEntry)) {
 			if (this.debug) {
-				console.log(` CacheManager: Cache HIT (memory) for ${leagueType}`);
+				Log.info(` CacheManager: Cache HIT (memory) for ${leagueType}`);
 			}
 			// LRU: Refresh entry position in Map
 			this.memoryCache.delete(leagueType);
@@ -81,7 +81,7 @@ class CacheManager {
 			await fsPromises.access(cacheFile);
 		} catch {
 			if (this.debug) {
-				console.log(
+				Log.info(
 					` CacheManager: Cache MISS for ${leagueType} - file not found`
 				);
 			}
@@ -94,7 +94,7 @@ class CacheManager {
 
 			if (this.isExpired(cacheEntry)) {
 				if (this.debug) {
-					console.log(` CacheManager: Cache EXPIRED for ${leagueType}`);
+					Log.info(` CacheManager: Cache EXPIRED for ${leagueType}`);
 				}
 				await this.delete(leagueType); // Clean up expired cache
 				return null;
@@ -102,7 +102,7 @@ class CacheManager {
 
 			if (this.debug) {
 				const age = Math.round((Date.now() - cacheEntry.timestamp) / 1000);
-				console.log(
+				Log.info(
 					` CacheManager: Cache HIT (disk) for ${leagueType} - Age: ${age}s`
 				);
 			}
@@ -111,9 +111,8 @@ class CacheManager {
 			this.memoryCache.set(leagueType, cacheEntry);
 			return cacheEntry.data;
 		} catch (error) {
-			console.error(
-				` CacheManager: Error reading cache for ${leagueType}:`,
-				error.message
+			Log.error(
+				` CacheManager: Error reading cache for ${leagueType}: ${error.message}`
 			);
 			return null;
 		}
@@ -146,7 +145,7 @@ class CacheManager {
 				const oldestKey = this.memoryCache.keys().next().value;
 				this.memoryCache.delete(oldestKey);
 				if (this.debug) {
-					console.log(` CacheManager: Memory cache full, evicted ${oldestKey}`);
+					Log.info(` CacheManager: Memory cache full, evicted ${oldestKey}`);
 				}
 			}
 			this.memoryCache.set(leagueType, cacheEntry);
@@ -155,16 +154,15 @@ class CacheManager {
 			await fsPromises.writeFile(cacheFile, JSON.stringify(cacheEntry, null, 2), "utf8");
 
 			if (this.debug) {
-				console.log(
+				Log.info(
 					` CacheManager: Cache SET for ${leagueType} (${data.teams?.length || 0} teams)`
 				);
 			}
 
 			return true;
 		} catch (error) {
-			console.error(
-				` CacheManager: Error writing cache for ${leagueType}:`,
-				error.message
+			Log.error(
+				` CacheManager: Error writing cache for ${leagueType}: ${error.message}`
 			);
 			return false;
 		}
@@ -184,16 +182,15 @@ class CacheManager {
 				this.memoryCache.delete(leagueType);
 
 				if (this.debug) {
-					console.log(` CacheManager: Cache DELETED for ${leagueType}`);
+					Log.info(` CacheManager: Cache DELETED for ${leagueType}`);
 				}
 				return true;
 			} catch {
 				return false;
 			}
 		} catch (error) {
-			console.error(
-				` CacheManager: Error deleting cache for ${leagueType}:`,
-				error.message
+			Log.error(
+				` CacheManager: Error deleting cache for ${leagueType}: ${error.message}`
 			);
 			return false;
 		}
@@ -220,9 +217,8 @@ class CacheManager {
 						await fsPromises.unlink(path.join(this.cacheDir, file));
 						deleted++;
 					} catch (error) {
-						console.error(
-							` CacheManager: Error deleting ${file}:`,
-							error.message
+						Log.error(
+							` CacheManager: Error deleting ${file}: ${error.message}`
 						);
 					}
 				}
@@ -231,14 +227,14 @@ class CacheManager {
 			this.memoryCache.clear();
 
 			if (this.debug) {
-				console.log(
+				Log.info(
 					` CacheManager: Cleared all cache (${deleted} files deleted)`
 				);
 			}
 
 			return deleted;
 		} catch (error) {
-			console.error(" CacheManager: Error clearing cache:", error.message);
+			Log.error(` CacheManager: Error clearing cache: ${error.message}`);
 			return 0;
 		}
 	}
@@ -280,7 +276,7 @@ class CacheManager {
 						const filePath = path.join(this.cacheDir, file);
 						const stats = await fsPromises.stat(filePath);
 						const content = await fsPromises.readFile(filePath, "utf8");
-						const cacheEntry = JSON.parse(content);
+					const cacheEntry = JSON.parse(content);
 
 						const age = Date.now() - cacheEntry.timestamp;
 						const ttl = cacheEntry.ttl || this.defaultTTL;
@@ -298,9 +294,8 @@ class CacheManager {
 							timestamp: new Date(cacheEntry.timestamp).toISOString()
 						});
 					} catch (error) {
-						console.error(
-							` CacheManager: Error reading stats for ${file}:`,
-							error.message
+						Log.error(
+							` CacheManager: Error reading stats for ${file}: ${error.message}`
 						);
 					}
 				}
@@ -315,7 +310,7 @@ class CacheManager {
 				)
 			};
 		} catch (error) {
-			console.error(" CacheManager: Error getting stats:", error.message);
+			Log.error(` CacheManager: Error getting stats: ${error.message}`);
 			return null;
 		}
 	}
@@ -348,23 +343,22 @@ class CacheManager {
 							deleted++;
 						}
 					} catch (error) {
-						console.error(
-							` CacheManager: Error checking ${file}:`,
-							error.message
+						Log.error(
+							` CacheManager: Error checking ${file}: ${error.message}`
 						);
 					}
 				}
 			}
 
 			if (this.debug && deleted > 0) {
-				console.log(
+				Log.info(
 					` CacheManager: Cleaned up ${deleted} expired cache entries`
 				);
 			}
 
 			return deleted;
 		} catch (error) {
-			console.error(" CacheManager: Error during cleanup:", error.message);
+			Log.error(` CacheManager: Error during cleanup: ${error.message}`);
 			return 0;
 		}
 	}
