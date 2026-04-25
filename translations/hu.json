@@ -108,5 +108,6 @@
   "COL_GOALS_AGAINST": "KG",
   "COL_GOAL_DIFFERENCE": "GK",
   "COL_POINTS": "Pts",
-  "COL_FORM": "Forma"
+  "COL_FORM": "Forma",
+  "OFFLINE_MODE_CACHED": "Offline mód - Gyorsítótárazott adatok megjelenítése"
 }

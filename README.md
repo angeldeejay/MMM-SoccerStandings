@@ -24,6 +24,8 @@ Current behavior:
 - Canonical payloads come from the backend provider path, not from scraping.
 - UEFA Champions League and FIFA World Cup use tournament-oriented views.
 - Colombian Primera A uses the flat league standings/fixtures path.
+- Fixture views render as scrollable card lists, not tabular fixture bodies.
+- Visible fixture lists page vertically with marquee scrolling when they exceed `marqueePageSize`.
 - Team logos come from provider payloads. If the provider does not return a logo, the gap stays visible.
 - League visibility is controlled only by `selectedLeagues`.
 
@@ -79,6 +81,8 @@ Add the module to `~/MagicMirror/config/config.js`.
 	header: "League Standings",
 	config: {
 		provider: "espn_service",
+		espnSoccerApiBaseUrl: "http://localhost:28000",
+		espnSoccerApiTimeout: 8000,
 		providerSettings: {
 			espn_service: {
 				baseUrl: "http://localhost:28000",
@@ -92,10 +96,8 @@ Add the module to `~/MagicMirror/config/config.js`.
 		animationSpeed: 0,
 		fadeSpeed: 0,
 		colored: true,
-		maxTeams: 36,
+		maxTeams: 12,
 		highlightTeams: ["Celtic", "Hearts"],
-		autoFocusRelevantSubTab: true,
-		showPosition: true,
 		showTeamLogos: true,
 		showPlayedGames: true,
 		showWon: true,
@@ -106,25 +108,15 @@ Add the module to `~/MagicMirror/config/config.js`.
 		showGoalDifference: true,
 		showPoints: true,
 		showForm: true,
-		formMaxGames: 5,
+		formMaxGames: 5, // visible form tokens (clamped to 1..5)
 		enhancedIndicatorShapes: true,
-		highlightedColor: "rgba(255, 255, 255, 0.1)",
 		tableDensity: "normal",
-		fixtureDateFilter: null,
-		maxLeaguePastFixtures: null,
-		maxLeagueUpcomingFixtures: null,
+		marqueePageSize: 3,
+		marqueePageInterval: 3,
 		theme: "auto",
-		customTeamColors: {},
-		autoCycle: false,
+		cycle: true,
 		cycleInterval: 15 * 1000,
-		wcSubtabCycleInterval: 15 * 1000,
-		autoCycleWcSubtabs: true,
-		leagueHeaders: {},
 		darkMode: null,
-		fontColorOverride: "#FFFFFF",
-		opacityOverride: null,
-		debug: false,
-		dateTimeOverride: null,
 		clearCacheButton: true,
 		clearCacheOnStart: false
 	}
@@ -133,34 +125,29 @@ Add the module to `~/MagicMirror/config/config.js`.
 
 ### Common options
 
-| Option | Default | Description |
-| :-- | :-- | :-- |
-| `provider` | `"espn_service"` | Active provider for the current runtime. |
-| `providerSettings.espn_service.baseUrl` | `"http://localhost:28000"` | Base URL for the local API service. |
-| `providerSettings.espn_service.timeoutMs` | `8000` | Request timeout for API calls. |
-| `selectedLeagues` | `["uefa.champions"]` | Competition slugs to render. Use provider/API slugs directly. |
-| `leagueHeaders` | `{}` | Optional label overrides. API catalog names are used by default. |
-| `autoFocusRelevantSubTab` | `true` | Prefer the subtab with live or upcoming fixtures when possible. |
-| `tableDensity` | `"normal"` | `compact`, `normal`, or `comfortable`. |
-| `fixtureDateFilter` | `null` | `null`, `"today"`, `"week"`, `"month"`, or a `{ start, end }` range. |
-| `maxLeaguePastFixtures` | `null` | Optional cap for recent flat-league fixtures after windowing. |
-| `maxLeagueUpcomingFixtures` | `null` | Optional cap for upcoming flat-league fixtures after windowing. |
-| `theme` | `"auto"` | `auto`, `light`, or `dark`. |
-| `darkMode` | `null` | Legacy force override: `null`, `true`, or `false`. |
-| `customTeamColors` | `{}` | Per-team row color overrides. |
-| `autoCycle` | `false` | Rotate between configured leagues automatically. |
-| `cycleInterval` | `15000` | League auto-cycle interval in milliseconds. |
-| `autoCycleWcSubtabs` | `true` | Rotate World Cup subtabs automatically. |
-| `wcSubtabCycleInterval` | `15000` | World Cup subtab auto-cycle interval in milliseconds. |
-| `clearCacheButton` | `true` | Show the clear-cache control in the UI. |
-| `clearCacheOnStart` | `false` | Clear caches during startup. |
-| `debug` | `false` | Enable verbose logging. |
-| `dateTimeOverride` | `null` | Override the current time for testing. |
+| Option                                    | Default                    | Description                                                                                                                    |
+| :---------------------------------------- | :------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
+| `provider`                                | `"espn_service"`           | Active provider for the current runtime.                                                                                       |
+| `espnSoccerApiBaseUrl`                    | `"http://localhost:28000"` | Preferred base URL for the API consumed by canonical requests.                                                                 |
+| `espnSoccerApiTimeout`                    | `8000`                     | Preferred request timeout for canonical requests.                                                                              |
+| `providerSettings.espn_service.baseUrl`   | `"http://localhost:28000"` | Compatibility fallback for older config shapes.                                                                                |
+| `providerSettings.espn_service.timeoutMs` | `8000`                     | Compatibility fallback for older config shapes.                                                                                |
+| `selectedLeagues`                         | `["uefa.champions"]`       | Competition slugs to render. Use provider/API slugs directly.                                                                  |
+| `tableDensity`                            | `"normal"`                 | `compact`, `normal`, or `comfortable`.                                                                                         |
+| `marqueePageSize`                         | `3`                        | Maximum number of fixture cards visible before vertical marquee paging is enabled.                                             |
+| `marqueePageInterval`                     | `3`                        | Seconds to wait on each visible fixture marquee page before smooth scrolling to the next page.                                 |
+| `theme`                                   | `"auto"`                   | `auto`, `light`, or `dark`.                                                                                                    |
+| `darkMode`                                | `null`                     | Legacy force override: `null`, `true`, or `false`.                                                                             |
+| `cycle`                                   | `true`                     | Enables cycling by default. Only explicit `false` disables cycling and removes the pin/countdown controls from the header DOM. |
+| `cycleInterval`                           | `15000`                    | Interval in milliseconds for each cycle step.                                                                                  |
+| `clearCacheButton`                        | `true`                     | Show the clear-cache control in the UI.                                                                                        |
+| `clearCacheOnStart`                       | `false`                    | Clear caches during startup.                                                                                                   |
 
 ## Runtime notes
 
 - `node_helper.js` performs provider I/O server-side for the canonical data path.
 - The frontend still renders team logos with provider image URLs. If your deployment enforces a strict CSP, allow the relevant image hosts or disable logos with `showTeamLogos: false`.
+- Standings always render the position column, fixture recency always uses the real current date, and highlighted rows use the built-in `rgba(255, 255, 255, 0.1)` styling.
 - This repo is a MagicMirror module, not a standalone web app.
 
 ## Development commands
@@ -174,12 +161,28 @@ npm run scss:build
 npm run format
 ```
 
+## Single-module sandbox
+
+For live smoke checks, screenshots, and module-only debugging without a full MagicMirror checkout:
+
+```bash
+npm run sandbox:start
+npm run sandbox:watch
+npm run mock-api:start
+```
+
+- `npm run sandbox:start` and `npm run sandbox:watch` launch the single-module sandbox provided by the installed `magicmirror-module-sandbox` package.
+- Edit root `config\module.config.json` to change the mounted module config and the API URL it consumes.
+- Root `config\runtime.config.json` holds the sandbox language/locale defaults.
+- The packaged sandbox runtime is intentionally narrow: it mounts only `MMM-SoccerStandings` and only the MagicMirror surface this module actually uses.
+- The fixture-backed ESPN mock now lives as a separate tool. Start it with `npm run mock-api:start`, then point `espnSoccerApiBaseUrl` at `http://127.0.0.1:3200`.
+
 ## Maintained repo references
 
 - `README.md`: setup and configuration guide
 - `AGENTS.md`: repository workflow and engineering rules
 - `TODO.md`: operational notes and current findings
-- `tests/security.test.js`: active canonical/provider/helper coverage
+- `tests/`: domain-split canonical/provider/helper coverage (`competition-keys`, `competition-catalog`, `canonical-payload`, `canonical-provider`, `view-model`, `module-shell`)
 - `LICENSE`: MIT license text
 
 ## License

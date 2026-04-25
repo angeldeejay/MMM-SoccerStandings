@@ -1,0 +1,15 @@
+{% if subTabs.length %}
+  <div class="wc-subtabs-container single-line">
+    {% for subTab in subTabs %}
+      <button
+        class="wc-btn{% if subTab.isKnockoutStage %} ko-btn{% endif %}{% if subTab.active %} active{% endif %}"
+        aria-label="{{ subTab.ariaLabel }}"
+        aria-pressed="{% if subTab.active %}true{% else %}false{% endif %}"
+        role="tab"
+        data-subtab="{{ subTab.id }}"
+      >
+        {{ subTab.label }}
+      </button>
+    {% endfor %}
+  </div>
+{% endif %}

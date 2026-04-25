@@ -108,5 +108,6 @@
   "COL_GOALS_AGAINST": "I",
   "COL_GOAL_DIFFERENCE": "DC",
   "COL_POINTS": "P",
-  "COL_FORM": "Foirm"
+  "COL_FORM": "Foirm",
+  "OFFLINE_MODE_CACHED": "Mód As Líne - Sonraí Stóráilte á Taispeáint"
 }

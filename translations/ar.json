@@ -108,5 +108,6 @@
   "COL_GOALS_AGAINST": "عليه",
   "COL_GOAL_DIFFERENCE": "فر.ا",
   "COL_POINTS": "نق",
-  "COL_FORM": "الشكل"
+  "COL_FORM": "الشكل",
+  "OFFLINE_MODE_CACHED": "وضع عدم الاتصال - عرض البيانات المخزنة"
 }

@@ -120,5 +120,6 @@
   "SEMI_FINAL": "Semi",
   "TP": "3er Puesto",
   "THIRD_PLACE": "3er",
-  "FINAL": "Final"
+  "FINAL": "Final",
+  "OFFLINE_MODE_CACHED": "Modo sin conexión - Mostrando datos en caché"
 }

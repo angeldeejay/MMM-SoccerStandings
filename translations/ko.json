@@ -108,5 +108,6 @@
   "COL_GOALS_AGAINST": "실점",
   "COL_GOAL_DIFFERENCE": "득실차",
   "COL_POINTS": "승점",
-  "COL_FORM": "폼"
+  "COL_FORM": "폼",
+  "OFFLINE_MODE_CACHED": "오프라인 모드 - 캐시된 데이터 표시 중"
 }

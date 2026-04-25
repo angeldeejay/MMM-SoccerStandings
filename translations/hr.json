@@ -108,5 +108,6 @@
   "COL_GOALS_AGAINST": "GP",
   "COL_GOAL_DIFFERENCE": "RS",
   "COL_POINTS": "Bod",
-  "COL_FORM": "Forma"
+  "COL_FORM": "Forma",
+  "OFFLINE_MODE_CACHED": "Izvanmrežni način - Prikazivanje predmemoriranih podataka"
 }

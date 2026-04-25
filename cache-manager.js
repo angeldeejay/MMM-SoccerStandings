@@ -14,362 +14,367 @@ const path = require("path");
 const Log = require("logger");
 
 class CacheManager {
-	constructor(modulePath) {
-		this.modulePath = modulePath;
-		this.cacheDir = path.join(modulePath, ".cache");
-		this.memoryCache = new Map(); // In-memory cache for speed
-		this.maxMemoryEntries = 20; // Maximum number of entries to keep in memory (LRU)
-		this.defaultTTL = 24 * 60 * 60 * 1000; // 24 hours default
-		this.maxCacheAge = 7 * 24 * 60 * 60 * 1000; // 7 days max before deletion
-		this.debug = false;
+  constructor(modulePath) {
+    this.modulePath = modulePath;
+    const overrideCacheDir =
+      typeof process.env.MMM_SOCCERSTANDINGS_CACHE_DIR === "string" &&
+      process.env.MMM_SOCCERSTANDINGS_CACHE_DIR.trim()
+        ? process.env.MMM_SOCCERSTANDINGS_CACHE_DIR.trim()
+        : null;
+    this.cacheDir = overrideCacheDir || path.join(modulePath, ".cache");
+    this.memoryCache = new Map(); // In-memory cache for speed
+    this.maxMemoryEntries = 20; // Maximum number of entries to keep in memory (LRU)
+    this.defaultTTL = 24 * 60 * 60 * 1000; // 24 hours default
+    this.maxCacheAge = 7 * 24 * 60 * 60 * 1000; // 7 days max before deletion
+    this.debug = false;
 
-		// Ensure cache directory exists
-		this.ensureCacheDir();
-	}
+    // Ensure cache directory exists
+    this.ensureCacheDir();
+  }
 
-	/**
-	 * Ensure cache directory exists
-	 */
-	ensureCacheDir() {
-		if (!fs.existsSync(this.cacheDir)) {
-			try {
-				fs.mkdirSync(this.cacheDir, { recursive: true });
-				if (this.debug) {
-					Log.info(
-						` CacheManager: Created cache directory at ${this.cacheDir}`
-					);
-				}
-			} catch (error) {
-				Log.error(
-					` CacheManager: Failed to create cache directory: ${error.message || error}`
-				);
-			}
-		}
-	}
+  /**
+   * Ensure cache directory exists
+   */
+  ensureCacheDir() {
+    if (!fs.existsSync(this.cacheDir)) {
+      try {
+        fs.mkdirSync(this.cacheDir, { recursive: true });
+        if (this.debug) {
+          Log.info(
+            ` CacheManager: Created cache directory at ${this.cacheDir}`
+          );
+        }
+      } catch (error) {
+        Log.error(
+          ` CacheManager: Failed to create cache directory: ${error.message || error}`
+        );
+      }
+    }
+  }
 
-	/**
-	 * Get cache file path for a league
-	 * @param {string} leagueType - League identifier (e.g., "SCOTLAND_PREMIERSHIP")
-	 * @returns {string} Path to cache file
-	 */
-	getCacheFilePath(leagueType) {
-		const sanitized = leagueType.toLowerCase().replace(/[^a-z0-9_]/g, "_");
-		return path.join(this.cacheDir, `${sanitized}.json`);
-	}
+  /**
+   * Get cache file path for a league
+   * @param {string} leagueType - League identifier (e.g., "SCOTLAND_PREMIERSHIP")
+   * @returns {string} Path to cache file
+   */
+  getCacheFilePath(leagueType) {
+    const sanitized = leagueType.toLowerCase().replace(/[^a-z0-9_]/g, "_");
+    return path.join(this.cacheDir, `${sanitized}.json`);
+  }
 
-	/**
-	 * Get cached data for a league (async)
-	 * @param {string} leagueType - League identifier
-	 * @returns {Promise<object | null>} Cached data or null if not found/expired
-	 */
-	async get(leagueType) {
-		// Check memory cache first
-		const memCacheEntry = this.memoryCache.get(leagueType);
-		if (memCacheEntry && !this.isExpired(memCacheEntry)) {
-			if (this.debug) {
-				Log.info(` CacheManager: Cache HIT (memory) for ${leagueType}`);
-			}
-			// LRU: Refresh entry position in Map
-			this.memoryCache.delete(leagueType);
-			this.memoryCache.set(leagueType, memCacheEntry);
-			return memCacheEntry.data;
-		}
+  /**
+   * Get cached data for a league (async)
+   * @param {string} leagueType - League identifier
+   * @returns {Promise<object | null>} Cached data or null if not found/expired
+   */
+  async get(leagueType) {
+    // Check memory cache first
+    const memCacheEntry = this.memoryCache.get(leagueType);
+    if (memCacheEntry && !this.isExpired(memCacheEntry)) {
+      if (this.debug) {
+        Log.info(` CacheManager: Cache HIT (memory) for ${leagueType}`);
+      }
+      // LRU: Refresh entry position in Map
+      this.memoryCache.delete(leagueType);
+      this.memoryCache.set(leagueType, memCacheEntry);
+      return memCacheEntry.data;
+    }
 
-		// Check disk cache
-		const cacheFile = this.getCacheFilePath(leagueType);
-		try {
-			await fsPromises.access(cacheFile);
-		} catch {
-			if (this.debug) {
-				Log.info(
-					` CacheManager: Cache MISS for ${leagueType} - file not found`
-				);
-			}
-			return null;
-		}
+    // Check disk cache
+    const cacheFile = this.getCacheFilePath(leagueType);
+    try {
+      await fsPromises.access(cacheFile);
+    } catch {
+      if (this.debug) {
+        Log.info(
+          ` CacheManager: Cache MISS for ${leagueType} - file not found`
+        );
+      }
+      return null;
+    }
 
-		try {
-			const fileContent = await fsPromises.readFile(cacheFile, "utf8");
-			const cacheEntry = JSON.parse(fileContent);
+    try {
+      const fileContent = await fsPromises.readFile(cacheFile, "utf8");
+      const cacheEntry = JSON.parse(fileContent);
 
-			if (this.isExpired(cacheEntry)) {
-				if (this.debug) {
-					Log.info(` CacheManager: Cache EXPIRED for ${leagueType}`);
-				}
-				await this.delete(leagueType); // Clean up expired cache
-				return null;
-			}
+      if (this.isExpired(cacheEntry)) {
+        if (this.debug) {
+          Log.info(` CacheManager: Cache EXPIRED for ${leagueType}`);
+        }
+        await this.delete(leagueType); // Clean up expired cache
+        return null;
+      }
 
-			if (this.debug) {
-				const age = Math.round((Date.now() - cacheEntry.timestamp) / 1000);
-				Log.info(
-					` CacheManager: Cache HIT (disk) for ${leagueType} - Age: ${age}s`
-				);
-			}
+      if (this.debug) {
+        const age = Math.round((Date.now() - cacheEntry.timestamp) / 1000);
+        Log.info(
+          ` CacheManager: Cache HIT (disk) for ${leagueType} - Age: ${age}s`
+        );
+      }
 
-			// Store in memory cache for next time
-			this.memoryCache.set(leagueType, cacheEntry);
-			return cacheEntry.data;
-		} catch (error) {
-			Log.error(
-				` CacheManager: Error reading cache for ${leagueType}: ${error.message}`
-			);
-			return null;
-		}
-	}
+      // Store in memory cache for next time
+      this.memoryCache.set(leagueType, cacheEntry);
+      return cacheEntry.data;
+    } catch (error) {
+      Log.error(
+        ` CacheManager: Error reading cache for ${leagueType}: ${error.message}`
+      );
+      return null;
+    }
+  }
 
-	/**
-	 * Save league data to cache (async, non-blocking)
-	 * @param {string} leagueType - League identifier
-	 * @param {object} data - League data to cache
-	 * @param {number} ttl - Time-to-live in milliseconds (optional)
-	 * @returns {Promise<boolean>} Success status
-	 */
-	async set(leagueType, data, ttl = null) {
-		try {
-			const cacheEntry = {
-				leagueType: leagueType,
-				timestamp: Date.now(),
-				ttl: ttl || this.defaultTTL,
-				data: data,
-				version: 1 // For future migrations
-			};
+  /**
+   * Save league data to cache (async, non-blocking)
+   * @param {string} leagueType - League identifier
+   * @param {object} data - League data to cache
+   * @param {number} ttl - Time-to-live in milliseconds (optional)
+   * @returns {Promise<boolean>} Success status
+   */
+  async set(leagueType, data, ttl = null) {
+    try {
+      const cacheEntry = {
+        leagueType: leagueType,
+        timestamp: Date.now(),
+        ttl: ttl || this.defaultTTL,
+        data: data,
+        version: 1 // For future migrations
+      };
 
-			const cacheFile = this.getCacheFilePath(leagueType);
-			
-			// Update memory cache immediately (synchronous for instant availability)
-			if (this.memoryCache.has(leagueType)) {
-				this.memoryCache.delete(leagueType);
-			} else if (this.memoryCache.size >= this.maxMemoryEntries) {
-				// Remove oldest entry (first in Map)
-				const oldestKey = this.memoryCache.keys().next().value;
-				this.memoryCache.delete(oldestKey);
-				if (this.debug) {
-					Log.info(` CacheManager: Memory cache full, evicted ${oldestKey}`);
-				}
-			}
-			this.memoryCache.set(leagueType, cacheEntry);
+      const cacheFile = this.getCacheFilePath(leagueType);
 
-			// Write to disk asynchronously (non-blocking)
-			await fsPromises.writeFile(cacheFile, JSON.stringify(cacheEntry, null, 2), "utf8");
+      // Update memory cache immediately (synchronous for instant availability)
+      if (this.memoryCache.has(leagueType)) {
+        this.memoryCache.delete(leagueType);
+      } else if (this.memoryCache.size >= this.maxMemoryEntries) {
+        // Remove oldest entry (first in Map)
+        const oldestKey = this.memoryCache.keys().next().value;
+        this.memoryCache.delete(oldestKey);
+        if (this.debug) {
+          Log.info(` CacheManager: Memory cache full, evicted ${oldestKey}`);
+        }
+      }
+      this.memoryCache.set(leagueType, cacheEntry);
 
-			if (this.debug) {
-				Log.info(
-					` CacheManager: Cache SET for ${leagueType} (${data.teams?.length || 0} teams)`
-				);
-			}
+      // Write to disk asynchronously (non-blocking)
+      await fsPromises.writeFile(
+        cacheFile,
+        JSON.stringify(cacheEntry, null, 2),
+        "utf8"
+      );
 
-			return true;
-		} catch (error) {
-			Log.error(
-				` CacheManager: Error writing cache for ${leagueType}: ${error.message}`
-			);
-			return false;
-		}
-	}
+      if (this.debug) {
+        Log.info(
+          ` CacheManager: Cache SET for ${leagueType} (${data.teams?.length || 0} teams)`
+        );
+      }
 
-	/**
-	 * Delete cached data for a league (async)
-	 * @param {string} leagueType - League identifier
-	 * @returns {Promise<boolean>} Success status
-	 */
-	async delete(leagueType) {
-		try {
-			const cacheFile = this.getCacheFilePath(leagueType);
-			try {
-				await fsPromises.access(cacheFile);
-				await fsPromises.unlink(cacheFile);
-				this.memoryCache.delete(leagueType);
+      return true;
+    } catch (error) {
+      Log.error(
+        ` CacheManager: Error writing cache for ${leagueType}: ${error.message}`
+      );
+      return false;
+    }
+  }
 
-				if (this.debug) {
-					Log.info(` CacheManager: Cache DELETED for ${leagueType}`);
-				}
-				return true;
-			} catch {
-				return false;
-			}
-		} catch (error) {
-			Log.error(
-				` CacheManager: Error deleting cache for ${leagueType}: ${error.message}`
-			);
-			return false;
-		}
-	}
+  /**
+   * Delete cached data for a league (async)
+   * @param {string} leagueType - League identifier
+   * @returns {Promise<boolean>} Success status
+   */
+  async delete(leagueType) {
+    try {
+      const cacheFile = this.getCacheFilePath(leagueType);
+      try {
+        await fsPromises.access(cacheFile);
+        await fsPromises.unlink(cacheFile);
+        this.memoryCache.delete(leagueType);
 
-	/**
-	 * Clear all cache (async)
-	 * @returns {Promise<number>} Number of cache files deleted
-	 */
-	async clearAll() {
-		try {
-			try {
-				await fsPromises.access(this.cacheDir);
-			} catch {
-				return 0;
-			}
+        if (this.debug) {
+          Log.info(` CacheManager: Cache DELETED for ${leagueType}`);
+        }
+        return true;
+      } catch {
+        return false;
+      }
+    } catch (error) {
+      Log.error(
+        ` CacheManager: Error deleting cache for ${leagueType}: ${error.message}`
+      );
+      return false;
+    }
+  }
 
-			const files = await fsPromises.readdir(this.cacheDir);
-			let deleted = 0;
+  /**
+   * Clear all cache (async)
+   * @returns {Promise<number>} Number of cache files deleted
+   */
+  async clearAll() {
+    try {
+      try {
+        await fsPromises.access(this.cacheDir);
+      } catch {
+        return 0;
+      }
 
-			for (const file of files) {
-				if (file.endsWith(".json")) {
-					try {
-						await fsPromises.unlink(path.join(this.cacheDir, file));
-						deleted++;
-					} catch (error) {
-						Log.error(
-							` CacheManager: Error deleting ${file}: ${error.message}`
-						);
-					}
-				}
-			}
+      const files = await fsPromises.readdir(this.cacheDir);
+      let deleted = 0;
 
-			this.memoryCache.clear();
+      for (const file of files) {
+        if (file.endsWith(".json")) {
+          try {
+            await fsPromises.unlink(path.join(this.cacheDir, file));
+            deleted++;
+          } catch (error) {
+            Log.error(
+              ` CacheManager: Error deleting ${file}: ${error.message}`
+            );
+          }
+        }
+      }
 
-			if (this.debug) {
-				Log.info(
-					` CacheManager: Cleared all cache (${deleted} files deleted)`
-				);
-			}
+      this.memoryCache.clear();
 
-			return deleted;
-		} catch (error) {
-			Log.error(` CacheManager: Error clearing cache: ${error.message}`);
-			return 0;
-		}
-	}
+      if (this.debug) {
+        Log.info(` CacheManager: Cleared all cache (${deleted} files deleted)`);
+      }
 
-	/**
-	 * Check if cache entry is expired
-	 * @param cacheEntry
-	 * @private
-	 */
-	isExpired(cacheEntry) {
-		const age = Date.now() - cacheEntry.timestamp;
-		const ttl = cacheEntry.ttl || this.defaultTTL;
-		return age > ttl;
-	}
+      return deleted;
+    } catch (error) {
+      Log.error(` CacheManager: Error clearing cache: ${error.message}`);
+      return 0;
+    }
+  }
 
-	/**
-	 * Get cache statistics (async)
-	 * @returns {Promise<object>} Cache statistics
-	 */
-	async getStats() {
-		try {
-			try {
-				await fsPromises.access(this.cacheDir);
-			} catch {
-				return {
-					cacheDir: this.cacheDir,
-					totalFiles: 0,
-					memoryEntries: this.memoryCache.size,
-					entries: []
-				};
-			}
+  /**
+   * Check if cache entry is expired
+   * @param cacheEntry
+   * @private
+   */
+  isExpired(cacheEntry) {
+    const age = Date.now() - cacheEntry.timestamp;
+    const ttl = cacheEntry.ttl || this.defaultTTL;
+    return age > ttl;
+  }
 
-			const files = await fsPromises.readdir(this.cacheDir);
-			const entries = [];
+  /**
+   * Get cache statistics (async)
+   * @returns {Promise<object>} Cache statistics
+   */
+  async getStats() {
+    try {
+      try {
+        await fsPromises.access(this.cacheDir);
+      } catch {
+        return {
+          cacheDir: this.cacheDir,
+          totalFiles: 0,
+          memoryEntries: this.memoryCache.size,
+          entries: []
+        };
+      }
 
-			for (const file of files) {
-				if (file.endsWith(".json")) {
-					try {
-						const filePath = path.join(this.cacheDir, file);
-						const stats = await fsPromises.stat(filePath);
-						const content = await fsPromises.readFile(filePath, "utf8");
-					const cacheEntry = JSON.parse(content);
+      const files = await fsPromises.readdir(this.cacheDir);
+      const entries = [];
 
-						const age = Date.now() - cacheEntry.timestamp;
-						const ttl = cacheEntry.ttl || this.defaultTTL;
-						const isExpired = age > ttl;
-						const expiresIn = Math.max(0, ttl - age);
+      for (const file of files) {
+        if (file.endsWith(".json")) {
+          try {
+            const filePath = path.join(this.cacheDir, file);
+            const stats = await fsPromises.stat(filePath);
+            const content = await fsPromises.readFile(filePath, "utf8");
+            const cacheEntry = JSON.parse(content);
 
-						entries.push({
-							leagueType: cacheEntry.leagueType,
-							fileName: file,
-							teams: cacheEntry.data?.teams?.length || 0,
-							fileSize: stats.size,
-							cacheAge: Math.round(age / 1000), // seconds
-							expiresIn: Math.round(expiresIn / 1000), // seconds
-							isExpired: isExpired,
-							timestamp: new Date(cacheEntry.timestamp).toISOString()
-						});
-					} catch (error) {
-						Log.error(
-							` CacheManager: Error reading stats for ${file}: ${error.message}`
-						);
-					}
-				}
-			}
+            const age = Date.now() - cacheEntry.timestamp;
+            const ttl = cacheEntry.ttl || this.defaultTTL;
+            const isExpired = age > ttl;
+            const expiresIn = Math.max(0, ttl - age);
 
-			return {
-				cacheDir: this.cacheDir,
-				totalFiles: files.filter((f) => f.endsWith(".json")).length,
-				memoryEntries: this.memoryCache.size,
-				entries: entries.sort((a, b) =>
-					a.leagueType.localeCompare(b.leagueType)
-				)
-			};
-		} catch (error) {
-			Log.error(` CacheManager: Error getting stats: ${error.message}`);
-			return null;
-		}
-	}
+            entries.push({
+              leagueType: cacheEntry.leagueType,
+              fileName: file,
+              teams: cacheEntry.data?.teams?.length || 0,
+              fileSize: stats.size,
+              cacheAge: Math.round(age / 1000), // seconds
+              expiresIn: Math.round(expiresIn / 1000), // seconds
+              isExpired: isExpired,
+              timestamp: new Date(cacheEntry.timestamp).toISOString()
+            });
+          } catch (error) {
+            Log.error(
+              ` CacheManager: Error reading stats for ${file}: ${error.message}`
+            );
+          }
+        }
+      }
 
-	/**
-	 * Clean up expired cache entries (async)
-	 * @returns {Promise<number>} Number of expired files deleted
-	 */
-	async cleanupExpired() {
-		try {
-			try {
-				await fsPromises.access(this.cacheDir);
-			} catch {
-				return 0;
-			}
+      return {
+        cacheDir: this.cacheDir,
+        totalFiles: files.filter((f) => f.endsWith(".json")).length,
+        memoryEntries: this.memoryCache.size,
+        entries: entries.sort((a, b) =>
+          a.leagueType.localeCompare(b.leagueType)
+        )
+      };
+    } catch (error) {
+      Log.error(` CacheManager: Error getting stats: ${error.message}`);
+      return null;
+    }
+  }
 
-			const files = await fsPromises.readdir(this.cacheDir);
-			let deleted = 0;
+  /**
+   * Clean up expired cache entries (async)
+   * @returns {Promise<number>} Number of expired files deleted
+   */
+  async cleanupExpired() {
+    try {
+      try {
+        await fsPromises.access(this.cacheDir);
+      } catch {
+        return 0;
+      }
 
-			for (const file of files) {
-				if (file.endsWith(".json")) {
-					try {
-						const filePath = path.join(this.cacheDir, file);
-						const content = await fsPromises.readFile(filePath, "utf8");
-						const cacheEntry = JSON.parse(content);
+      const files = await fsPromises.readdir(this.cacheDir);
+      let deleted = 0;
 
-						if (this.isExpired(cacheEntry)) {
-							await fsPromises.unlink(filePath);
-							this.memoryCache.delete(cacheEntry.leagueType);
-							deleted++;
-						}
-					} catch (error) {
-						Log.error(
-							` CacheManager: Error checking ${file}: ${error.message}`
-						);
-					}
-				}
-			}
+      for (const file of files) {
+        if (file.endsWith(".json")) {
+          try {
+            const filePath = path.join(this.cacheDir, file);
+            const content = await fsPromises.readFile(filePath, "utf8");
+            const cacheEntry = JSON.parse(content);
 
-			if (this.debug && deleted > 0) {
-				Log.info(
-					` CacheManager: Cleaned up ${deleted} expired cache entries`
-				);
-			}
+            if (this.isExpired(cacheEntry)) {
+              await fsPromises.unlink(filePath);
+              this.memoryCache.delete(cacheEntry.leagueType);
+              deleted++;
+            }
+          } catch (error) {
+            Log.error(
+              ` CacheManager: Error checking ${file}: ${error.message}`
+            );
+          }
+        }
+      }
 
-			return deleted;
-		} catch (error) {
-			Log.error(` CacheManager: Error during cleanup: ${error.message}`);
-			return 0;
-		}
-	}
+      if (this.debug && deleted > 0) {
+        Log.info(` CacheManager: Cleaned up ${deleted} expired cache entries`);
+      }
 
-	/**
-	 * Set debug mode
-	 * @param {boolean} enabled - Enable debug logging
-	 */
-	setDebug(enabled) {
-		this.debug = enabled;
-	}
+      return deleted;
+    } catch (error) {
+      Log.error(` CacheManager: Error during cleanup: ${error.message}`);
+      return 0;
+    }
+  }
+
+  /**
+   * Set debug mode
+   * @param {boolean} enabled - Enable debug logging
+   */
+  setDebug(enabled) {
+    this.debug = enabled;
+  }
 }
 
 module.exports = CacheManager;

@@ -116,5 +116,6 @@
   "SEMI_FINAL": "SF",
   "TP": "3rd Place",
   "THIRD_PLACE": "3rd Place",
-  "FINAL": "Final"
+  "FINAL": "Final",
+  "OFFLINE_MODE_CACHED": "Offline Mode - Showing Cached Data"
 }

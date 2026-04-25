@@ -14,10 +14,6 @@
 	&.density-compact {
 		@include density-row-spacing(3px 2px, 1.1);
 
-		.team-name {
-			font-size: 11px;
-		}
-
 		@include density-logo-size(16px);
 
 		.form-token {
@@ -35,19 +31,11 @@
 	/* Normal density - default balanced spacing (already defined in base styles) */
 	&.density-normal {
 		@include density-row-spacing(6px 4px);
-
-		.team-name {
-			font-size: 15px;
-		}
 	}
 
 	/* Comfortable density - generous padding for better readability */
 	&.density-comfortable {
 		@include density-row-spacing(10px 6px, 1.4);
-
-		.team-name {
-			font-size: 15px;
-		}
 
 		@include density-logo-size(24px);
 
@@ -60,6 +48,30 @@
 
 		.fixture-row-v2 td {
 			padding: 8px 6px;
+		}
+	}
+
+	&.density-compact,
+	&.density-normal,
+	&.density-comfortable {
+		.team-row td.played-cell,
+		.team-row td.won-cell,
+		.team-row td.drawn-cell,
+		.team-row td.lost-cell,
+		.team-row td.gf-cell,
+		.team-row td.ga-cell,
+		.team-row td.gd-cell,
+		.team-row td.points-cell,
+		.table-header-row th.played-header,
+		.table-header-row th.won-header,
+		.table-header-row th.drawn-header,
+		.table-header-row th.lost-header,
+		.table-header-row th.gf-header,
+		.table-header-row th.ga-header,
+		.table-header-row th.gd-header,
+		.table-header-row th.points-header {
+			padding-left: 0;
+			padding-right: 0;
 		}
 	}
 }

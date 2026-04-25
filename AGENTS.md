@@ -12,15 +12,16 @@ Run commands from the repository root.
 ```bash
 npm install
 npm run scss:build
+npm run mock-api:start
+npm run sandbox:watch
 ```
 
-This repo is a MagicMirror module, not a standalone web app. Runtime verification normally happens by loading the module in MagicMirror with `provider: "espn_service"` and a reachable `providerSettings.espn_service.baseUrl`.
+This repo is a MagicMirror module, not a standalone web app. Runtime verification normally happens either through MagicMirror itself or through the single-module sandbox with root `config\module.config.json`, using `provider: "espn_service"` and a reachable `espnSoccerApiBaseUrl` (with `providerSettings.espn_service.baseUrl` only as compatibility fallback).
 
 ### Tests
 
 ```bash
 npm test
-npm run test:security
 ```
 
 ### Linting and formatting
@@ -68,7 +69,7 @@ Use this conversational/operational workflow when the user is in "flow" mode.
 ### Default flow behavior
 
 1. Re-read the current project state before offering options:
-   - check whether there are active or pending tracked tasks
+   - check whether `TODO.md` has active or pending operational tasks
    - re-read `TODO.md`
    - align the visible state with the actual repository state if needed
 2. If there is no active front, offer the workflow menu again.
@@ -124,6 +125,7 @@ Prefer an interactive choice prompt when tools allow it. Otherwise use the same 
 4. Treat markdown docs and instruction files as secondary guidance that must be kept aligned with the implementation.
 5. If the user adds a new task but has not confirmed implementation yet, analyze and frame it first; do not start coding automatically.
 6. Keep the user-facing workflow concise, but keep `TODO.md` and guidance docs synchronized with reality.
+7. Do not offer Git tree management, staging, tracking, commits, or repository housekeeping as workflow fronts; the user owns repository management.
 
 ### Workflow interruptions and resumptions
 
@@ -193,7 +195,7 @@ Prefer an interactive choice prompt when tools allow it. Otherwise use the same 
 - **Do** keep canonical socket traffic on `GET_COMPETITION_PAYLOAD` / `COMPETITION_PAYLOAD`.
 - **Do** keep provider-native team identities and logos. If the provider gives no logo, leave the gap visible.
 - **Do** use `createElement()`, `textContent`, `appendChild()`, and `DocumentFragment`; do not use `innerHTML` for dynamic content.
-- **Do** wrap non-critical logging behind `this.config.debug` and prefer MagicMirror `Log` helpers.
+- **Do** keep non-critical production logging minimal and prefer MagicMirror `Log` helpers when logging is justified.
 - **Do** keep CSS scoped and layout behavior stable.
 - **Don't** reintroduce scraper-era parser dependencies, legacy provider chains, `showWC2026`, static team-logo mapping runtime dependencies, or synthetic logo paths in the active runtime.
 - **Don't** treat `CHANGELOG.md` as active source of truth for current architecture.
@@ -210,28 +212,30 @@ Prefer an interactive choice prompt when tools allow it. Otherwise use the same 
 - `backend/competition-catalog.js`: active competition catalog metadata.
 - `constants/competition-keys.js`: stable internal competition identifiers.
 - `cache-manager.js`: disk persistence layer used by the backend path.
-- `tests/security.test.js`: canonical provider/adapter/helper coverage for the active narrowed scope.
+- `tests/`: domain-split test suite — `competition-keys`, `competition-catalog`, `canonical-payload`, `canonical-provider`, `view-model`, `module-shell`. Shared setup in `tests/helpers/setup.js`.
 
 ## Key conventions
 
 - Active runtime direction is API-first. Scraping is not part of the intended future path.
 - Current product baseline is intentionally narrowed to `uefa.champions`, `col.1`, and `fifa.world`.
-- `leagueHeaders` defaults to `{}`; API catalog names are the primary labels unless the user overrides them.
+- API catalog names are the primary league labels in the active runtime.
 - Team names on the provider path are already normalized; do not resurrect scraper-era normalization rules on the active path.
 - Use explicit fixture state flags such as `isLive`, `isUpcoming`, and `isFinished`; never infer state from an ambiguous score like `0-0`.
 - Do not show status tags for upcoming fixtures.
+- Active fixture rendering uses scrollable card lists in `.fixtures-body-scroll` / `.fixtures-list-v3`, not old tabular fixture bodies.
+- Fixture marquee paging defaults to `marqueePageSize: 3` and `marqueePageInterval: 3`; only visible fixture lists should auto-scroll.
 - Preserve accessibility work: semantic table roles, keyboard navigation, and descriptive labels matter here.
 - Preserve performance work: batch DOM updates, lazy-load images, and avoid noisy production logging.
 - Prefer fixed-height, scoped CSS behavior over broad layout changes that introduce shifting or unstable views.
 
 ## Testing-specific conventions
 
-- Prefer focused updates to `tests/security.test.js` for canonical provider, adapter, and active-scope behavior.
+- Add tests to the relevant domain file under `tests/`. Shared globals and `loadRegisteredModuleDefinition` live in `tests/helpers/setup.js`.
 - When config or doc claims change, verify them against `package.json`, runtime defaults, and the active code path.
 - When frontend shell helper behavior changes, validate the narrowest relevant surface first, then widen to `npm test`.
 
 ## Repository-specific gotchas
 
 - MagicMirror frontend refresh alone may not pick up `node_helper.js` changes; backend restart may still be required.
-- This repo may be in a bulk migration state with many deletions and untracked canonical files; do not assume docs or `TODO.md` are current until you resync them.
+- This repo may be in a bulk migration state; do not assume docs or `TODO.md` are current until you resync them against the actual code and configs.
 - Deleted legacy docs, parsers, and image assets may still appear in archival files. Treat those references as stale history, not live architecture.

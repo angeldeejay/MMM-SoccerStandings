@@ -110,5 +110,6 @@
   "COL_GOALS_AGAINST": "BC",
   "COL_GOAL_DIFFERENCE": "DB",
   "COL_POINTS": "Pts",
-  "COL_FORM": "Forme"
+  "COL_FORM": "Forme",
+  "OFFLINE_MODE_CACHED": "Mode hors ligne - Affichage des données en cache"
 }

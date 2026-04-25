@@ -110,5 +110,6 @@
   "COL_GOALS_AGAINST": "G",
   "COL_GOAL_DIFFERENCE": "DG",
   "COL_POINTS": "Pts",
-  "COL_FORM": "Forma"
+  "COL_FORM": "Forma",
+  "OFFLINE_MODE_CACHED": "Modaliteti offline - Po shfaqen të dhënat e ruajtura"
 }

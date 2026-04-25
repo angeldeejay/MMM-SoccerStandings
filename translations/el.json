@@ -108,5 +108,6 @@
   "COL_GOALS_AGAINST": "ΓΚ",
   "COL_GOAL_DIFFERENCE": "ΔΓ",
   "COL_POINTS": "Β",
-  "COL_FORM": "Φόρμα"
+  "COL_FORM": "Φόρμα",
+  "OFFLINE_MODE_CACHED": "Λειτουργία εκτός σύνδεσης - Εμφάνιση αποθηκευμένων δεδομένων"
 }

@@ -110,5 +110,6 @@
   "COL_GOALS_AGAINST": "O",
   "COL_GOAL_DIFFERENCE": "R",
   "COL_POINTS": "B",
-  "COL_FORM": "Forma"
+  "COL_FORM": "Forma",
+  "OFFLINE_MODE_CACHED": "Offline režim - Zobrazenie uložených dát"
 }

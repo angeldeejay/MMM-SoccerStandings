@@ -108,5 +108,6 @@
   "COL_GOALS_AGAINST": "失点",
   "COL_GOAL_DIFFERENCE": "得失差",
   "COL_POINTS": "勝点",
-  "COL_FORM": "調子"
+  "COL_FORM": "調子",
+  "OFFLINE_MODE_CACHED": "オフラインモード - キャッシュデータを表示中"
 }

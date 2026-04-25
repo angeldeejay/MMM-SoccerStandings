@@ -30,6 +30,8 @@ $success-green-alt: #5cb85c;
 $warning-amber: #f0ad4e;
 $blue-accent: #4d94ff;
 $surface-dark: #3a3a3a;
+$form-token-size: 16px;
+$form-token-gap: 4px;
 
 $white-03: rgba(255, 255, 255, 0.03);
 $white-05: rgba(255, 255, 255, 0.05);
@@ -213,6 +215,22 @@ $theme-auto-dark-vars: (
   }
 }
 
+@mixin form-count-width-classes(
+  $max-count: 5,
+  $token-size: $form-token-size,
+  $gap: $form-token-gap
+) {
+  @for $count from 1 through $max-count {
+    $width: ($count * $token-size) + (($count - 1) * $gap);
+
+    &.form-count-#{$count} {
+      width: $width;
+      min-width: $width;
+      max-width: $width;
+    }
+  }
+}
+
 %league-btn-pass-through {
   pointer-events: none;
 }
@@ -224,6 +242,8 @@ $theme-auto-dark-vars: (
   --mtlt-font-size-table: clamp(13px, 1.2vw, 16px);
   --mtlt-font-size-small: clamp(11px, 1vw, 14px);
   --mtlt-font-size-xsmall: clamp(10px, 0.9vw, 13px);
+  --mtlt-font-size-row-primary: 14px;
+  --mtlt-font-size-team-name: var(--mtlt-font-size-row-primary);
 
   /* Animation timing */
   --mtlt-transition-speed: 0ms;

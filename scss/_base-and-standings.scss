@@ -8,7 +8,7 @@
 	position: relative;
 	width: 100%;
 	max-width: 100%; /* Added max-width to prevent table from expanding too much */
-	min-width: fit-content; /* Set a minimum width for all tables */
+	min-width: 360px; /* Keep the module readable before content-driven widths take over */
 	margin: 0 auto; /* Moved up 30px from the bottom */
 	contain: content; /* P-06: Improve browser reflow performance */
 	overflow: hidden; /* Prevent horizontal scrollbars at module level */
@@ -40,7 +40,7 @@
 	max-width: 60%; /* Prevent title from taking too much space */
 }
 
-/* Meta info styling (Last Updated and Refresh) */
+/* Meta info styling */
 .league-meta-info {
 	display: flex;
 	align-items: center;
@@ -49,10 +49,34 @@
 	flex-shrink: 0; /* Don't allow icons to shrink */
 }
 
-.last-updated {
-	font-size: var(--mtlt-font-size-xsmall);
-	font-weight: 400;
-	font-style: italic;
+.league-action-bar {
+	display: inline-flex;
+	align-items: stretch;
+	gap: 0;
+
+	.refresh-btn,
+	.clear-cache-btn,
+	.pin-btn {
+		margin: 0;
+		border-radius: 0;
+	}
+
+	.refresh-btn {
+		border-top-left-radius: 4px;
+		border-bottom-left-radius: 4px;
+	}
+
+	.pin-btn:last-child,
+	.clear-cache-btn:last-child {
+		border-top-right-radius: 4px;
+		border-bottom-right-radius: 4px;
+	}
+
+	.refresh-btn + .clear-cache-btn,
+	.refresh-btn + .pin-btn,
+	.clear-cache-btn + .pin-btn {
+		margin-left: -1px;
+	}
 }
 
 /* Shared base styling for all three header action buttons.
@@ -68,15 +92,20 @@
 	line-height: 1;
 	/* Visual style */
 	color: $white-75;
-	font-size: 14px;
-	padding: 3px 5px;
+	font-size: 12px;
+	padding: 0;
+	width: 1.5rem;
+	height: 1.5rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
 	border-radius: 4px;
 	background: $white-08;
 	border: 1px solid $white-18;
 	transition:
 		color 0.25s ease,
 		background 0.25s ease,
-		transform 0.25s ease,
 		border-color 0.25s ease;
 	cursor: pointer;
 }
@@ -91,8 +120,7 @@
 }
 
 /* Spin animation plays while a fetch is in progress */
-.refresh-btn i.fa-spin,
-.clear-cache-btn i.fa-spin {
+.refresh-btn i.fa-spin {
 	color: $white !important;
 }
 
@@ -103,14 +131,29 @@
 	border-color: rgba(255, 100, 100, 0.5) !important;
 }
 
-/* Animate the thumbtack rotation when toggling pin state */
-.pin-btn {
-	transform-origin: center;
-	transition:
-		color 0.25s ease,
-		background 0.25s ease,
-		transform 0.2s ease,
-		border-color 0.25s ease;
+.refresh-btn i,
+.clear-cache-btn i,
+.pin-btn i {
+	pointer-events: none;
+	line-height: 1;
+}
+
+.cycle-countdown {
+	width: 1.95rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+
+	&.is-paused {
+		animation: cycle-countdown-blink 1s steps(2, start) infinite;
+	}
+}
+
+@keyframes cycle-countdown-blink {
+	50% {
+		opacity: 0.35;
+	}
 }
 
 /* League tabs wrapper for horizontal scroll indicators */
@@ -188,7 +231,8 @@
 	background: transparent;
 	border: 1px solid $white-20;
 	color: $gray-ccc;
-	padding: 4px 8px;
+	min-height: 2.6em;
+	padding: 8px 8px;
 	font-size: var(--mtlt-font-size-small);
 	border-radius: 3px;
 	cursor: pointer;
@@ -252,6 +296,20 @@
 	}
 
 	/* League abbreviation text */
+	.league-logo {
+		width: 2.75em;
+		height: 2.75em;
+		max-width: 2.75em;
+		max-height: 2.75em;
+		display: block;
+		flex: 0 0 auto;
+		aspect-ratio: 1;
+		background-position: center;
+		background-repeat: no-repeat;
+		background-size: cover;
+		pointer-events: none;
+	}
+
 	.league-abbr {
 		font-size: var(--mtlt-font-size-xsmall);
 		font-weight: 600;
@@ -387,14 +445,37 @@
 	min-width: 120px;
 }
 
+.team-cell-content {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+	max-width: 100%;
+	width: 100%;
+}
+
 /* Team logo styling */
 .team-logo {
 	width: 1em;
 	height: 1em;
-	margin-right: 3px;
-	vertical-align: -0.125em;
-	object-fit: contain;
+	margin-right: 0;
+	aspect-ratio: 1 / 1;
+	display: block;
+	flex: 0 0 auto;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.team-name {
 	display: inline-block;
+	font-size: var(--mtlt-font-size-team-name);
+	min-width: 0;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	line-height: 1em;
 }
 
 /* Stats columns */
@@ -406,8 +487,11 @@
 .ga-cell,
 .gd-cell,
 .points-cell {
+	font-size: var(--mtlt-font-size-row-primary);
 	text-align: center;
-	width: 30px;
+	width: 34px;
+	padding-left: 0;
+	padding-right: 0;
 }
 
 .gd-cell.positive {
@@ -426,45 +510,46 @@
 }
 
 /* Form tokens */
+.form-header,
 .form-cell {
 	text-align: center;
-	padding-left: 10px !important;
-	padding-right: 10px !important;
-	width: 6.5rem;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	white-space: nowrap;
+
+	@include form-count-width-classes();
 }
 
 .form-tokens {
 	display: flex;
-	gap: 0px;
+	gap: $form-token-gap;
 	justify-content: center;
 	position: relative;
-	width: 100%;
-	min-width: fit-content;
+	width: max-content;
+	min-width: 0;
 	max-width: 100%;
 	align-items: center;
+	margin: 0 auto;
+
+	@include form-count-width-classes();
 
 	span {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 0.8rem;
-		min-width: 0.8rem;
-		max-width: 0.8rem;
-		height: 0.8rem;
-		min-height: 0.8rem;
-		max-height: 0.8rem;
+		width: $form-token-size;
+		min-width: $form-token-size;
+		max-width: $form-token-size;
+		height: $form-token-size;
+		min-height: $form-token-size;
+		max-height: $form-token-size;
 		box-sizing: content-box;
 		padding: 0;
 		font-weight: bolder;
-		line-height: 1;
+		line-height: $form-token-size;
 		border-radius: 50%;
-		line-height: 1rem;
-		font-size: 0.8rem;
-		margin-right: 0.2rem;
+		font-size: $form-token-size;
 		overflow: hidden;
-		&:last-child {
-			margin-right: 0px !important;
-		}
 	}
 }
 
@@ -567,7 +652,7 @@
 }
 
 .team-row.highlighted {
-	background-color: rgba(255, 215, 0, 0.15) !important;
+	background-color: rgba(255, 255, 255, 0.1) !important;
 	font-weight: bold;
 }
 

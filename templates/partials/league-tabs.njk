@@ -1,0 +1,22 @@
+{% if leagueTabs.length %}
+  <div class="league-buttons-container">
+    {% for tab in leagueTabs %}
+      <button
+        class="league-btn{% if tab.active %} active{% endif %}"
+        title="{{ tab.name }}"
+        aria-label="{{ tab.ariaLabel }}"
+        data-league="{{ tab.leagueCode }}"
+      >
+        {% if tab.logo %}
+          <span
+            class="league-logo"
+            aria-hidden="true"
+            style="background-image: url('{{ tab.logo }}');"
+          ></span>
+        {% else %}
+          <span class="league-abbr">{{ tab.abbreviation }}</span>
+        {% endif %}
+      </button>
+    {% endfor %}
+  </div>
+{% endif %}

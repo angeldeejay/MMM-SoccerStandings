@@ -108,5 +108,6 @@
   "COL_GOALS_AGAINST": "DT",
   "COL_GOAL_DIFFERENCE": "DS",
   "COL_POINTS": "Pnt",
-  "COL_FORM": "Vorm"
+  "COL_FORM": "Vorm",
+  "OFFLINE_MODE_CACHED": "Offlinemodus - Gecachede gegevens weergeven"
 }

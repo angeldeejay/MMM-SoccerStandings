@@ -110,5 +110,6 @@
   "COL_GOALS_AGAINST": "PM",
   "COL_GOAL_DIFFERENCE": "ME",
   "COL_POINTS": "Pst",
-  "COL_FORM": "Vire"
+  "COL_FORM": "Vire",
+  "OFFLINE_MODE_CACHED": "Offline-tila - Näytetään välimuistissa olevia tietoja"
 }

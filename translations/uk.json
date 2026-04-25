@@ -108,5 +108,6 @@
   "COL_GOALS_AGAINST": "ПГ",
   "COL_GOAL_DIFFERENCE": "РГ",
   "COL_POINTS": "О",
-  "COL_FORM": "Форма"
+  "COL_FORM": "Форма",
+  "OFFLINE_MODE_CACHED": "Офлайн режим - Відображення кешованих даних"
 }

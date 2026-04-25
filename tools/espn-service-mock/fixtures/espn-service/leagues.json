@@ -1,0 +1,534 @@
+{
+  "count": 3,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 65,
+      "slug": "col.1",
+      "name": "Colombian Primera A",
+      "abbreviation": "Colombian Primera A",
+      "logos": [
+        {
+          "alt": "",
+          "rel": [
+            "full",
+            "default"
+          ],
+          "href": "https://a.espncdn.com/i/leaguelogos/soccer/500/1543.png",
+          "width": 500,
+          "height": 500,
+          "lastUpdated": "2020-01-27T19:03Z"
+        },
+        {
+          "alt": "",
+          "rel": [
+            "full",
+            "dark"
+          ],
+          "href": "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/1543.png",
+          "width": 500,
+          "height": 500,
+          "lastUpdated": "2020-01-27T19:04Z"
+        }
+      ],
+      "primary_logo": "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/1543.png",
+      "phases": [
+        {
+          "id": 132,
+          "name": "Apertura",
+          "slug": "apertura",
+          "season_year": 2026,
+          "current": true,
+          "has_groups": false,
+          "espn_id": "1",
+          "start_date": "2026-01-01T05:00:00Z",
+          "end_date": "2026-05-27T03:59:00Z"
+        },
+        {
+          "id": 133,
+          "name": "Apertura - Semifinals",
+          "slug": "apertura---semifinals",
+          "season_year": 2026,
+          "current": false,
+          "has_groups": true,
+          "espn_id": "2",
+          "start_date": "2026-05-27T04:00:00Z",
+          "end_date": "2026-06-21T03:59:00Z"
+        },
+        {
+          "id": 134,
+          "name": "Finals",
+          "slug": "finals",
+          "season_year": 2026,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "3",
+          "start_date": "2026-06-21T04:00:00Z",
+          "end_date": "2026-07-01T03:59:00Z"
+        },
+        {
+          "id": 135,
+          "name": "Clausura",
+          "slug": "clausura",
+          "season_year": 2026,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "4",
+          "start_date": "2026-07-01T04:00:00Z",
+          "end_date": "2026-11-14T04:59:00Z"
+        },
+        {
+          "id": 136,
+          "name": "Clausura - Semifinals",
+          "slug": "clausura---semifinals",
+          "season_year": 2026,
+          "current": false,
+          "has_groups": true,
+          "espn_id": "5",
+          "start_date": "2026-11-14T05:00:00Z",
+          "end_date": "2027-01-01T04:59:00Z"
+        },
+        {
+          "id": 138,
+          "name": "Playoffs - Finals",
+          "slug": "playoffs---finals",
+          "season_year": 2026,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "6",
+          "start_date": "2026-11-14T05:00:00Z",
+          "end_date": "2027-01-01T04:59:00Z"
+        }
+      ],
+      "groups": [
+        {
+          "id": 88,
+          "phase_id": 133,
+          "phase_espn_id": "2",
+          "phase_slug": "apertura---semifinals",
+          "phase_name": "Apertura - Semifinals",
+          "espn_id": "1",
+          "name": "Group A",
+          "abbreviation": "Group A",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:15.239206Z",
+          "updated_at": "2026-04-30T03:35:55.540529Z"
+        },
+        {
+          "id": 89,
+          "phase_id": 133,
+          "phase_espn_id": "2",
+          "phase_slug": "apertura---semifinals",
+          "phase_name": "Apertura - Semifinals",
+          "espn_id": "2",
+          "name": "Group B",
+          "abbreviation": "Group B",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:15.341616Z",
+          "updated_at": "2026-04-30T03:35:55.627815Z"
+        },
+        {
+          "id": 90,
+          "phase_id": 136,
+          "phase_espn_id": "5",
+          "phase_slug": "clausura---semifinals",
+          "phase_name": "Clausura - Semifinals",
+          "espn_id": "1",
+          "name": "Semifinal - Group A",
+          "abbreviation": "Semifinal - Group A",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:15.561341Z",
+          "updated_at": "2026-04-30T03:35:55.818698Z"
+        },
+        {
+          "id": 91,
+          "phase_id": 136,
+          "phase_espn_id": "5",
+          "phase_slug": "clausura---semifinals",
+          "phase_name": "Clausura - Semifinals",
+          "espn_id": "2",
+          "name": "Semifinal - Group B",
+          "abbreviation": "Semifinal - Group B",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:15.659387Z",
+          "updated_at": "2026-04-30T03:35:55.908667Z"
+        }
+      ],
+      "created_at": "2026-04-30T01:53:13.353919Z",
+      "updated_at": "2026-04-30T03:35:55.189748Z"
+    },
+    {
+      "id": 257,
+      "slug": "uefa.champions",
+      "name": "UEFA Champions League",
+      "abbreviation": "UEFA Champions League",
+      "logos": [
+        {
+          "alt": "",
+          "rel": [
+            "full",
+            "default"
+          ],
+          "href": "https://a.espncdn.com/i/leaguelogos/soccer/500/2.png",
+          "width": 500,
+          "height": 500,
+          "lastUpdated": "2019-05-08T16:07Z"
+        },
+        {
+          "alt": "",
+          "rel": [
+            "full",
+            "dark"
+          ],
+          "href": "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/2.png",
+          "width": 500,
+          "height": 500,
+          "lastUpdated": "2019-05-08T16:07Z"
+        }
+      ],
+      "primary_logo": "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/2.png",
+      "phases": [
+        {
+          "id": 498,
+          "name": "League Phase",
+          "slug": "league-phase",
+          "season_year": 2025,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "1",
+          "start_date": "2025-08-28T04:00:00Z",
+          "end_date": "2026-01-30T04:59:00Z"
+        },
+        {
+          "id": 499,
+          "name": "Knockout Round Playoffs",
+          "slug": "knockout-round-playoffs",
+          "season_year": 2025,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "2",
+          "start_date": "2026-01-30T05:00:00Z",
+          "end_date": "2026-02-27T04:59:00Z"
+        },
+        {
+          "id": 500,
+          "name": "Round of 16",
+          "slug": "round-of-16",
+          "season_year": 2025,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "3",
+          "start_date": "2026-02-27T05:00:00Z",
+          "end_date": "2026-03-20T03:59:00Z"
+        },
+        {
+          "id": 501,
+          "name": "Quarterfinals",
+          "slug": "quarterfinals",
+          "season_year": 2025,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "4",
+          "start_date": "2026-03-20T04:00:00Z",
+          "end_date": "2026-04-17T03:59:00Z"
+        },
+        {
+          "id": 502,
+          "name": "Semifinals",
+          "slug": "semifinals",
+          "season_year": 2025,
+          "current": true,
+          "has_groups": false,
+          "espn_id": "5",
+          "start_date": "2026-04-17T04:00:00Z",
+          "end_date": "2026-05-08T03:59:00Z"
+        },
+        {
+          "id": 503,
+          "name": "Final",
+          "slug": "final",
+          "season_year": 2025,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "6",
+          "start_date": "2026-05-08T04:00:00Z",
+          "end_date": "2026-07-01T03:59:00Z"
+        }
+      ],
+      "groups": [],
+      "created_at": "2026-04-30T01:55:28.642553Z",
+      "updated_at": "2026-04-30T03:36:35.557085Z"
+    },
+    {
+      "id": 124,
+      "slug": "fifa.world",
+      "name": "FIFA World Cup",
+      "abbreviation": "FIFA World Cup",
+      "logos": [
+        {
+          "alt": "",
+          "rel": [
+            "full",
+            "default"
+          ],
+          "href": "https://a.espncdn.com/i/leaguelogos/soccer/500/4.png",
+          "width": 500,
+          "height": 500,
+          "lastUpdated": "2025-06-16T14:56Z"
+        },
+        {
+          "alt": "",
+          "rel": [
+            "full",
+            "dark"
+          ],
+          "href": "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png",
+          "width": 500,
+          "height": 500,
+          "lastUpdated": "2025-06-16T14:56Z"
+        }
+      ],
+      "primary_logo": "https://a.espncdn.com/i/leaguelogos/soccer/500-dark/4.png",
+      "phases": [
+        {
+          "id": 285,
+          "name": "Group Stage",
+          "slug": "group-stage",
+          "season_year": 2026,
+          "current": false,
+          "has_groups": true,
+          "espn_id": "1",
+          "start_date": "2026-06-11T04:00:00Z",
+          "end_date": "2026-06-28T03:59:00Z"
+        },
+        {
+          "id": 298,
+          "name": "Round of 32",
+          "slug": "round-of-32",
+          "season_year": 2026,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "2",
+          "start_date": "2026-06-28T04:00:00Z",
+          "end_date": "2026-07-04T03:59:00Z"
+        },
+        {
+          "id": 299,
+          "name": "Round of 16",
+          "slug": "round-of-16",
+          "season_year": 2026,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "3",
+          "start_date": "2026-07-04T04:00:00Z",
+          "end_date": "2026-07-09T03:59:00Z"
+        },
+        {
+          "id": 300,
+          "name": "Quarterfinals",
+          "slug": "quarterfinals",
+          "season_year": 2026,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "4",
+          "start_date": "2026-07-09T04:00:00Z",
+          "end_date": "2026-07-14T03:59:00Z"
+        },
+        {
+          "id": 301,
+          "name": "Semifinals",
+          "slug": "semifinals",
+          "season_year": 2026,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "5",
+          "start_date": "2026-07-14T04:00:00Z",
+          "end_date": "2026-07-19T03:59:00Z"
+        },
+        {
+          "id": 303,
+          "name": "3rd-Place Match",
+          "slug": "3rd-place-match",
+          "season_year": 2026,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "6",
+          "start_date": "2026-07-18T04:00:00Z",
+          "end_date": "2026-07-19T03:59:00Z"
+        },
+        {
+          "id": 304,
+          "name": "Final",
+          "slug": "final",
+          "season_year": 2026,
+          "current": false,
+          "has_groups": false,
+          "espn_id": "7",
+          "start_date": "2026-07-19T04:00:00Z",
+          "end_date": "2026-08-01T03:59:00Z"
+        }
+      ],
+      "groups": [
+        {
+          "id": 185,
+          "phase_id": 285,
+          "phase_espn_id": "1",
+          "phase_slug": "group-stage",
+          "phase_name": "Group Stage",
+          "espn_id": "1",
+          "name": "Group A",
+          "abbreviation": "Group A",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:34.488833Z",
+          "updated_at": "2026-04-30T03:36:17.546135Z"
+        },
+        {
+          "id": 206,
+          "phase_id": 285,
+          "phase_espn_id": "1",
+          "phase_slug": "group-stage",
+          "phase_name": "Group Stage",
+          "espn_id": "10",
+          "name": "Group J",
+          "abbreviation": "Group J",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:35.336142Z",
+          "updated_at": "2026-04-30T03:36:19.581844Z"
+        },
+        {
+          "id": 208,
+          "phase_id": 285,
+          "phase_espn_id": "1",
+          "phase_slug": "group-stage",
+          "phase_name": "Group Stage",
+          "espn_id": "11",
+          "name": "Group K",
+          "abbreviation": "Group K",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:35.431739Z",
+          "updated_at": "2026-04-30T03:36:19.667769Z"
+        },
+        {
+          "id": 210,
+          "phase_id": 285,
+          "phase_espn_id": "1",
+          "phase_slug": "group-stage",
+          "phase_name": "Group Stage",
+          "espn_id": "12",
+          "name": "Group L",
+          "abbreviation": "Group L",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:35.529291Z",
+          "updated_at": "2026-04-30T03:36:19.753577Z"
+        },
+        {
+          "id": 189,
+          "phase_id": 285,
+          "phase_espn_id": "1",
+          "phase_slug": "group-stage",
+          "phase_name": "Group Stage",
+          "espn_id": "2",
+          "name": "Group B",
+          "abbreviation": "Group B",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:34.581810Z",
+          "updated_at": "2026-04-30T03:36:17.632213Z"
+        },
+        {
+          "id": 193,
+          "phase_id": 285,
+          "phase_espn_id": "1",
+          "phase_slug": "group-stage",
+          "phase_name": "Group Stage",
+          "espn_id": "3",
+          "name": "Group C",
+          "abbreviation": "Group C",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:34.674087Z",
+          "updated_at": "2026-04-30T03:36:17.720046Z"
+        },
+        {
+          "id": 196,
+          "phase_id": 285,
+          "phase_espn_id": "1",
+          "phase_slug": "group-stage",
+          "phase_name": "Group Stage",
+          "espn_id": "4",
+          "name": "Group D",
+          "abbreviation": "Group D",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:34.767456Z",
+          "updated_at": "2026-04-30T03:36:17.807578Z"
+        },
+        {
+          "id": 198,
+          "phase_id": 285,
+          "phase_espn_id": "1",
+          "phase_slug": "group-stage",
+          "phase_name": "Group Stage",
+          "espn_id": "5",
+          "name": "Group E",
+          "abbreviation": "Group E",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:34.861459Z",
+          "updated_at": "2026-04-30T03:36:19.151331Z"
+        },
+        {
+          "id": 200,
+          "phase_id": 285,
+          "phase_espn_id": "1",
+          "phase_slug": "group-stage",
+          "phase_name": "Group Stage",
+          "espn_id": "6",
+          "name": "Group F",
+          "abbreviation": "Group F",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:34.955119Z",
+          "updated_at": "2026-04-30T03:36:19.237132Z"
+        },
+        {
+          "id": 202,
+          "phase_id": 285,
+          "phase_espn_id": "1",
+          "phase_slug": "group-stage",
+          "phase_name": "Group Stage",
+          "espn_id": "7",
+          "name": "Group G",
+          "abbreviation": "Group G",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:35.051332Z",
+          "updated_at": "2026-04-30T03:36:19.322716Z"
+        },
+        {
+          "id": 203,
+          "phase_id": 285,
+          "phase_espn_id": "1",
+          "phase_slug": "group-stage",
+          "phase_name": "Group Stage",
+          "espn_id": "8",
+          "name": "Group H",
+          "abbreviation": "Group H",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:35.139888Z",
+          "updated_at": "2026-04-30T03:36:19.409415Z"
+        },
+        {
+          "id": 205,
+          "phase_id": 285,
+          "phase_espn_id": "1",
+          "phase_slug": "group-stage",
+          "phase_name": "Group Stage",
+          "espn_id": "9",
+          "name": "Group I",
+          "abbreviation": "Group I",
+          "season_year": 2026,
+          "created_at": "2026-04-30T01:53:35.238270Z",
+          "updated_at": "2026-04-30T03:36:19.496209Z"
+        }
+      ],
+      "created_at": "2026-04-30T01:53:31.702527Z",
+      "updated_at": "2026-04-30T03:36:16.517949Z"
+    }
+  ]
+}

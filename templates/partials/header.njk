@@ -1,0 +1,22 @@
+<div class="league-header-container">
+  <div class="league-title">{{ header.title }}</div>
+  <div class="league-meta-info">
+    {% for badge in header.badges %}
+      <span
+        class="{{ badge.className }}"
+        {% if badge.ariaLabel %}aria-label="{{ badge.ariaLabel }}"{% endif %}
+        {% if badge.title %}title="{{ badge.title }}"{% endif %}
+        {% if badge.severity %}data-severity="{{ badge.severity }}"{% endif %}
+        {% if badge.style %}style="{{ badge.style }}"{% endif %}
+      >
+        <i class="{{ badge.iconClass }}" aria-hidden="true"></i>{{ badge.text }}
+      </span>
+    {% endfor %}
+
+    {% if header.countdown %}
+      <span class="cycle-countdown xsmall">{{ header.countdown }}</span>
+    {% endif %}
+
+    {% include "templates/partials/action-bar.njk" %}
+  </div>
+</div>

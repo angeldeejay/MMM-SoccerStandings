@@ -108,5 +108,6 @@
   "COL_GOALS_AGAINST": "I",
   "COL_GOAL_DIFFERENCE": "DC",
   "COL_POINTS": "P",
-  "COL_FORM": "Cruth"
+  "COL_FORM": "Cruth",
+  "OFFLINE_MODE_CACHED": "Modh far-loidhne - A' sealltainn dàta tasgaidh"
 }

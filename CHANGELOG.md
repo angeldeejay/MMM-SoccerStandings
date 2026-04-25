@@ -7,6 +7,7 @@
 **Problem:** Even after narrowing the MVP to UCL, `col.1`, and WC2026, the frontend still repeated the same competition-routing decisions in several places: default subtab selection, UEFA stage-aware landing, tournament view selection, and semantic World Cup checks. That repetition kept the runtime more monolithic than necessary.
 
 **Fix:**
+
 - Added shared helpers for competition-subtab routing, tournament-view detection, default subtab selection, and UEFA stage-aware subtab selection.
 - Replaced repeated semantic `WORLD_CUP_2026` checks with helper-based checks where the code was really asking about competition type rather than a config key or ordering rule.
 - Kept the cleanup inside MVP scope only, without widening coverage or changing the blocked UEFA expansion story.
@@ -20,6 +21,7 @@
 **Problem:** Even after shifting canonical gating to provider slugs, the frontend still accepted shorthand league aliases like `UCL`, `SPFL`, and `EPL` through runtime normalization and league metadata helpers. That kept a legacy compatibility layer alive in the exact area the rebuild is trying to simplify.
 
 **Fix:**
+
 - Removed live shorthand alias normalization from `normalizeLeagueCode()` so selected leagues now flow through canonical identifiers or provider slugs directly.
 - Removed redundant alias-based UEFA overrides and abbreviation keys from league metadata helpers.
 - Kept the runtime focused on canonical identifiers for the MVP path instead of silently translating older shorthand values.
@@ -33,6 +35,7 @@
 **Problem:** The top-level docs still described a much broader product than the one currently being rebuilt. README and configuration examples still centered leagues and examples outside the agreed MVP, which made the current implementation direction look wider than it really is.
 
 **Fix:**
+
 - Reframed README and the configuration guide around the active MVP scope: `UEFA_CHAMPIONS_LEAGUE`, `COLOMBIA_PRIMERA`, and `WORLD_CUP_2026`.
 - Replaced out-of-scope examples with MVP-first examples, including UCL as the minimum config and a three-competition MVP rotation example.
 - Clarified that broader league/provider coverage still exists only as legacy coverage rather than the primary rebuilt product surface.
@@ -46,6 +49,7 @@
 **Problem:** The rebuild goal was narrowed to an MVP centered on `COLOMBIA_PRIMERA`, `UEFA_CHAMPIONS_LEAGUE`, and `WORLD_CUP_2026`, but the module still defaulted and fell back to Scotland-era startup behavior. The canonical flat slice also still advertised Scotland and England as active rebuild targets.
 
 **Fix:**
+
 - Changed the default `selectedLeagues` startup from `SCOTLAND_PREMIERSHIP` to `UEFA_CHAMPIONS_LEAGUE`.
 - Changed empty-league fallbacks so the module now lands on UCL instead of Scotland-era defaults.
 - Narrowed the active canonical flat slice back to the MVP scope by keeping `COLOMBIA_PRIMERA` as the only flat-league canonical slice and leaving UCL as the hybrid table overlay path.
@@ -61,6 +65,7 @@
 **Problem:** UCL still depended fully on the legacy BBC path, even though the local `espn-soccer-api` service already exposes usable league-phase standings for `uefa.champions`. Moving all of UEFA at once would be too risky because knockout stage metadata still lives in the BBC parser shape.
 
 **Fix:**
+
 - Enabled a narrow canonical overlay for `UEFA_CHAMPIONS_LEAGUE` standings via `GET_COMPETITION_PAYLOAD`.
 - Kept the legacy `GET_LEAGUE_DATA` request for UCL so knockout tabs and BBC-derived stage buckets still work.
 - Merged canonical table rows onto the legacy UCL tournament data in `getRenderLeagueData()` so the `Table` tab can move toward the API-first path without breaking knockout surfaces.
@@ -75,6 +80,7 @@
 **Problem:** Two residual frontend defaults were producing misleading UI. Footer source text could still fall back to `BBC Sport` even when the current view had no explicit source, and long cycle intervals could render a noisy multi-thousand-second countdown in the header.
 
 **Fix:**
+
 - Replaced the hardcoded footer fallback with the existing translated `SOURCE_UNAVAILABLE` label.
 - Suppressed the header countdown when the cycle interval is very large (`>= 1 hour`), keeping the header quiet instead of showing an unhelpful raw seconds counter.
 
@@ -87,6 +93,7 @@
 **Problem:** The new API-first slices were already active, but the production backend/runtime path still used raw `console.*` calls across canonical fetches, the live `espn_service` flow, shared request plumbing, cache plumbing, and active parsers. That broke the repo's logging rules and made the rebuilt production path inconsistent with the rest of the module.
 
 **Fix:**
+
 - Added MagicMirror logger usage across active backend/runtime files.
 - Replaced raw debug/error logging in canonical payload fetches, ESPN service fetches, shared request plumbing, cache plumbing, and active parsers with `Log.info()` / `Log.warn()` / `Log.error()`.
 - Switched the currently used World Cup ESPN helper, legacy fetch orchestration in `node_helper.js`, and parser/base-parser logging to the same convention.
@@ -101,6 +108,7 @@
 **Problem:** `WORLD_CUP_2026` already had grouped provider data, but the rebuild path still stopped at flat competitions. That meant World Cup group tabs and grouped tables still depended on legacy payload shapes and direct `leagueData` assumptions instead of the canonical `COMPETITION_PAYLOAD` flow.
 
 **Fix:**
+
 - Extended the canonical competition backend so `GET_COMPETITION_PAYLOAD` now accepts grouped `WORLD_CUP_2026` requests in addition to flat leagues.
 - Added grouped payload assembly in `backend/slice1-flat-standings.js`, reusing the existing ESPN service World Cup grouping logic to emit canonical group standings plus group fixtures/knockout buckets.
 - Updated `node_helper.js` so grouped canonical payloads are emitted without forcing the flat legacy bridge.
@@ -116,6 +124,7 @@
 **Problem:** Even after windowing, flat leagues still mixed standings and fixtures in one surface. That wasted vertical space, made long domestic leagues feel cramped, and did not take advantage of `highlightTeams` to prioritize the fixtures the user actually cares about.
 
 **Fix:**
+
 - Added flat-league `Table` / `Fixtures` subtabs for the canonical flat slice.
 - Made flat-league subtab cycling follow the existing cycle options instead of forcing a fixed combined layout.
 - Kept `Table` focused on standings only and moved results/upcoming into the `Fixtures` tab.
@@ -132,6 +141,7 @@
 **Problem:** The first flat-league canonical fixtures render correctly separated results and upcoming matches, but it still passed every fixture in the season into those sections. In practice that made domestic leagues like Colombia Primera show an endless fixtures list instead of one useful nearby window.
 
 **Fix:**
+
 - Added flat-league fixture windowing in `MMM-SoccerStandings.js`.
 - Recent results now collapse to the most recent nearby matchday block instead of the full historical season list.
 - Upcoming fixtures now collapse to the nearest upcoming block instead of all future fixtures.
@@ -146,6 +156,7 @@
 **Problem:** After slice 1, the module could render canonical flat standings, but fixtures for flat leagues still depended on legacy payload shapes and the old `espn_service` path still carried a hardcoded service base URL. That left two gaps: the next canonical slice was not landed yet, and the legacy service path could still fail by trying to reach an outdated host.
 
 **Fix:**
+
 - Extended `backend/slice1-flat-standings.js` so canonical payload assembly can also include fixtures.
 - Normalized fixture mapping so non-started matches keep `score.home` / `score.away` as `null`, preventing fake `0-0` displays.
 - Extended the temporary canonical-to-legacy bridge so canonical fixture payloads can still feed existing renderer expectations during the migration.
@@ -164,6 +175,7 @@
 **Problem:** The rebuild had contracts, but startup and rendering still ran fully through scraper-era request and payload flows. Even leagues already available in the local `espn-soccer-api` service still entered the module as legacy provider-chain traffic, so there was no real production slice of the new architecture yet.
 
 **Fix:**
+
 - Added `backend/slice1-flat-standings.js` with the first canonical helpers for:
   - supported flat-table competitions
   - provider base URL resolution from config
@@ -183,6 +195,7 @@
 **Problem:** The rebuild already had canonical schema, provider, frontend-state, backend-gateway, and render contracts, but it still lacked a concrete end-to-end landing order and a safe deletion plan for scraper-era architecture. Without that, implementation risk stayed high: too easy to do a partial rewrite or to keep dead legacy branches around forever.
 
 **Fix:**
+
 - Added `contracts/vertical-slices.contract.yaml` to define the delivery order:
   - slice 1: flat standings
   - slice 2: flat fixtures
@@ -201,6 +214,7 @@
 shell — no standings data. The HTML scraper in `ESPNParser.js` was effectively broken for all leagues.
 
 **Fix:**
+
 - `constants/league-urls.js` — All 30 ESPN URLs changed from `www.espn.com/soccer/standings/_/league/{id}`
   to `https://site.api.espn.com/apis/v2/sports/soccer/{id}/standings` (public, no auth required).
 - `parsers/ESPNParser.js` — Rewritten to parse the ESPN API JSON response:

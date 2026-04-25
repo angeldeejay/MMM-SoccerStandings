@@ -110,5 +110,6 @@
   "COL_GOALS_AGAINST": "GT",
   "COL_GOAL_DIFFERENCE": "TD",
   "COL_POINTS": "Pkt",
-  "COL_FORM": "Form"
+  "COL_FORM": "Form",
+  "OFFLINE_MODE_CACHED": "Offline-Modus - Zeige gespeicherte Daten"
 }

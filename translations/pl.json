@@ -108,5 +108,6 @@
   "COL_GOALS_AGAINST": "G-",
   "COL_GOAL_DIFFERENCE": "RB",
   "COL_POINTS": "Pkt",
-  "COL_FORM": "Forma"
+  "COL_FORM": "Forma",
+  "OFFLINE_MODE_CACHED": "Tryb offline - Wyświetlanie danych z pamięci podręcznej"
 }

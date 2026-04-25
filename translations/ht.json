@@ -108,5 +108,6 @@
   "COL_GOALS_AGAINST": "BC",
   "COL_GOAL_DIFFERENCE": "DG",
   "COL_POINTS": "Pts",
-  "COL_FORM": "Fòm"
+  "COL_FORM": "Fòm",
+  "OFFLINE_MODE_CACHED": "Mòd Offlàyn - Montre Done Kachte"
 }

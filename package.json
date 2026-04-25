@@ -1,59 +1,76 @@
 {
-	"name": "MMM-SoccerStandings",
-	"version": "3.0.0",
-	"description": "A MagicMirror² module for API-first football standings and tournament views",
-	"main": "MMM-SoccerStandings.js",
-	"keywords": [
-		"MagicMirror",
-		"module",
-		"SPFL",
-		"Scottish Premier League",
-		"football",
-		"soccer",
-		"league table",
-		"standings",
-		"sports",
-		"Celtic"
-	],
-	"author": {
-		"name": "gitgitaway",
-		"email": " "
-	},
-	"license": "MIT",
-	"homepage": "https://github.com/angeldeejay/MMM-SoccerStandings",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/angeldeejay/MMM-SoccerStandings.git"
-	},
-	"bugs": {
-		"url": "https://github.com/angeldeejay/MMM-SoccerStandings/issues"
-	},
-	"engines": {
-		"node": ">=14.0.0"
-	},
-	"dependencies": {
-		"node-fetch": "^3.3.2"
-	},
-	"devDependencies": {
-		"eslint": "^10.2.1",
-		"mocha": "^11.7.5",
-		"prettier": "^3.8.3",
-		"sass": "^1.99.0"
-	},
-	"scripts": {
-		"test": "npm run test:security",
-		"test:security": "mocha tests/security.test.js --timeout 10000",
-		"lint": "eslint *.js constants/*.js providers/*.js backend/*.js backend/providers/*.js",
-		"format": "prettier --write *.js constants/*.js providers/*.js backend/*.js backend/providers/*.js tests/*.js *.json *.md",
-		"audit": "npm audit --audit-level=moderate",
-		"audit:fix": "npm audit fix",
-		"postinstall": "sass --style=compressed scss/entrypoint.scss MMM-SoccerStandings.css",
-		"scss:build": "sass --style=compressed scss/entrypoint.scss MMM-SoccerStandings.css",
-		"scss:watch": "sass --watch scss/entrypoint.scss:MMM-SoccerStandings.css"
-	},
-	"magicmirror": {
-		"moduleName": "MMM-SoccerStandings",
-		"moduleVersion": "1.0.0",
-		"requiredVersion": "2.1.0"
-	}
+  "name": "MMM-SoccerStandings",
+  "version": "3.0.1",
+  "description": "A MagicMirror² module for API-first football standings and tournament views",
+  "main": "MMM-SoccerStandings.js",
+  "keywords": [
+    "MagicMirror",
+    "module",
+    "SPFL",
+    "Scottish Premier League",
+    "football",
+    "soccer",
+    "league table",
+    "standings",
+    "sports",
+    "Celtic"
+  ],
+  "author": {
+    "name": "Andrés Vanegas Jiménez",
+    "url": "https://github.com/angeldeejay"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/angeldeejay/MMM-SoccerStandings",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angeldeejay/MMM-SoccerStandings.git"
+  },
+  "bugs": {
+    "url": "https://github.com/angeldeejay/MMM-SoccerStandings/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "overrides": {
+    "serialize-javascript": "^7.0.5"
+  },
+  "devDependencies": {
+    "@angeldeejay/magicmirror-module-sandbox": "^1.0.1",
+    "@fortawesome/fontawesome-free": "^7.2.0",
+    "chokidar": "^5.0.0",
+    "eslint": "^10.2.1",
+    "express": "^5.2.1",
+    "mocha": "^11.3.0",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.6.1",
+    "prettier": "^3.8.3",
+    "sass": "^1.99.0",
+    "socket.io": "^4.8.3"
+  },
+  "sandbox": {
+    "startup": [
+      "mock-api:start"
+    ]
+  },
+  "scripts": {
+    "test": "mocha \"tests/*.test.js\" --timeout 10000",
+    "lint": "eslint *.js constants/*.js providers/*.js backend/*.js backend/providers/*.js tests/*.js tools/espn-service-mock/server/*.js",
+    "format": "prettier --write *.js constants/*.js providers/*.js backend/*.js backend/providers/*.js tests/*.js tools/espn-service-mock/server/*.js *.json *.md",
+    "audit": "npm audit --audit-level=moderate",
+    "audit:fix": "npm audit fix",
+    "postinstall": "sass --style=compressed scss/entrypoint.scss MMM-SoccerStandings.css",
+    "scss:build": "sass --style=compressed scss/entrypoint.scss MMM-SoccerStandings.css",
+    "scss:watch": "sass --watch scss/entrypoint.scss:MMM-SoccerStandings.css",
+    "mock-api:start": "node tools/espn-service-mock/server/index.js",
+    "sandbox:start": "magicmirror-module-sandbox",
+    "sandbox:watch": "magicmirror-module-sandbox --watch"
+  },
+  "magicmirror": {
+    "moduleName": "MMM-SoccerStandings",
+    "moduleVersion": "1.0.0",
+    "requiredVersion": "2.1.0"
+  }
 }

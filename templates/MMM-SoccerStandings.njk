@@ -1,0 +1,12 @@
+<div class="{{ wrapperClassName }}" id="mtlt-{{ identifier }}" data-league="{{ currentLeague }}">
+  {% if offlineIndicator %}
+    <div class="offline-indicator" role="status" aria-live="polite">
+      <i class="{{ offlineIndicator.iconClass }}" aria-hidden="true"></i>{{ offlineIndicator.text }}
+    </div>
+  {% endif %}
+
+  {% include "templates/partials/header.njk" %}
+  {% include "templates/partials/league-tabs.njk" %}
+  {% include "templates/partials/subtabs.njk" %}
+  {% include "templates/partials/content-shell.njk" %}
+</div>

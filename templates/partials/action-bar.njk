@@ -1,0 +1,13 @@
+<div class="league-action-bar">
+  {% for button in header.actionButtons %}
+    <button
+      class="{{ button.className }}"
+      data-action="{{ button.action }}"
+      {% if button.ariaPressed %}aria-pressed="{{ button.ariaPressed }}"{% endif %}
+      title="{{ button.title }}"
+      aria-label="{{ button.ariaLabel }}"
+    >
+      <i class="{{ button.iconClass }}" aria-hidden="true"></i>
+    </button>
+  {% endfor %}
+</div>
