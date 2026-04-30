@@ -10,17 +10,28 @@ const {
 } = require("../backend/slice1-flat-standings.js");
 
 describe("Canonical payload building", () => {
-  it("resolves the ESPN service config from top-level request fields", () => {
+  it("resolves the ESPN service config from providerSettings", () => {
     assert.deepStrictEqual(
       resolveEspnSoccerApiConfig({
-        espnSoccerApiBaseUrl: "http://127.0.0.1:3200/",
-        espnSoccerApiTimeout: 4321
+        providerSettings: {
+          espn_service: {
+            baseUrl: "http://127.0.0.1:3200/",
+            timeoutMs: 4321
+          }
+        }
       }),
       {
         baseUrl: "http://127.0.0.1:3200",
         timeoutMs: 4321
       }
     );
+  });
+
+  it("returns empty baseUrl when providerSettings.espn_service.baseUrl is absent", () => {
+    assert.deepStrictEqual(resolveEspnSoccerApiConfig({}), {
+      baseUrl: "",
+      timeoutMs: 8000
+    });
   });
 
   it("limits canonical support to the narrowed active competitions", () => {

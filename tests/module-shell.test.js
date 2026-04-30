@@ -313,11 +313,11 @@ describe("Module shell helpers", () => {
       live: true,
       homeScore: 2,
       awayScore: 1,
-      aggregateScore: "3-2"
+      aggregateScore: "3 - 2"
     });
     assert.strictEqual(aggregateDisplay.isLive, true);
     assert.strictEqual(aggregateDisplay.mainText, "2 - 1");
-    assert.strictEqual(aggregateDisplay.aggregateText, "(agg 3-2)");
+    assert.strictEqual(aggregateDisplay.aggregateText, "3 - 2");
   });
 
   it("recognizes canonical fixture statuses from the endpoint contract", () => {

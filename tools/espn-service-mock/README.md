@@ -47,7 +47,9 @@ npm run mock-api:start
 2. point root sandbox module config at it:
 
 ```javascript
-espnSoccerApiBaseUrl: "http://127.0.0.1:3200";
+providerSettings: {
+  espn_service: { baseUrl: "http://127.0.0.1:3200" }
+}
 ```
 
 Edit:

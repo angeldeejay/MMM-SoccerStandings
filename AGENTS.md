@@ -16,7 +16,7 @@ npm run mock-api:start
 npm run sandbox:watch
 ```
 
-This repo is a MagicMirror module, not a standalone web app. Runtime verification normally happens either through MagicMirror itself or through the single-module sandbox with root `config\module.config.json`, using `provider: "espn_service"` and a reachable `espnSoccerApiBaseUrl` (with `providerSettings.espn_service.baseUrl` only as compatibility fallback).
+This repo is a MagicMirror module, not a standalone web app. Runtime verification normally happens either through MagicMirror itself or through the single-module sandbox with root `config\module.config.json`, using `provider: "espn_service"` and a reachable `providerSettings.espn_service.baseUrl`.
 
 ### Tests
 

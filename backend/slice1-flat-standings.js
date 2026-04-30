@@ -83,32 +83,17 @@ function resolveEspnSoccerApiConfig(config) {
     (config &&
       config.providerSettings &&
       config.providerSettings.espn_service) ||
-    (config && config.providers && config.providers.espn_service) ||
     {};
-  const directBaseUrl =
-    config &&
-    typeof config.espnSoccerApiBaseUrl === "string" &&
-    config.espnSoccerApiBaseUrl.trim()
-      ? config.espnSoccerApiBaseUrl.trim()
+  const baseUrl =
+    typeof providerSettings.baseUrl === "string" &&
+    providerSettings.baseUrl.trim()
+      ? providerSettings.baseUrl.trim().replace(/\/+$/, "")
       : "";
-  const directTimeout =
-    config && Number.isFinite(config.espnSoccerApiTimeout)
-      ? Number(config.espnSoccerApiTimeout)
-      : null;
-
-  const baseUrl = directBaseUrl
-    ? directBaseUrl.replace(/\/+$/, "")
-    : typeof providerSettings.baseUrl === "string" &&
-        providerSettings.baseUrl.trim()
-      ? providerSettings.baseUrl.replace(/\/+$/, "")
-      : "http://localhost:28000";
   const timeoutMs =
-    Number.isFinite(directTimeout) && directTimeout > 0
-      ? directTimeout
-      : Number.isFinite(providerSettings.timeoutMs) &&
-          providerSettings.timeoutMs > 0
-        ? providerSettings.timeoutMs
-        : 8000;
+    Number.isFinite(providerSettings.timeoutMs) &&
+    providerSettings.timeoutMs > 0
+      ? providerSettings.timeoutMs
+      : 8000;
 
   return { baseUrl, timeoutMs };
 }
@@ -376,7 +361,15 @@ function buildCanonicalFixtures(fixturesResults, updatedAt, leagueType = null) {
         },
         legValue:
           event.leg_value != null ? Number(event.leg_value) || null : null,
-        seriesCompleted: event.series_completed ?? null
+        seriesCompleted: event.series_completed ?? null,
+        aggregateScore:
+          event.home_aggregate_score != null &&
+          event.away_aggregate_score != null
+            ? {
+                home: Number(event.home_aggregate_score),
+                away: Number(event.away_aggregate_score)
+              }
+            : null
       };
     })
     .filter(Boolean)

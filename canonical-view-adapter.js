@@ -75,7 +75,17 @@
           ? fixture.group
           : fixture && fixture.stage === "GS" && fixture.group
             ? fixture.group
-            : null
+            : null,
+      aggregateScore:
+        fixture &&
+        (fixture.legValue === 2 || fixture.seriesCompleted) &&
+        fixture.aggregateScore &&
+        fixture.aggregateScore.home != null &&
+        fixture.aggregateScore.away != null
+          ? `${fixture.aggregateScore.home} - ${fixture.aggregateScore.away}`
+          : null,
+      isSecondLeg: !!(fixture && fixture.legValue === 2),
+      seriesCompleted: !!(fixture && fixture.seriesCompleted)
     };
   }
 

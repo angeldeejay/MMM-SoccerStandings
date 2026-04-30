@@ -81,12 +81,10 @@ Module.register("MMM-SoccerStandings", {
     // Theme overrides
     darkMode: null, // null=auto, true=force dark, false=force light
     provider: "espn_service", // Default product provider for the active canonical runtime path
-    espnSoccerApiBaseUrl: "http://localhost:28000", // Preferred ESPN service base URL for canonical requests
-    espnSoccerApiTimeout: 8000, // Preferred ESPN service timeout for canonical requests
     providerSettings: {
       espn_service: {
-        baseUrl: "http://localhost:28000", // Compatibility fallback; prefer espnSoccerApiBaseUrl
-        timeoutMs: 8000 // Compatibility fallback; prefer espnSoccerApiTimeout
+        baseUrl: "http://localhost:28000",
+        timeoutMs: 8000
       }
     },
 
@@ -804,8 +802,12 @@ Module.register("MMM-SoccerStandings", {
             leagueType: leagueCode,
             slug,
             provider: this.config.provider,
-            espnSoccerApiBaseUrl: espnApiConfig.baseUrl,
-            espnSoccerApiTimeout: espnApiConfig.timeoutMs,
+            providerSettings: {
+              espn_service: {
+                baseUrl: espnApiConfig.baseUrl,
+                timeoutMs: espnApiConfig.timeoutMs
+              }
+            },
             surfaces: {
               standings: true,
               fixtures: true
@@ -829,9 +831,7 @@ Module.register("MMM-SoccerStandings", {
 
   /**
    * Resolve the API endpoint configuration sent to the backend helper.
-   * Top-level options are the preferred public config surface; nested
-   * providerSettings remain as compatibility fallback while old configs fade
-   * out.
+   * Reads exclusively from providerSettings[provider].
    *
    * @returns {{ baseUrl: string, timeoutMs: number }}
    */
@@ -843,26 +843,17 @@ Module.register("MMM-SoccerStandings", {
         ? this.config.providerSettings.espn_service
         : {};
     const baseUrl =
-      typeof this.config.espnSoccerApiBaseUrl === "string" &&
-      this.config.espnSoccerApiBaseUrl.trim()
-        ? this.config.espnSoccerApiBaseUrl.trim()
-        : typeof providerSettings.baseUrl === "string" &&
-            providerSettings.baseUrl.trim()
-          ? providerSettings.baseUrl.trim()
-          : "http://localhost:28000";
+      typeof providerSettings.baseUrl === "string" &&
+      providerSettings.baseUrl.trim()
+        ? providerSettings.baseUrl.trim().replace(/\/+$/, "")
+        : "";
     const timeoutMs =
-      Number.isFinite(this.config.espnSoccerApiTimeout) &&
-      this.config.espnSoccerApiTimeout > 0
-        ? Number(this.config.espnSoccerApiTimeout)
-        : Number.isFinite(providerSettings.timeoutMs) &&
-            providerSettings.timeoutMs > 0
-          ? Number(providerSettings.timeoutMs)
-          : 8000;
+      Number.isFinite(providerSettings.timeoutMs) &&
+      providerSettings.timeoutMs > 0
+        ? Number(providerSettings.timeoutMs)
+        : 8000;
 
-    return {
-      baseUrl: baseUrl.replace(/\/+$/, ""),
-      timeoutMs
-    };
+    return { baseUrl, timeoutMs };
   },
 
   /**
@@ -3877,7 +3868,7 @@ Module.register("MMM-SoccerStandings", {
 
   getFixtureAggregateLabel(fix) {
     if (fix.aggregateScore) {
-      return `(agg ${fix.aggregateScore})`;
+      return fix.aggregateScore;
     }
 
     if (
@@ -3886,7 +3877,7 @@ Module.register("MMM-SoccerStandings", {
       fix.firstLegFixture.homeScore !== undefined &&
       fix.firstLegFixture.awayScore !== undefined
     ) {
-      return `(agg ${fix.firstLegFixture.awayScore}-${fix.firstLegFixture.homeScore})`;
+      return `${fix.firstLegFixture.awayScore} - ${fix.firstLegFixture.homeScore}`;
     }
 
     return null;

@@ -98,8 +98,9 @@ describe("Canonical provider integration", () => {
       slug: "col.1",
       wantsFixtures: true,
       request: {
-        espnSoccerApiBaseUrl: "http://localhost:28000",
-        espnSoccerApiTimeout: 8000
+        providerSettings: {
+          espn_service: { baseUrl: "http://localhost:28000", timeoutMs: 8000 }
+        }
       }
     });
 
@@ -261,8 +262,9 @@ describe("Canonical provider integration", () => {
       slug: "fifa.world",
       wantsFixtures: true,
       request: {
-        espnSoccerApiBaseUrl: "http://localhost:28000",
-        espnSoccerApiTimeout: 8000
+        providerSettings: {
+          espn_service: { baseUrl: "http://localhost:28000", timeoutMs: 8000 }
+        }
       }
     });
 
