@@ -2724,32 +2724,42 @@ Module.register("MMM-SoccerStandings", {
     }
 
     this._applyThemeOverrides();
-    const wrapper = this._super();
+    const _wrapper = this._super();
 
-    this._lastRenderedWrapper = wrapper;
-    this._countdownEl = wrapper.querySelector(".cycle-countdown");
-    this.bindChromeInteractions(wrapper);
+    const postRender = (wrapper) => {
+      this._lastRenderedWrapper = wrapper;
+      this._countdownEl = wrapper.querySelector(".cycle-countdown");
+      this.bindChromeInteractions(wrapper);
 
-    const leagueTabsContainer = wrapper.querySelector(
-      ".league-buttons-container"
-    );
-    if (leagueTabsContainer) {
-      this._addHorizontalScrollIndicators(leagueTabsContainer);
+      const leagueTabsContainer = wrapper.querySelector(
+        ".league-buttons-container"
+      );
+      if (leagueTabsContainer) {
+        this._addHorizontalScrollIndicators(leagueTabsContainer);
+      }
+
+      const subTabsContainer = wrapper.querySelector(".wc-subtabs-container");
+      if (subTabsContainer) {
+        this._addHorizontalScrollIndicators(subTabsContainer);
+      }
+
+      this.renderContentBody(
+        wrapper.querySelector('[data-slot="content-body"]'),
+        currentData
+      );
+      this.populateFooterSource(wrapper, currentData);
+      this.schedulePostRenderEnhancements(wrapper);
+      return wrapper;
+    };
+
+    if (_wrapper instanceof Promise) {
+      return _wrapper.then(postRender).catch((error) => {
+        Log.error("MMM-SoccerStandings: getDom error", error);
+        return document.createElement("div");
+      });
     }
 
-    const subTabsContainer = wrapper.querySelector(".wc-subtabs-container");
-    if (subTabsContainer) {
-      this._addHorizontalScrollIndicators(subTabsContainer);
-    }
-
-    this.renderContentBody(
-      wrapper.querySelector('[data-slot="content-body"]'),
-      currentData
-    );
-    this.populateFooterSource(wrapper, currentData);
-    this.schedulePostRenderEnhancements(wrapper);
-
-    return wrapper;
+    return postRender(_wrapper);
   },
 
   // Create the league table
