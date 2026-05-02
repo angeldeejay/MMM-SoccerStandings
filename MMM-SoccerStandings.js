@@ -46,7 +46,7 @@ Module.register("MMM-SoccerStandings", {
     animationSpeed: 0, // DOM update animation speed (ms)
     fadeSpeed: 0, // Fade animation speed (ms)
     colored: true, // Color rows by standing (top/UEFA/relegation)
-    maxTeams: 36, // 0 = show all teams
+    maxTeams: 12, // 0 = show all teams
     highlightTeams: ["Celtic", "Hearts"], // Emphasize teams by exact name
     // ===== League Selection =====
     // Use selectedLeagues to choose leagues by espn_service slug.

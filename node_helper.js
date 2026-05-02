@@ -9,7 +9,7 @@
 
 const NodeHelper = require("node_helper");
 const Log = require("logger");
-const http = require("http");
+const http = require("node:http");
 const CacheManager = require("./cache-manager.js");
 const {
   buildCanonicalCacheKey,

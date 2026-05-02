@@ -10,10 +10,10 @@ Run commands from the repository root.
 ### Setup and local run
 
 ```bash
-npm install
-npm run scss:build
-npm run mock-api:start
-npm run sandbox:watch
+node --run install
+node --run scss:build
+node --run mock-api:start
+node --run sandbox:watch
 ```
 
 This repo is a MagicMirror module, not a standalone web app. Runtime verification normally happens either through MagicMirror itself or through the single-module sandbox with root `config\module.config.json`, using `provider: "espn_service"` and a reachable `providerSettings.espn_service.baseUrl`.
@@ -21,23 +21,23 @@ This repo is a MagicMirror module, not a standalone web app. Runtime verificatio
 ### Tests
 
 ```bash
-npm test
+node --run test
 ```
 
 ### Linting and formatting
 
 ```bash
-npm run lint
-npm run format
-npm run scss:build
+node --run lint
+node --run format
+node --run scss:build
 ```
 
 ### Validation by change type
 
 - Ensure LF line endings in project files, including markdown, JSON, SCSS, config files, and `TODO.md`.
 - For documentation-only changes, do not force JavaScript validation unless commands, defaults, or behavior claims changed and need verification.
-- For JavaScript changes, run `npm run lint` and `npm test`.
-- For SCSS changes, run `npm run scss:build` so generated CSS stays aligned.
+- For JavaScript changes, run `node --run lint` and `node --run test`.
+- For SCSS changes, run `node --run scss:build` so generated CSS stays aligned.
 - For configuration or metadata changes, validate with the closest existing command or test surface that exercises the affected behavior.
 
 ## Communication style
@@ -232,7 +232,7 @@ Prefer an interactive choice prompt when tools allow it. Otherwise use the same 
 
 - Add tests to the relevant domain file under `tests/`. Shared globals and `loadRegisteredModuleDefinition` live in `tests/helpers/setup.js`.
 - When config or doc claims change, verify them against `package.json`, runtime defaults, and the active code path.
-- When frontend shell helper behavior changes, validate the narrowest relevant surface first, then widen to `npm test`.
+- When frontend shell helper behavior changes, validate the narrowest relevant surface first, then widen to `node --run test`.
 
 ## Repository-specific gotchas
 

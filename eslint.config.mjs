@@ -1,7 +1,8 @@
 import js from "@eslint/js";
 import globals from "globals";
+import { defineConfig } from "eslint";
 
-export default [
+export default defineConfig([
   js.configs.recommended,
   {
     languageOptions: {
@@ -39,4 +40,4 @@ export default [
       }
     }
   }
-];
+]);

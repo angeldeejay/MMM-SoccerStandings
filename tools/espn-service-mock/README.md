@@ -11,7 +11,7 @@ Purpose:
 ## Command
 
 ```bash
-npm run mock-api:start
+node --runmock-api:start
 ```
 
 Default URL:
@@ -41,14 +41,16 @@ Current league scope:
 1. start the mock:
 
 ```bash
-npm run mock-api:start
+node --runmock-api:start
 ```
 
 2. point root sandbox module config at it:
 
 ```javascript
 providerSettings: {
-  espn_service: { baseUrl: "http://127.0.0.1:3200" }
+  espn_service: {
+    baseUrl: "http://127.0.0.1:3200";
+  }
 }
 ```
 
@@ -61,5 +63,5 @@ config\module.config.json
 3. run the sandbox:
 
 ```bash
-npm run sandbox:watch
+node --runsandbox:watch
 ```

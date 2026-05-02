@@ -9,12 +9,6 @@ A **MagicMirror²** module for football standings and fixture views, powered by 
 
 ## What it does
 
-| Competition           | Slug             | View                                                 |
-| :-------------------- | :--------------- | :--------------------------------------------------- |
-| Colombian Primera A   | `col.1`          | Flat league table + fixture cards                    |
-| UEFA Champions League | `uefa.champions` | Group/knockout table + fixture cards per phase       |
-| FIFA World Cup        | `fifa.world`     | Group tables (A–L) + knockout rounds + fixture cards |
-
 - Standings render as position tables with configurable columns (played, W/D/L, GF/GA/GD, points, form).
 - Fixture views render as scrollable card lists, not tabular bodies. Lists page vertically with marquee scrolling when they exceed `marqueePageSize`.
 - Knockout fixtures show leg scores and aggregate totals for two-legged ties.
@@ -25,7 +19,7 @@ A **MagicMirror²** module for football standings and fixture views, powered by 
 
 - **MagicMirror²** `v2.34.0+`
 - **Node.js** `v24+`
-- A running `espn-soccer-api` instance reachable at the configured `providerSettings.espn_service.baseUrl`
+- A running [`espn-soccer-api`](https://github.com/angeldeejay/espn-soccer-api) instance reachable at the configured `providerSettings.espn_service.baseUrl`
 
 Without a reachable API the module renders an offline state and retries on a configurable back-off schedule.
 
@@ -36,17 +30,17 @@ From your MagicMirror `modules/` directory:
 ```bash
 git clone https://github.com/angeldeejay/MMM-SoccerStandings.git
 cd MMM-SoccerStandings
-npm install
+node --run install
 ```
 
-`npm install` runs `scss:build` as a postinstall step. No separate CSS build is required.
+`node --run install` runs `scss:build` as a postinstall step. No separate CSS build is required.
 
 ## Update
 
 ```bash
 cd ~/MagicMirror/modules/MMM-SoccerStandings
 git pull
-npm install
+node --run install
 ```
 
 ## Configuration
@@ -188,7 +182,7 @@ Add the module to `~/MagicMirror/config/config.js`.
 
 | Option           | Default    | Description                                                            |
 | :--------------- | :--------- | :--------------------------------------------------------------------- |
-| `maxTeams`       | `0` (all)  | Cap the number of rows shown per standings table. `0` shows all rows.  |
+| `maxTeams`       | `12`       | Cap the number of rows shown per standings table. `0` shows all rows.  |
 | `highlightTeams` | `[]`       | Team names to highlight in the table. Partial, case-insensitive match. |
 | `tableDensity`   | `"normal"` | Row height preset: `"compact"`, `"normal"`, or `"comfortable"`.        |
 | `colored`        | `true`     | Colour W/D/L and form tokens.                                          |
@@ -282,11 +276,11 @@ Highlighted team rows use `rgba(255, 255, 255, 0.1)` background styling. This is
 Run from the repository root:
 
 ```bash
-npm run lint          # ESLint static analysis
-npm test              # Mocha domain-split test suite (35 tests across 6 files)
-npm run scss:build    # Rebuild CSS from scss/entrypoint.scss
-npm run format        # Prettier auto-format
-npm run audit         # Check for dependency vulnerabilities
+node --run lint          # ESLint static analysis
+node --run test              # Mocha domain-split test suite (35 tests across 6 files)
+node --run scss:build    # Rebuild CSS from scss/entrypoint.scss
+node --run format        # Prettier auto-format
+node --run audit         # Check for dependency vulnerabilities
 ```
 
 ## Single-module sandbox
@@ -295,10 +289,10 @@ For live smoke checks, screenshots, and module-only debugging without a full Mag
 
 ```bash
 # Terminal 1 — fixture-backed ESPN mock on localhost:3200
-npm run mock-api:start
+node --run mock-api:start
 
 # Terminal 2 — sandbox (or :watch for hot-reload)
-npm run sandbox:start
+node --run sandbox:start
 ```
 
 - Edit `config/module.config.json` to change the mounted module config and the API URL it consumes.
@@ -325,7 +319,7 @@ npm run sandbox:start
 
 **CSS looks wrong after an update**
 
-- Run `npm run scss:build` to regenerate `MMM-SoccerStandings.css`.
+- Run `node --run scss:build` to regenerate `MMM-SoccerStandings.css`.
 
 ## Repo references
 
