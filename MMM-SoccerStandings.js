@@ -2724,40 +2724,30 @@ Module.register("MMM-SoccerStandings", {
     }
 
     this._applyThemeOverrides();
-    const _wrapper = this._super();
-    let wrapper;
+    const wrapper = this._super();
 
-    const renderDom = (w) => {
-      wrapper = w;
-      this._lastRenderedWrapper = w;
-      this._countdownEl = w.querySelector(".cycle-countdown");
-      this.bindChromeInteractions(w);
+    this._lastRenderedWrapper = wrapper;
+    this._countdownEl = wrapper.querySelector(".cycle-countdown");
+    this.bindChromeInteractions(wrapper);
 
-      const leagueTabsContainer = w.querySelector(".league-buttons-container");
-      if (leagueTabsContainer) {
-        this._addHorizontalScrollIndicators(leagueTabsContainer);
-      }
-
-      const subTabsContainer = w.querySelector(".wc-subtabs-container");
-      if (subTabsContainer) {
-        this._addHorizontalScrollIndicators(subTabsContainer);
-      }
-
-      this.renderContentBody(
-        w.querySelector('[data-slot="content-body"]'),
-        currentData
-      );
-      this.populateFooterSource(w, currentData);
-      this.schedulePostRenderEnhancements(w);
-    };
-
-    if (_wrapper instanceof Promise) {
-      _wrapper.then(renderDom).catch((error) => {
-        Log.error("MMM-SoccerStandings: Error rendering DOM", error);
-      });
-    } else {
-      renderDom(_wrapper);
+    const leagueTabsContainer = wrapper.querySelector(
+      ".league-buttons-container"
+    );
+    if (leagueTabsContainer) {
+      this._addHorizontalScrollIndicators(leagueTabsContainer);
     }
+
+    const subTabsContainer = wrapper.querySelector(".wc-subtabs-container");
+    if (subTabsContainer) {
+      this._addHorizontalScrollIndicators(subTabsContainer);
+    }
+
+    this.renderContentBody(
+      wrapper.querySelector('[data-slot="content-body"]'),
+      currentData
+    );
+    this.populateFooterSource(wrapper, currentData);
+    this.schedulePostRenderEnhancements(wrapper);
 
     return wrapper;
   },
