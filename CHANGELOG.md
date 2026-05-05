@@ -2,6 +2,26 @@
 
 ## [Unreleased] - 2026-04-20
 
+### Mock server: Express → MSW (`handlers.ts` + `@mswjs/http-middleware`)
+
+**Problem:** The ESPN service mock (`tools/espn-service-mock/`) used a hand-rolled Express router that only worked as a standalone HTTP server. The handlers could not be reused for in-process test interception without starting a real network listener, and the codebase was plain JS with no type coverage.
+
+**Fix:**
+
+- Replaced `server.js` + `routes/` with two TypeScript files:
+  - `handlers.ts` — MSW v2 request handlers (`http.get("*/api/v1/...")`). Usable both as a standalone HTTP server and as `setupServer(...handlers)` in MSW node mode (no port, no real network).
+  - `server.ts` — thin entry point that wraps handlers in `@mswjs/http-middleware`'s `createServer` and binds to port 3200.
+- All handler logic is fully typed: `PaginatedResponse<T>` shape, `FILE_MAP` record, `filterByDateRange` helper.
+- `/api/v1/standings/` adds `current=true` support (filters to max `season_year`) and explicit `season=<year>` filtering.
+- `/api/v1/fixtures/` adds `season=<year>` (filters by `league_phase.season_year`) and `date_from`/`date_to` (YYYY-MM-DD inclusive range on `date` field).
+- `mock-api:start` script updated to use `tsx` to run the TypeScript entry point directly without a separate compile step.
+- Added devDependencies: `msw@^2.14.3`, `@mswjs/http-middleware@^0.10.3`, `tsx@^4.21.0`.
+- `tools/espn-service-mock/README.md` rewritten: env vars table, full query-param reference per endpoint, curl examples, in-process test usage pattern.
+
+**Files modified:** `tools/espn-service-mock/handlers.ts` (new), `tools/espn-service-mock/server.ts` (new), `tools/espn-service-mock/README.md`, `package.json`
+
+---
+
 ### MVP wiring cleanup: competition routing now flows through shared helpers
 
 **Problem:** Even after narrowing the MVP to UCL, `col.1`, and WC2026, the frontend still repeated the same competition-routing decisions in several places: default subtab selection, UEFA stage-aware landing, tournament view selection, and semantic World Cup checks. That repetition kept the runtime more monolithic than necessary.
